@@ -1,0 +1,29 @@
+\begin{satz}[Cramer'sche Regel]
+\label{SatzCramer}
+\index{Cramer'sche Regel}
+    Sei $A$ invertierbar. Sei $b$ ein Vektor der L"ange $n$. Die Matrix
+    $B_k$ entstehe aus $A$ dadurch, da"s die $k$-te Spalte durch $b$ 
+    ersetzt wird. Es sei das lineare Gleichungssystem
+    \begin{equation}
+    \label{Equ1SatzCramer}
+        Ax=b
+    \end{equation}
+    zu l"osen, wobei
+    $x$ der Vektor der $n$ Unbekannten ist. Dann gilt
+    \[ x_k = \frac{\det(B_k)}{\det(A)} \]
+\end{satz}
+\begin{beweis}
+    Gleichung \equref{Equ1SatzCramer} l"a"st sich umformen in
+    \[ x= A^{-1} b \]
+    Aus Satz \ref{SatzAdj} folgt
+    \[ x= \frac{\adj(A)}{\det(A)}b \]
+    F"ur das $k$-te Element von $x$ bedeutet das
+    \begin{equation}
+    \label{Equ2SatzCramer}
+        x_k = \frac{\sum_{j=1}^n (-1)^{k+j} \det(A_{(j|k)}) b_j}{\det(A)}
+    \end{equation}
+    Da nach \ref{SatzEntw} der Z"ahler auf rechten Seite dieser
+    Gleichung die Entwicklung von $\det(B_k)$ nach der
+    $k-ten$ Spalte beschreibt, folgt daraus die Behauptung.
+\end{beweis}
+

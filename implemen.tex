@@ -1,0 +1,422 @@
+%
+% Datei: implemen.tex
+%
+\MyChapter{Implementierung}
+\label{ChapImplemen}
+
+In diesem Kapitel wird die Implementierung der in den Kapitel 
+\ref{ChapCsanky} bis \ref{ChapPan} behandelten Algorithmen 
+beschrieben\footnote{Der Algorithmus nach dem Entwicklungssatz von
+Laplace (siehe Unterkapitel \ref{SecDivCon}) wird hier nicht 
+ber"ucksichtigt.}.
+
+\MySection{Erf"ullte Anforderungen}
+\label{SecAnford}
+
+In diesem Unterkapitel werden die wesentlichen Eigenschaften des
+implementierten Programms beschrieben um einen "Uberblick "uber dessen
+Leistungsmerkmale zu geben.
+
+Die Algorithmen sind in Modula-2 auf einem Rechner mit einem Prozessor
+implementiert\footnote{Megamax Modula-2 auf einem ATARI ST}. 
+Als Literatur "uber die Programmiersprache Modula-2 ist
+z. B. \cite{DCLR86} empfehlenswert.
+
+Alle Algorithmusteile, die parallel ausgef"uhrt werden sollen,
+werden mit Hilfe von Schleifen nacheinander ausgef"uhrt. Mit Hilfe von
+Z"ahlprozeduren (siehe Modul `Pram') wird w"ahrend der Programmausf"uhrung
+ermittelt, in wieviel Schritten und mit Hilfe von wieviel Prozessoren der
+Algorithmus durch eine PRAM abgearbeitet werden kann.
+
+Das Programm erm"oglicht es, Matrizen anhand von Parametervorgaben 
+zuf"allig zu erzeugen. Die Parameter sind
+\begin{itemize}
+\item Gr"o"se der Matrix,
+\item
+      Rang (um auch Matrizen mit der Determinante Null gezielt 
+      erzeugen zu k"onnen),
+\item
+      Wahl einer der Mengen\footnote{durch geeignete Parameterwahl mit dem 
+      Befehl `param'}  $\Nat$, $\Integers$, $\Rationals$ oder
+      $\Rationals^+$ \footnote{alle Elemente aus $\Rationals$, die
+      gr"o"ser oder gleich Null sind} f"ur die Matrizenelemente,
+      da Algorithmen evtl. nicht auf jede dieser Mengen anwendbar sind,
+      und
+\item 
+      Vielfachheiten der Eigenwerte (wichtig f"ur den Algorithmus von Pan).
+\end{itemize}
+
+F"ur erzeugte Matrizen kann jeder der implementierten Algorithmen aufgerufen
+werden. Eine Matrix wird zusammen mit den durch die verschiedenen 
+Algorithmen berechneten Determinanten und den Me"sergebnissen der 
+Z"ahlprozeduren unter einem Namen auf dem Hintergrundspeicher abgelegt. 
+Diese Verwaltung geschieht automatisch. Dazu mu"s der Benutzer vor jedem
+neuen Anlegen eines aus den obigen Daten bestehenden Datensatzes einen
+Namen f"ur diesen Datensatz angeben.
+
+Das Programm ist kommandoorientiert. D. h. nach dem Start wird der 
+Benutzer aufgefordert, Befehle einzugeben, die nacheinander ausgef"uhrt 
+werden.
+
+Die Lesbarkeit des Quelltextes wird durch h"aufige Kommentare gesteigert.
+
+% **************************************************************************
+
+\MySection{Bedienung des Programms}
+\label{SecBedienung}
+
+In diesem Unterkapitel wird die Benutzung des Programms beschrieben.
+
+Nach dem Programmstart mu"s zun"achst mit Hilfe des Befehls {\em find}
+ein Datensatz festgelegt werden, der bearbeitet werden soll. Dies kann
+ein bereits existierender oder ein neu anzulegender sein.
+
+Bei einem neu angelegten Datensatz m"ussen danach mit Hilfe des Befehls 
+{\em param} die Parameter f"ur die zu erzeugende Matrix festgelegt werden.
+
+Anschlie"send kann man mit {\em gen} eine neue Matrix erzeugen lassen.
+Nachdem mit {\em param} die Parameter festgelegt sind, kann mit mit {\em gen}
+zu jeder Zeit eine neue Matrix generieren lassen, wodurch jedoch die 
+vorangegangene Matrix verloren geht.
+
+Wenn eine Matrix erzeugt worden ist, kann man mit Hilfe der Befehle
+{\em berk, bgh, csanky} und {\em pan} die entsprechenden Algorithmen auf 
+die generierte Matrix anwenden.
+
+Mit {\em show} kann man sich zu jeder Zeit den aktuellen mit {\em find}
+bestimmten Datensatz auf dem Bildschirm anzeigen lassen. Die generierte
+Matrix wird nur ausgegeben, wenn eine Matrixzeile in eine Bildschirmzeile 
+pa"st. Gr"o"sere Matrizen kann man mit {\em mshow} trotzdem ausgeben 
+lassen.
+
+Falls man einen weiteren Datensatz anlegen oder einen bereits vorhandenen
+wieder bearbeiten will, benutzt man erneut den Befehl {\em find}. Die
+Speicherung des alten Datensatzes geschieht automatisch.
+
+Weitere Befehle, die man nach dem Programmstart zu jedem Zeitpunkt angeben
+kann, sind: {\em del, exit, h, help, hilfe, ?, ls} und {\em q} . Ihre
+Bedeutung ist in der folgenden Liste aller erlaubten Befehle erkl"art:
+
+\begin{MyDescription}
+\MyItem{\em berk}
+    Der Algorithmus von Berkowitz aus Kapitel \ref{ChapBerk} wird auf
+    die Matrix des aktuellen Datensatzes angewendet. Die berechnete
+    Determinante sowie die Ergebisse der Z"ahlprozeduren 
+    (siehe Modul `Pram') werden im aktuellen Datensatz abgelegt.
+\MyItem{\em bgh}
+    Die Wirkung dieses Befehls ist analog zu der des Befehls {\em berk},
+    jedoch bezogen auf den Algorithmus von Borodin, von zur Gathen und
+    Hopcroft aus Kapitel \ref{ChapBGH}.
+\MyItem{\em csanky}
+    Die Wirkung dieses Befehls ist analog zu der des Befehls {\em berk},
+    jedoch bezogen auf den Algorithmus von Csanky aus Unterkapitel 
+    \ref{SecAlgFrame}.
+\MyItem{\em del}
+    Es wird nach einem Datensatznamen gefragt. Der zugeh"orige Datensatz
+    wird im Hauptspeicher und auf dem Hintergrundspeicher gel"oscht.
+\MyItem{\em exit}
+    Das Programm wird beendet. Der aktuelle mit {\em find} festgelegte
+    Datensatz wird automatisch auf dem Hintergrundspeicher abgelegt.
+\MyItem{\em find}
+    Es wird nach einem Datensatznamen gefragt. Falls ein Datensatz mit 
+    diesem Namen bereits im Hauptspeicher abgelegt ist, wird dieser erneut
+    zum aktuellen Datensatz. Falls dies nicht der Fall ist und auf dem 
+    Hintergrundspeicher ein Datensatz mit diesem Namen abgelegt ist,
+    wird dieser in den Hauptspeicher geladen und zum aktuellen Datensatz.
+    Falls beide F"alle nicht zutreffen, wird ein neuer Datensatz mit dem 
+    angegebenen Namen im Hauptspeicher angelegt und als aktueller 
+    Datensatz betrachtet.
+\MyItem{\em gen}
+    Entsprechend der mit {\em param} festgelegten Parameter wird eine neue
+    Matrix f"ur den aktuellen Datensatz generiert. Die dort durch die
+    Befehle {\em berk, bgh, csanky} und {\em pan} abgelegten Daten werden
+    gel"oscht.
+\MyItem{\em h, help, hilfe, ?}
+    Durch diese Befehle wird eine Kurzbeschreibung aller erlaubten Befehle
+    auf den Bildschirm ausgegeben.
+\MyItem{\em ls}
+    Auf dem Bildschirm wird eine Liste der Namen der im Hauptspeicher
+    befindlichen Datens"atze ausgegeben.
+\MyItem{\em mshow}
+    Die Matrix des aktuellen Datensatzes wird auf dem Bildschirm ausgegeben.
+\MyItem{\em pan}
+    Die Wirkung dieses Befehls ist analog zu der des Befehls {\em berk},
+    jedoch bezogen auf den Algorithmus von Pan aus Kapitel \ref{ChapPan}.
+\MyItem{\em param}
+    Es wird nach den Parametern f"ur die mit Hilfe von {\em gen} zu
+    generierende Matrix gefragt. Alle zuvor im aktuellen Datensatz
+    abgelegten Daten werden gel"oscht.
+\MyItem{\em q}
+    Die Wirkung dieses Befehls ist mit der des Befehls {\em exit} identisch.
+\MyItem{\em show}
+    Der aktuelle Datensatz wird auf dem Bildschirm ausgegeben. Die 
+    Matrix wird nur ausgegeben, falls eine Matrixzeile in eine 
+    Bildschirmzeile pa"st. Mit dem Befehl {\em mshow} kann die Matrix 
+    dennoch ausgegeben werden.
+\end{MyDescription}
+
+% **************************************************************************
+
+\MySection{Die Modulstruktur}
+\label{SecModule}
+
+In diesem Unterkapitel wird die Struktur des implementierten Programms 
+beschrieben. Dazu wird zu jedem Modul dessen Aufgabe und evtl. dessen
+Beziehung zu anderen Modulen angegeben. Alle Beschreibungen von Details
+der Implementierung, die f"ur die Benutzung des Programms und f"ur 
+das Verst"andnis von dessen Gesamtstruktur unwichtig sind, erfolgen durch 
+Kommentare innerhalb des Quelltextes (siehe Anhang).
+
+Eine Beschreibung des Programmoduls {\em main} entspricht einer Erkl"arung
+der Benutzung des Programms. Diese ist in Unterkapitel \ref{SecBedienung}
+zu finden.
+
+Die Beschreibung der Programmodule zum Test einzelner Teile des 
+Gesamtprogramms ist von untergeordnetem Interesse und beschr"ankt sich 
+deshalb auf kurze Bemerkungen "uber ihren Zweck ihm Rahmen der 
+alphabetischen Auflistung (s. u.).
+
+Die vorrangige Aufmerksamkeit des an der Implementierung der Algorithmen
+Interessierten sollte sich auf die Module {\em Det} und {\em Pram} sowie
+auf das Programmodul {\em algtest} richten. 
+
+Die genannten vorrangig interessanten Module sind im Anhang 
+\ref{ChapImplDet} zusammen mit dem Modul {\em main} gesammelt. Die
+weniger interessanten Testprogrammodule sind im Anhang \ref{ChapTest}
+aufgef"uhrt. Alle weiteren Module sind in alphabetischer Reihenfolge in
+Anhang \ref{ChapSupport} zu finden.
+
+Zun"achst wird anhand eines {\em reduzierten Ebenenstrukturbildes}
+(Erkl"arung s. u.) ein "Uberblick "uber die Programmstruktur geben. 
+Anschlie"send erfolgt eine alphabetische Auflistung der Module und 
+ihrer Erkl"arungen.
+
+In das erw"ahnte Strukturbild sind alle Module nach folgenden Regeln
+eingetragen:
+\begin{itemize}
+\item
+      Die Eintragung erfolgt ebenenweise. Die niedrigste Ebene ist im
+      Bild unten zu finden und die h"ochste oben. Jedes Modul geh"ort 
+      genau einer Ebene an.
+\item
+      Jedes Modul wird im Rahmen der Ma"sgaben durch die anderen Regeln
+      in einer m"oglichst niedrigen Ebene eingetragen.
+\item
+      Von jedem Modul A aus, das ein Modul B benutzt, z. B. durch Aufruf von
+      Prozeduren des Moduls B, wird im Rahmen der Einschr"ankungen durch
+      andere Regeln ein Pfeil auf dieses Modul $B$ gerichtet.
+\item 
+      Jedes Modul wird so eingetragen, da"s kein Pfeil von ihm auf ein 
+      Modul auf der gleichen oder einer h"oheren Ebene gerichtet ist.
+\item
+      Alle Pfeile von einem Modul aus auf Module, die nicht genau eine
+      Ebene tiefer angeordnet sind, werden weggelassen.
+\end{itemize}
+Durch die letzte Regel gewinnt das Strukturbild erheblich an
+"Ubersichtlichkeit, ohne wesentlichen Informationsgehalt zu verlieren.
+Aus dem Quelltext jedes Moduls ist zu entnehmen, welche Module, au"ser
+den im Bild angegebenen, sonst noch benutzt werden. Die aufgef"uhrten 
+Regeln liefern das in Abbildung \ref{PicModule} angegebene Bild.
+
+\begin{figure}[htb]
+\begin{center}
+    \input{bilder/module}
+    \caption{reduziertes Ebenenstrukturbild}
+    \label{PicModule}
+\end{center}
+\end{figure}
+
+Es folgen die Kurzbeschreibungen der einzelnen Module in alphabetischer 
+Reihenfolge.
+
+\begin{MyDescription}
+\MyItem{\bf algtest (Programmodul)}
+    Dieses Modul dient zum Test der Algorithmen zur 
+    Determinantenberechnung ohne Behinderung durch Anforderungen 
+    irgendwelcher Art, insbesondere
+    ohne Beachtung der Parallelisierung und der Ma"sgabe, Matrizen
+    beliebiger Gr"o"se zu verarbeiten.
+\MyItem{Cali (CArdinal LIst)}
+    In diesem Modul sind lineare Listen positiver ganzer Zahlen 
+    implementiert. Es st"utzt sich auf das Modul `List'.
+\MyItem{Data}
+    Das Modul `Data' dient der Verwaltung der Datens"atze bestehend aus 
+    Matrizen und ihren Parametern, sowie der berechneten Determinanten 
+    und der dabei gez"ahlten Schritte und Prozessoren.
+\MyItem{Det}
+    In diesem Modul sind die Algorithmen zur parallelen
+    Determinantenberechnung implementiert.
+\MyItem{Frag (array FRAGments)}
+    Im Modul `Frag' sind Felder beliebiger variabler L"ange und beliebigen
+    Inhalts implementiert. Das Modul ist erforderlich, um Matrizen 
+    verarbeiten zu k"onnen, deren Gr"o"se durch den Benutzer erst w"ahrend 
+    der Laufzeit des Programms festgelegt wird.
+    
+    Das Modul profitiert von der Verwaltung von 
+    Elementen beliebiger Typen durch das Modul `Type'.
+\MyItem{Func (FUNCtions)}
+    In diesem Modul sind verschiedene Prozeduren und Funktionen 
+    insbesondere f"ur mathematische Zwecke zusammengefa"st.
+\MyItem{Hash}
+    Durch dieses Modul werden Prozeduren zur Streuspeicherung, auch unter
+    dem Namen `Hashing' bekannt, zur Verf"ugung gestellt. Das Modul wird 
+    durch den Algorithmus von Borodin, von zur Gathen und Hopcroft im 
+    Modul `Det' ben"otigt, um Zwischenergebnisse bei der parallelen 
+    Berechnung von Termen zu speichern.
+    
+    Das Modul `Hash' erlaubt es, beliebige Daten zu speichern. Dabei wird
+    auf das Modul `Type' zur Verwaltung von Elementen beliebiger Typen
+    zur"uckgegriffen.
+\MyItem{Inli (INteger LIst)}
+    In diesem Modul sind lineare Listen ganzer Zahlen 
+    implementiert. Es st"utzt sich auf das Modul `List'.
+\MyItem{List}
+    Das Modul `List' stellt Prozeduren zur Verwaltung von linearen 
+    doppelt verketteten Listen bliebiger Elemente zur Verf"ugung. Analog
+    zu den Modulen `Frag', `Hash' und `Mat' benutzt `List' das Modul
+    'Type` zur Verwaltung von Elementen beliebiger Typen.
+    
+    Auf dem Modul `List' bauen verschiedene Module zur Implementierung von
+    Listen spezieller Typen auf.
+\MyItem{\bf listtest (Programmodul)}
+    Dieses Programmodul dient zum Test des Moduls `List'. Es verwendet
+    dazu das Modul `Cali'.
+\MyItem{\bf main (Programmodul)}
+    Dies ist das Hauptmodul des gesamten Programms. Es nimmt die Befehle
+    des Benutzers entgegen und ruft die entsprechenden Prozeduren auf.
+    Die Benutzung ist in Unterkapitel \ref{SecBedienung} beschrieben.
+\MyItem{Mali (MAtrix LIst)}
+    In diesem Modul sind lineare Listen von Matrizen
+    implementiert. Es st"utzt sich auf die Module `List' und `Mat'.
+\MyItem{Mat (MATrix)}
+    Dieses Modul stellt Prozeduren zur Verwaltung von zweidimensionalen 
+    Matrizen beliebiger Gr"o"se f"ur beliebige Elemente zur Verf"ugung.
+    Es st"utzt sich auf das Modul `Frag' zur Verwaltung der Felder
+    beliebiger Gr"o"se und auf das Modul `Type' zur Verwaltung von 
+    Elementen beliebiger Typen.
+\MyItem{Pram}
+    Das Modul `Pram' stellt die Z"ahlprozeduren zur Verf"ugung, die zur 
+    Ermittlung des Aufwandes f"ur
+    eine PRAM zur Abarbeitung der verschiedenen Algorithmen zur 
+    Determiantenberechnung erforderlich sind. Das Modul wird durch die
+    Module 'Det' und 'Rema' benutzt und verwendet seinerseits insbesondere
+    das Modul `Cali' f"ur Verwaltungsaufgaben.
+\MyItem{\bf pramtest (Programmodul)}
+    Dieses Programmodul dient zum Test des Modul `Pram'.
+\MyItem{Reli (REal LIst)}
+    In diesem Modul sind lineare Listen von Flie"skommazahlen
+    implementiert. Es st"utzt sich auf das Modul `List'.
+\MyItem{Rema (REal MAtrix)}
+    Dieses Modul implementiert Matrizen aus Flie"skommazahlen. Es st"utzt
+    sich dazu auf das Modul \nopagebreak[3] `Mat'.
+\MyItem{Rnd  (RaNDomize)}
+    Das Modul 'Rnd' erlaubt es, Zufallszahlen nach der linearen 
+    Kongruenzmethode zu erzeugen. Es wird vom Modul `Rema' dazu benutzt,
+    anhand von verschiedenen Parametern zuf"allige Matrizen zu generieren.
+\MyItem{\bf rndtest (Programmodul)}
+    Dieses Programmodul dient zum Test des Moduls `Rnd'.
+\MyItem{simptype (SIMPle TYPE)} \sloppy
+    Dieses Modul stellt Verwaltungsprozeduren f"ur die einfachen 
+    Datentypen \newline[3] `LONGCARD', `LONGINT' und `LONGREAL' zur 
+    Verf"ugung, damit
+    sie in Verbindung mit dem Modul `Type' verwendet werden k"onnen.
+    \fussy
+\MyItem{Str (STRing)}
+    Im Modul `Str' sind diverse Prozeduren zur Verarbeitung von 
+    Zeichenketten implementiert.
+\MyItem{\bf strtest (Programmodul)}
+    Dieses Programmodul dient zum Test des Moduls `Str'.
+\MyItem{Sys}
+    Dieses Modul stellt Prozeduren zum Ablegen von Daten auf dem 
+    Hintergrundspeicher zur Verf"ugung. Da die Behandlung der Massenspeicher
+    auf den verschiendenen Rechnersystemen unterschiedlich ist, mu"s
+    das Modul 'Sys' bei der Portierung des Programms auf einen
+    anderen Rechner neu implementiert werden. 
+\MyItem{SysMath}
+    Die zur Verf"ugung gestellten mathematischen Funktionen sind von 
+    System zu System unterschiedlich. Deshalb sind im Modul `SysMath' die
+    Funktionen gesammelt, die im Programm benutzt werden. Bei der Portierung
+    des Programms auf ein anderes Computersystem mu"s dieses Modul evtl.
+    angepa"st werden.
+\MyItem{Type}
+    Dieses Modul dient der Verwaltung von Elementen beliebiger Datentypen.
+    Ein neuer Typ wird im Rahmen dieses Moduls durch die Angabe 
+    verschiedener Verwaltungsprozeduren definiert. Das Modul "ubernimmt 
+    auf diese Weise die Sammlung der Eigenschaften verschiedener Typen, um 
+    so die "Ubersichtlichkeit zu steigern. Ohne dieses Modul mu"s jedes 
+    der Module `Frag', `Hash', `List' und `Mat' eine entsprechende 
+    Verwaltung separat enthalten.
+\MyItem{\bf typetest (Programmodul)}
+    Dieses Programmodul dient zum Test des Moduls `Type'.
+\end{MyDescription}
+
+% **************************************************************************
+
+\MySection{Anmerkungen zur Implementierung}
+
+An dieser Stelle werden einige praktische Gesichtspunkte der
+Implementierung kommentiert.
+
+Vergleicht man das Modul `algtest' mit dem Rest des Quelltextes, so erkennt 
+man, da"s insbesondere die Anforderung der {\em Pseudoparallelisierung}
+die L"ange des Quelltextes stark vergr"o"sert. Bei den Algorithmen im
+Modul `Det' handelt es sich ungef"ahr um eine Vergr"o"serung 
+um den Faktor 5.
+
+Weiterhin zeigt sich, da"s eine flexible auch nachtr"aglich 
+erweiterbare Programmstruktur, die unter dem Gesichtspunkt sich evtl. 
+anschlie"sender Arbeiten w"unschenswert ist, nicht unerheblichen Aufwand
+bedeutet. So machen die eigentlich interessierenden Programmteile nur
+ca. 30 Prozent des Quelltextes\footnote{Gesamtl"ange ca. 9500 Zeilen} aus. 
+Der gesamte weitere Aufwand ergibt sich
+einerseits aus verschiedenen Anforderungen an Leistungen und Struktur des 
+Programms, andererseits aus der Notwendigkeit, Datentypen zu implementieren,
+die die verwendete Sprache nicht standardm"a"sig zur Verf"ugung stellt.
+
+Auf eine Implementierung auf leistungsf"ahigeren Rechnern wurde verzichtet,
+da der ben"otigte Speicherplatz quadratisch mit der Anzahl der Zeilen und
+Spalten der Matrizen w"achst. Der zus"atzliche Speicherplatz f"uhrt nicht
+zu einer Steigerung der Matrizengr"o"se von weitreichendem Interesse.
+Diese Beschr"ankung erlaubt es, mit der relativ geringen Rechenleistung
+eine ATARI ST auszukommen.
+
+Gr"o"sere Matrizen sind auch aus einem weiteren Grund nicht ohne
+erheblichen weiteren Aufwand sinnvoll. Die Standardarithmetiken
+verschiedener Implementierungen von Programmiersprachen erlauben eine
+Rechengenauigkeit von typischerweise ca. 19 Stellen. Dies reicht nicht
+aus, um Determinanten
+gr"o"serer Matrizen "uberhaupt darzustellen. Deshalb ist es f"ur eine
+deutliche Steigerung der Matrizengr"o"se erforderlich, eine eigene
+Flie"skommaarithmetik zu implementieren, die es erm"oglicht, mit
+beliebiger Genauigkeit\footnote{im Rahmen der physikalischen Grenzen}
+zu rechnen.
+
+Die praktischen Erfahrungen in verschiedenen Bereichen der angewandten
+Informatik zeigen, da"s in bestehenden in der Regel zufriedenstellend
+laufenden Programmen eine Restquote an Programmierfehlern im
+Quelltext von ca. einem Fehler pro 1000 Zeilen Quelltext existiert.
+Beim gegenw"artigen Stand der Technik ist es nicht m"oglich, Programme
+wesentlich fehlerfreier zu bekommen.
+
+Besonders bei mathematischen Programmen ist es in der Regel erforderlich,
+trotzdem nahezu Fehlerfreiheit zu erreichen, was die Implementierung
+solcher Programme zus"atzlich erschwert. Ein praktisches Beispiel
+f"ur diese Probleme sind die implementierten Algorithmen zur
+Determiantenberechnung. Die pseudoparallelen Algorithmen im Modul
+`Det' besitzen eine Gesamtl"ange von ca. 2300 Zeilen, erheblich mehr
+als die Implementierungen im Programmodul 'algtest'.
+
+Da die Dauer einer Fehlersuche schwer abzusch"atzen ist und nur begrenzte
+Zeit zur Verf"ugung stand, haben die genannten Schwierigkeiten dazu
+gef"uhrt, da"s zwar alle Algorithmen lauff"ahig sind, jedoch
+die im Anhang zu findenden Implementierungen leider keine
+Determinanten berechnen:
+\begin{itemize}
+\item P-Alg. im Programmodul `algtest' sowie
+\item BGH-Alg., B-Alg. und P-Alg. im Modul `Det'.
+\end{itemize}
+Durch umfangreiche Testl"aufe kann ausgeschlossen werden, da"s die Fehler
+au"serhalb der Module zu suchen sind. Es mu"s sich jeweils um fehlerhafte
+Implementierung der Algorithmusbeschreibungen in den jeweiligen Kapiteln
+handeln (z. B. Vorzeichenfehler oder falsche Indizes).
+

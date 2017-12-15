@@ -1,0 +1,197 @@
+\begin{theindex}
+
+  \item Adjunkte, 37
+  \item Algorithmus
+    \subitem parallele Grundrechenarten, 14
+    \subitem parallele Matrizenmultiplikation, 14
+    \subitem Pr{\Mya}fixproblem, 11
+    \subitem von Berkowitz, 72
+    \subitem von Csanky, 30, 40
+
+  \indexspace
+
+  \item Basis, 84
+  \item Berechnungsmodell, 8
+  \item Berkowitz
+    \subitem Algorithmus von, 72
+  \item Bezeichnungen
+    \subitem Indizierung, 9
+    \subitem nat{\Myu}rliche Zahlen, 9
+    \subitem Schritt, 9
+
+  \indexspace
+
+  \item Cayley und Hamilton
+    \subitem Satz von, 70
+  \item CRCW, 8
+  \item Csanky
+    \subitem Algorithmus von, 30, 40
+
+  \indexspace
+
+  \item Determinante
+    \subitem Definition, 19
+  \item diagonalisierbar, 86
+  \item Diagonalmatrix, 86
+  \item Differenzierung
+    \subitem von Produkten, 35
+  \item Dimension, 84
+  \item direkte Summe, 87
+  \item Divide and Conquer, 30
+  \item Dreiecksmatrix, 45
+
+  \indexspace
+
+  \item Eigenraum, 86
+  \item Eigenvektor, 26
+  \item Eigenwert, 26
+  \item Einheit
+    \subitem in einem Ring, 46
+  \item Einheitsmatrix, 9
+  \item Entwicklung
+    \subitem  nach einer Zeile oder Spalte, 30
+
+  \indexspace
+
+  \item Frame
+    \subitem Satz von, 40
+
+  \indexspace
+
+  \item Gau{\Mys}s'sches Eliminationsverfahren, 45
+  \item Gleichung
+    \subitem charakteristische, 25
+  \item Gleichungssystem, 22
+    \subitem homogenes, 24
+    \subitem inhomogenes, 24
+
+  \indexspace
+
+  \item homogene Komponente, 47
+  \item H{\Myo}ldernorm, 94
+
+  \indexspace
+
+  \item Inverse
+    \subitem einer Matrix, 96, 98
+  \item Inversion, 18
+  \item invertierbar, 17
+  \item Iterationsverfahren, 98
+
+  \indexspace
+
+  \item kanonische Basis, 84
+  \item Kern
+    \subitem einer linearen Abbildung, 23
+  \item Koeffizientendarstellung, 26
+  \item konkav, 78
+  \item konstanter Term, 47
+  \item Konvergenzbereich, 47
+  \item Konvergenzradius, 47
+  \item Kroneckersymbol, 49
+  \item Krylov
+    \subitem Methode von, 91
+
+  \indexspace
+
+  \item Laplace
+    \subitem Entwicklungssatz von, 28
+  \item Leverrier
+    \subitem Methode von, 38
+  \item linear abh{\Mya}ngig, 84
+  \item linear unabh{\Mya}ngig, 84
+  \item Linearfaktorendarstellung, 32
+  \item Linearkombination, 83
+
+  \indexspace
+
+  \item Matrix
+    \subitem charakteristische, 26
+    \subitem symmetrische, 96
+  \item Matrixnorm, 95
+    \subitem induzierte, 95
+    \subitem nat{\Myu}rliche, 95
+  \item Matrizendarstellung
+    \subitem des charakteristischen Polynoms, 25
+  \item Matrizeninvertierung, 96, 98
+  \item Minimalpolynom, 87
+  \item Minimumgleichung, 87
+  \item Modellrechner, 8
+
+  \indexspace
+
+  \item Newton
+    \subitem Gleichungen von, 36
+    \subitem Iterationsverfahren von, 98
+  \item Norm
+    \subitem einer Matrix, 95
+    \subitem eines Vektors, 94
+    \subitem nat{\Myu}rliche, 95
+  \item Nullmatrix, 9
+  \item N{\Mya}herungsinverse, 96
+
+  \indexspace
+
+  \item Operatornorm, 95
+
+  \indexspace
+
+  \item p-Norm, 94
+  \item Parallelisierungsgrad, 9
+  \item Permutation, 9, 18
+  \item Polynom
+    \subitem charakteristisches, 25
+  \item Polynomdivsion, 34
+  \item Potenzreihenring
+    \subitem {\Myu}ber {\mit M}, 46
+  \item PRAM, 8
+  \item Programm uber R[], 53
+  \item Pr{\Mya}fixproblem, 10
+
+  \indexspace
+
+  \item Rang, 20, 21
+  \item Rangabfall, 26
+  \item Ring
+    \subitem {\Myu}ber {\mit M}, 46
+
+  \indexspace
+
+  \item Samuelson
+    \subitem Satz von, 72
+  \item Signatur einer Permutation, 18
+  \item Spaltenentwicklung, 30
+  \item Spaltenoperationen
+    \subitem elementare, 19
+  \item Spaltenrang, 20
+  \item Spektralradius, 96
+  \item Spur, 18
+  \item Spuroperator, 41
+  \item Stirling'sche Ungleichungen, 27
+  \item symmetrisch, 96
+
+  \indexspace
+
+  \item Taylor
+    \subitem Satz von, 47
+  \item Toepliz-Matrizen, 65
+    \subitem Multiplikation von, 65
+  \item Transponierte, 17
+
+  \indexspace
+
+  \item Unterraum, 22
+
+  \indexspace
+
+  \item Vielfachheit, 32
+
+  \indexspace
+
+  \item Zeilenentwicklung, 30
+  \item Zeilenoperationen
+    \subitem elementare, 19, 45
+  \item Zeilenrang, 20
+  \item Zeitkomplexit{\Mya}t, 9
+
+\end{theindex}

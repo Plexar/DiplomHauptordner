@@ -1,0 +1,26 @@
+
+# Datei: mod2list.mup
+#
+# alle Quelltexte so veraendern, dass TeX sie lesen kann
+# 
+
+setenv MyDipl g:\diplom         # gesamte Diplomarbeit
+setenv MySrc  $MyDipl\modula2   # Quelltexte der Implementierung
+setenv MyDest $MyDipl\listings  # fuer TeX verstaendliche Quelltexte
+setenv MyMark '###GrepMarke###' # Marke fuer zu entfernende Zeilen
+setenv MyCom 'echo $i; grep -v $MyMark $i >$MyDest\39433.tmp; cd $MyDest; mv 39433.tmp $i; cd $MySrc'
+
+rm $MyDest\*.m
+rm $MyDest\*.d 
+rm $MyDest\*.i
+
+cd $MySrc
+for i in *.m do $MyCom
+for i in *.d do $MyCom
+for i in *.i do $MyCom
+
+setenv MyDipl
+setenv MySrc
+setenv MyDest
+setenv MyMark
+setenv MyCom

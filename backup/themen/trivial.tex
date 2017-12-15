@@ -1,0 +1,60 @@
+\MySection{Einfache Voraussetzungen}
+
+F"ur Leser, die mit dem Thema dieser Arbeit nicht vertraut sind, werden
+in diesem Unterkapitel Ansatzpunkte zur Beseitigung von Unklarheiten 
+angegeben.
+
+Vorausgesetzt wird aus der linearen Algebra wird die Kenntnis der Begriffe
+\begin{quote}
+    Halbgruppe, Monoid, Gruppe, kommutative Gruppe, Ring, K"orper,
+    Vektorraum, Abbildung, injektiv, surjektiv, bijektiv,
+    Matrix, Addition von Matrizen, Multiplikation von Matrizen,
+    Multiplikation von Matrizen mit Skalaren
+\end{quote}
+sowie ihrer Eigenschaften und Beziehungen zueinander.
+
+Die Bezeichnung von Gr"o"senordnungen ist in der Informatik so 
+selbstverst"andlich, da"s man u. U. Schwierigkeiten hat, eine genaue
+Definition der Begriffe zu finden. Deshalb werden die Definitionen hier
+noch einmal angegeben.
+\MyBeginDef
+    Die Menge 
+    \[ 
+         \{ g | \exists c \in \Rationals: \exists n_0 \in \Nat: 
+                \forall n>n_0: c f(n) \geq g(n) \}
+    \]
+    hei"st 'Menge der Funktionen von {\em h"ochstens} der 
+    Gr"o"senordnung $f$' und wird mit \[ O(f) \] bezeichnet.
+\MyEndDef
+\MyBeginDef
+    Die Menge
+    \[  \{ g | \forall c \in \Rationals: \exists n_0 \in \Nat: 
+               \forall n>n_0: c f(n) \geq g(n) \}
+    \]
+    hei"st 'Menge der Funktionen von {\em geringerer} Gr"o"senordnung als 
+    $f$' und wird mit \[ o(f) \] bezeichnet.
+\MyEndDef % g=o(f) => f=\Omega(g)
+\MyBeginDef
+    Die Menge 
+    \[ 
+        \{ g | \exists c \in \Rationals: \exists n_0 \in \Nat: 
+               \forall n>n_0: c f(n) \leq g(n) \}
+    hei"st 'Menge der Funktionen von {\em mindestens} der Gr"o"senordnung
+    $f$' und wird mit \[ \Omega(f) \] bezeichnet.
+\MyEndDef
+\MyBeginDef
+    Die Menge
+    \[
+        \{ g | \exists c_1, c_2 \in \Rationals: \exists n_0 \in \Nat: 
+               \forall n>n_0: c_1 f(n) \leq g(n) \leq c_2 f(n) \}
+    \]
+    hei"st 'Menge der Funktionen von {\em genau} der Gr"o"senordnung
+    $f$' und wird mit \[ \Theta(f) \] bezeichnet.
+\MyEndDef
+Leider ist es in der Literatur oft "ublich, f"ur \[ g \in O(f) \] auch
+\[ g = O(f) \] zu schreiben (entsprechend f"ur die anderen
+Gr"o"senordnungen).
+Da diese Schreibweise mathematisch unsinnig ist, werden wir sie vermeiden.
+
+% **************************************************************************
+

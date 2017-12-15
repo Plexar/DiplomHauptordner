@@ -1,0 +1,31 @@
+
+# Datei: st2zoo.mup
+#
+# Ergebnisse der Diplomarbeit auf dem Atari ST in einem ZOO-Archiv speichern
+# 
+# wichtig:
+#     *.tex *.bib *.dvi readme *.bst *.sty *.mup (TeX, BiBTeX, Mupfel)
+#     *.ltd             (TeXDraw)
+#     *.d *.i *.m *.m2m (Modula-2)
+#     *.for *.set       (Form)
+#     *.log             (TeX, ShowDvi, Form)
+#     *.bas             (Basic)
+#     backup\*.*        (alles im Backup-Verzeichnis)
+# weniger wichtig:
+#     *.aux *.bbl *.blg *.ind *.idx *.dup *.ilg 
+
+
+setenv MyD g:\diplom  # alle Daten der Diplomarbeit
+
+setenv MyA h:         # archivierte Daten der Diplomarbeit
+
+noalias mv $MyA\diplom.zoo $TMP
+cd $MyD
+cd ..
+
+zoo ah// $MyA\diplom.zoo $MyD
+
+setenv MyD
+setenv MyA
+noalias rm $TMP\diplom.zoo 
+

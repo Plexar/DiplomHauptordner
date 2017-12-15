@@ -1,0 +1,22 @@
+In diesem Kapitel werden obere und untere Schranken f"ur die parallele
+Zeitkomplexit"at der Determinantenberechnung betrachtet. Weiterhin
+werden Beziehungen zu verwandten Problemen hergestellt. Schlie"slich wird 
+den angegebenen S"atzen und Lemmata ein Algorithmus zur parallelen 
+Determinantenberechnung entnommen. Das Kapitel basiert auf Ergebnissen, die
+in \cite{Csan76} ver"offentlicht wurden.
+
+Zun"achst liefert Satz \ref{Csan76Satz1} eine untere Schranke f"ur $D(n)$.
+Danach beschreibt Lemma \ref{Csan76Satz2} eine obere Schranke f"ur $I(n)$.
+Mit Hilfe von Lemma \ref{Csan76Satz3} kann 
+man von $I(n)$ auf $D(n)$ schlie"sen und schlie"slich
+wird daraus in Satz \ref{Csan76Satz4} eine obere Schranke f"ur $D(n)$ 
+gewonnen.
+%Dabei wird gleichzeitig auf die Anzahl der Prozessoren eingegangen,
+%die maximal gleichzeitig besch"aftigt werden k"onnen bzw. ben"otigt werden.
+
+
+Mit Hilfe von Lemma \ref{Csan76Satz3} hat man also, sobald man 
+einen Algorithmus
+f"ur I gefunden hat, auch einen f"ur D. Da Satz \ref{Csan76Satz2} einen 
+Algorithmus f"ur I angibt, erhalten wir somit eine obere Schranke f"ur D(n):
+

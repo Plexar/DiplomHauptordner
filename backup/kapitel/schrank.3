@@ -1,0 +1,17 @@
+                    F"ur $l= \lceil \log(n-1) \rceil \ldots 1$ :\\
+                    Parallel f"ur $ m=1 \ldots 2^{l-1}$:
+                    \begin{displaymath}
+                        \dot{x}^{(l-1)}_m:= \dot{x}^{(l)}_{2*m} *
+                                            \dot{x}^{(l)}_{2*m+1} 
+                    \end{displaymath}
+                    F"ur die Rechenschritte zur 
+                    Berechnung von $ \dot{x}^{(0)}_1 $ werden 
+                    $ \lceil \log(n-1) \rceil $ Schritte ben"otigt. F"ur die
+                    Schleife sind pro Durchlauf zwei zus"atzliche 
+                    Schritte f"ur
+                    Schleifenbedingung und Dekrementierung von l anzusetzen.
+                    Weiterhin werden pro Durchlauf zwei zus"atzliche
+                    Schritte f"ur die Berechnung von Indizes ben"otigt.
+                    So ergeben sich insgesamt $ 4\lceil \log(n-1) \rceil $ 
+                    Schritte.
+

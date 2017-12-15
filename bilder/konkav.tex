@@ -1,0 +1,24 @@
+%
+% You need 'bezier.sty'
+% You need 'epic.sty'
+%
+\setlength{\unitlength}{1mm}
+\makeatletter
+\def\Thicklines{\let\@linefnt\tenlnw \let\@circlefnt\tencircw
+\@wholewidth4\fontdimen8\tenln \@halfwidth .5\@wholewidth}
+\makeatother
+\begin{picture}(100.00,75.00)
+\drawline(95.00,69.75)(70.25,69.75)(70.25,39.75)(15.00,39.75)(15.00,9.75)(5.00,9.75)
+\bezier{100}(15.00,24.75)(40.00,54.75)(70.25,54.75)
+\put(50.25,45.00){Fl"ache 1}
+\bezier{100}(15.00,9.75)(40.00,39.75)(70.25,39.75)
+\put(19.50,35.50){\vector(1,-4){0}}
+\drawline(19.50,35.50)(15.50,52.00)
+\put(10.75,52.75){Fl"ache 2}
+\put(70.75,54.75){\vector(-4,3){0}}
+\drawline(70.75,54.75)(81.25,46.75)
+\put(70.50,39.75){\vector(-2,-1){0}}
+\drawline(70.50,39.75)(81.25,45.50)
+\put(82.50,44.75){$+0.5$}
+\end{picture}
+%

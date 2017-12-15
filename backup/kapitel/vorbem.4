@@ -1,0 +1,254 @@
+%
+% Datei: vorbem.tex
+% Datum: 12.08.91
+%
+% Datei zur Erzeugung des Textteils 'Vorbemerkungen'
+%
+% $$$$ motivieren: nicht ALLE Schritt werden gez"ahlt, sondern nur die
+%                  wesentlichen
+\MyChapter{Vorbemerkungen}
+
+\MySection{Motivation}
+In diesem Kapitel werden einige Anmerkungen zur Verwendung von
+Determinanten bei der L"osung verschiedener Probleme gemacht.
+
+(in Arbeit)
+
+% Hinweise auf Anwendungen der Determinantenberechnung
+% $$$$ Fortsetzung hier
+
+% **************************************************************************
+
+\MySection{Grundlagen}
+In diesem Kapitel werden diverse Grundlagen ins Besondere "uber Matrizen
+und ihre Eigenschaften behandelt.
+
+(in Arbeit)
+% $$$$ Fortsetzung hier
+
+% Hinweise auf die Kapitel
+% Begriffe:
+%     Grad der Parallelit"at
+%     Speicherplatzkomplexit"at
+%     parallele Zeitkomplexit"at
+% Strategie beim optimieren der Komplexit"aten
+
+% **************************************************************************
+
+\MySection{Der Modellrechner}
+Als Modellrechner wird eine {\em Concurrent Read Concurrent Write 
+Parallel Random Access Machine (CRCW PRAM) } benutzt.
+Er besteht aus poly\-no\-miell vielen
+gleichen Prozessoren, die alle auf denselben Arbeitsspeicher zugreifen.
+Die Gr"o"se des ben"otigten Arbeitsspeichers wird bei den Analysen nicht
+n"aher betrachtet.
+Innerhalb einer Zeiteinheit k"onnen diese 
+Prozessoren, und zwar alle gleichzeitig,
+zwei Operanden aus dem Speicher lesen, eine der in Tabelle \ref{Csan76Tab2}
+aufgef"uhrten Operationen ausf"uhren und
+das Ergebnis wieder im Speicher ablegen bzw., bei einem Vergleich, eine 
+Verzweigung im Programm durchf"uhren. Dabei k"onnen die Operanden direkt
+oder indirekt adressiert werden. Die unterschiedliche Dauer der
+Operationen und der Adressierungsarten wird vernachl"assigt. Falls beim
+Schreiben mehrere Prozessoren auf eine Speicherzelle zugreifen, mu"s der
+Algorithmus unabh"angig davon korrekt sein, welcher Prozessor seinen 
+Schreibzugriff tats"achlich ausf"uhrt.
+\begin{table}[htb]
+    \begin{center}    
+    \begin{tabular}{|p{4cm}|c|}
+        \hline
+        Operation & Symbol \\
+        \hline
+        \hline
+        Addition & $+$ \\
+        \hline
+        Subtraktion & $-$ \\
+        \hline
+        Multiplikation & $*$ \\
+        \hline
+        Division (Ergebnis in $\Rationals$) & $/$ \\
+        \hline
+        Division (Ergebnis in $\Integers$) & div \\
+        \hline
+        $ x - (x \; \mbox{div} \; y) * y $ & x mod y \\
+        \hline
+        Vergleich & $ <,>,\leq,\geq,=, $ \\
+                  & $ \not<,\not>,\not\le,\not\ge,\not= $ \\
+        \hline
+    \end{tabular}
+    \end{center}
+    \caption{Operationen des Modellrechners}
+    \label{Csan76Tab2}
+\end{table}
+
+Bei Parallelrechnern kann man zwei Arten der Abarbeitung von Befehlen
+unterscheiden:
+\begin{itemize}
+    \item Multiple Instruction Multiple Data (MIMD)
+    \item Single Instruction Multiple Data (SIMD)
+\end{itemize}
+Bei MIMD-Rechnern ist die automatische Aufgabenverteilung unter den 
+an der Probleml"osung
+beteiligten Prozessoren u. U. ein schwer l"osbares Problem.
+% $$$ hier vielleicht Hinweise auf Untersuchungen zur automatischen 
+%     Aufgabenverteilung
+Eine manuelle Aufgabenverteilung w"urde bedeuten, da"s ein Algorithmus
+aus mehreren zusammenarbeitenden Teilalgorithmen besteht, f"ur die vor
+Beginn der Ab\-ar\-bei\-tung festgelegt wird, welche Gruppen von Prozessoren
+welchen Teilalgorithmus ausf"uhren und wie diese zusammen zu arbeiten
+haben.
+Wenn man davon ausgeht, da"s die Aufgaben schon unter den 
+Prozessoren verteilt sind, schneiden Algorithmen, die f"ur diese Rechner
+formuliert sind, im Laufzeitverhalten besser ab, als die "aquivalenten 
+Algorithmen auf SIMD-Rechnern (siehe dazu z. B. \cite{Hell73}).
+Bei diesen Rechnern ist die Aufgabenverteilung weit weniger schwierig, 
+weil jeder Prozessor entweder das tut, was die anderen tun, oder gar
+nichts. Eine CRCW PRAM ist ein MIMD-Rechner. 
+Es sollen folgende Vereinbarungen gelten:
+\begin{itemize}
+    \item Es wird angenommen, da"s f"ur Anweisungen der Art
+          \begin{quotation}
+              Parallel f"ur $i=k \ldots l$:
+          \end{quotation}
+          und 
+          \begin{quotation}
+              Parallel: \\
+              i) Anweisung 1 \\
+              ii) Anweisung 2 
+          \end{quotation}
+          die Aufgabenverteilung auf die ben"otigten Prozessoren 
+          automatisch ohne Zeitverlust vorgenommen
+          werden kann. Dabei d"urfen $k$ und $l$ keine Ausdr"ucke sein, 
+          deren Wert dann erst noch berechnet werden m"u"ste.
+    \item Von der Ein- und Ausgabe von Daten wird abstrahiert. D. h. es wird da
+          ausgegangen, da"s alle Eingabedaten im Arbeitsspeicher vorhanden 
+          sind und die Ausgabedaten ebenfalls dort abgelegt werden.
+    \item Mehrfachindizierung wird gegen"uber Einfachindizierung nicht als
+          zus"atzlicher Aufwand betrachtet. Bei paralleler Abarbeitung von
+          Anweisungen, in denen mehrfachindizierte Variable vorkommen, ist 
+          dies tats"achlich kein zus"atzlicher Aufwand, da z. B. eine
+          zweidimensionale Matrix auf einen 
+          ein\-di\-men\-sio\-na\-len Speicher 
+          abgebildet von jedem Prozessor nur noch mit einem Index adressiert 
+          wird, wenn ein gleich\-zei\-ti\-ger Zugriff auf alle 
+          Ma\-trix\-ele\-men\-te erfolgt.
+\end{itemize}
+
+% **************************************************************************
+
+\MySection{Bezeichnungen}
+
+Begriffsdefinitionen:
+\begin{itemize}
+    \item Der Vorgang, in dem beliebig viele Prozessoren gleichzeitig je 
+          zwei Operanden aus dem Arbeitsspeicher lesen, aus diesen Operanden 
+          ein Ergebnis berechnen und dieses Ergebnis wieder im 
+          Arbeitsspeicher ablegen bzw. eine Verzweigung durchf"uhren, 
+          wird als ein Schritt bezeichnet.
+    \item Sei ${C}$ ein Problem. Dann bezeichnet die {\em parallele 
+          Zeitkomplexit"at} $C(n)$ von ${C}$ die kleinste 
+          Anzahl von Schritten,
+          die ben"otigt wird, um ${C}$ f"ur eine beliebige Eingabe der 
+          Gr"o"se $n$ zu l"osen. Einige Probleme sind in 
+          Tabelle \ref{Csan76Tab3} aufgef"uhrt 
+          (${A}$ sei eine $ n \times n $-Matrix).
+% $$$$ Definition von \proc(C(n)) pr"ufen
+%    \item Sei $C$ ein Problem. Es sind $p$ Prozessoren zur L"osung
+%          des Problems in $C(n)$ Schritten {\em n"otig}, falls das 
+%          Problem in mit $p$ Prozessoren in $C(n)$ Schritten gel"ost
+%          werden kann, nicht aber mit weniger als $p$ Prozessoren.
+    \item Sei $C$ ein Problem. Dann bezeichnet $\proc(C(n))$ die 
+          Anzahl der Prozessoren, 
+          die {\em n"otig} sind, um $C$ in $C(n)$ Schritten 
+          zu l"osen.
+\end{itemize}
+\begin{table}[htb]
+    \begin{center}
+    \begin{tabular}{|p{8.5cm}|c|}
+        \hline
+        Problem & Zeitkomplexit"at \\
+        \hline\hline
+        Invertierung von ${A}$ & $I(n)$ \\
+        \hline
+        Berechnung einer L"osung eines Systems 
+        von $n$ Glei\-chun\-gen mit $n$ Un\-be\-kannten
+        (${A}$ sei die Ko\-ef\-fi\-zien\-ten\-ma\-trix) & $G(n)$ \\
+        \hline
+        Berechnung der Determinante von ${A}$ & $D(n)$ \\
+        \hline
+        Berechnung des Charakteristischen Polynoms von ${A}$ & $P(n)$ \\
+        \hline
+    \end{tabular}
+    \end{center}
+    \caption{Parallele Zeitkompelxit"aten verschiedener Probleme}
+    \label{Csan76Tab3}
+\end{table}    
+
+Falls nicht anders festgelegt, bezeichnen im folgenden Gro"sbuchstaben 
+Matrizen und Kleinbuchstaben Zahlen. Sei $A$ eine $n \times n$-Matrix und 
+dabei $n$ eine nat"urliche Zahl. Dann gelten die Schreibweisen, wie sie in 
+Tabelle \ref{Csan76Tab1} aufgef"uhrt 
+sind.
+\begin{table}[htb]
+    \begin{center}
+    \begin{tabular}{|p{8.5cm}|c|}
+        \hline
+        Begriff & Schreibweise \\ 
+        \hline\hline
+        Determinate von $A$ & $\det(A)$ \\
+        \hline
+        Adjunkte (Komplement) von $A$ & $\adj(A)$ \\
+        \hline
+        Spur (Summe der Hauptdiagonalelemente; trace) von $A$
+                                                         & $\tr(A)$ \\
+        \hline
+        Spalte $j$ von $A$ (auch f"ur $1 \times n$-Matrizen) 
+                                                         & $ {A}_{|j} $ \\
+        \hline
+        Zeile $j$ von $A$ (auch f"ur $n \times 1$-Matrizen) & $ {A}_j $ \\
+        \hline % $$$$ Indizierung von a_{ij} auf a_{i,j} umstellen!
+        Element in Zeile $i$, Spalte $j$ von $A$ & $ a_{i,j} $ \\
+        \hline % $$$$ Schreibweise A_{ij} pruefen (umstellen auf A_{(i|j)} )
+        Matrix, die aus $A$ durch Streichen der i-ten Zeile und der j-ten
+        Spalte entsteht & $ {A}_{ij} $ \\
+        \hline
+        Matrix, die aus A durch Streichen der Zeilen $v$ und der 
+        Spalten $w$ entsteht (dabei seien $v$ und $w$
+        echte Teilmengen der Menge der Zahlen von $1$ bis $n$; diese
+        Mengen werden hier als durch Kommas getrennt Zahlenfolge 
+        geschrieben) & $ {A}_{(v|w)} $ \\
+        \hline
+        $A_{(|)}$ (d. h. $A_{(v|w)}$ wobei $v$ und $w$ leer sind & $A$ \\
+        \hline 
+        Einheitsmatrix (Elemente der Haupt\-di\-ago\-na\-len gleich $1$;
+        alle anderen Elemente gleich $0$; Anzahl der
+        Zeilen und Spalten aus dem Zusammenhang klar) & $E$ \\
+        \hline
+        Einheitsmatrix mit $n$ Zeilen und Spalten & $E_n$ \\
+        \hline
+        Nullmatrix (alle Elemente sind gleich 0) mit $n$ Zeilen und 
+        Spalten & $0_n$ \\
+        \hline
+        Logarithmus von $x$ zur Basis $2$ & $ \log(x) $ \\
+        \hline
+        Menge aller Permutationen der Zahlen von $1$ bis $n$
+                                                   & $\permut_n$ \\
+        \hline
+    \end{tabular}
+    \end{center}
+    \caption{Bezeichnungen}
+    \label{Csan76Tab1}
+\end{table}
+Es sei hiermit noch deutlich darauf hingewiesen, da"s \[ \Nat \] die Menge
+der positiven ganzen Zahlen { \em ohne Null } bezeichnet. Die Menge der
+positiven ganzen Zahl einschlie"slich der Null wird mit \[ \Nat_0 \] 
+bezeichnet.
+
+
+% **************************************************************************
+
+\MySection{L"osungen einfacher Probleme}
+(in Arbeit)
+% $$$$ Fortsetzung hier
+
+

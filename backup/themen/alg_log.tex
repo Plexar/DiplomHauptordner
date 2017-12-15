@@ -1,0 +1,26 @@
+\begin{satz}[Logarithmus zur Basis $b$]
+\label{SatzAlgLog}
+\index{Algorithmus!parallele Logarithmusberechnung}
+    Die Funktion
+    \[ \lceil \log_b(n) \rceil \] l"a"st sich in
+    \[ \max(2\lceil \log(n/b) \rceil, \, 1) \] Schritten von
+    \[ \lf \frac{3n}{4b} \rf \] Prozessoren berechnen.
+\end{satz}
+\begin{beweis}
+    Falls \[ n \leq b \] lautet das Ergebnis $1$.
+    Andernfalls berechne 
+    \[ b_i := b^i , \: i = 1, \ldots, \lceil n/b \rceil  \MyPunkt\]
+    Dies kann nach Satz \ref{SatzAlgPraefix}
+    von \[ \lf \frac{3n}{4b} \rf \] Prozessoren
+    in \[ \lc \log(n/b) \rc \] Schritten geleistet werden.
+    Suche dann unter den $b_i$
+    dasjenige, f"ur das gilt
+    \[ \forall j\neq i: (b_j < n) \vee (b_j > b_i) \]
+    Dies kann nach \ref{SatzAlgSuche} von
+    \[ \lf \frac{3n}{4b} \rf \] Prozessoren in
+    \[ \lc \log(n/b) \rc \] Schritten durchgef"uhrt werden.
+    Die Werte f"ur Schritte und
+    Prozessoren zusammengenommen ergeben die Behauptung. 
+    \mbox{\hspace{10em} \hfill}
+\end{beweis}
+

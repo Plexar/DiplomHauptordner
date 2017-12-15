@@ -1,0 +1,83 @@
+% **************************************************************************
+
+\MySection{L"osbarkeit linearer Gleichungssysteme}
+\label{SecLinEqu}
+\index{Gleichungssysteme}
+$$$$$
+Da lineare Gleichungssysteme eine wichtige Rolle beim Verst"andnis
+verschiedener Sachverhalte spielen, werden sie in diesem
+Unterkapitel n"aher betrachtet. Die nun folgenden Grundlagen aus der
+linearen Algebra sind in der in \ref{SecMatUndDet} aufgelisteten
+Literatur ausf"uhrlich behandelt. Wir beschr"anken uns hier auf die
+f"ur den nachfolgenden Text wichtigen Aspekte.
+
+Ein lineares Gleichungssystem besteht aus $n$ Gleichungen mit $m$
+Unbekannten:
+\begin{eqnarray*}
+    a_{1,1} x_1 + a_{1,2} x_2 + \cdots + a_{1,n} x_n & = & b_1 \\
+    \vdots & \vdots & \vdots \\
+    a_{n,1} x_1 + a_{n,2} x_2 + \cdots + a_{m,n} x_n & = & b_m
+\end{eqnarray*}
+Die $x_i$ sind die zu bestimmenden Unbekannten. Betrachtet man die
+gegebenen Konstanten $a_{i,j}$ und $b_i$ als Elemente einer Matrix
+bzw. eines Vektors kann man das Gleichungssystem auch kompakter
+darstellen:
+\Beq{EquGleichungssystem} 
+    A x = b \MyPunkt 
+\Eeq
+Dabei ist $A$ ein $n \times m$-Matrix und $b$ ein Vektor der L"ange $m$.
+Ist $b= 0_m$, so bezeichnet man das Gleichungssystem als
+homogen \index{Gleichungsystem!homogenes}.
+Ist $b \neq 0_m$, so bezeichnet man das Gleichungssystem als
+inhomogen \index{Gleichungssystem!inhomogenes}.
+
+Bei der Betrachtung von \equref{EquGleichungssystem} erkennt man 
+eine Eigenschaft, die besonders in Verbindung mit passenden Algorithmen
+zur L"osung anderer Probleme f"ur die Determinantenberechnung von 
+Bedeutung ist: 
+\begin{bemerkung}
+\label{SatzGdurchI}
+    Falls $A$ invertierbar ist, l"a"st sich \equref{EquGleichungssystem} 
+    "uberf"uhren in die Form
+    \[ x=A^{-1}b \MyPunkt \]
+    Ein Algorithmus zur Invertierung einer Matrix l"a"st sich also zur 
+    L"osung eines linearen Gleichungssystems benutzten, falls die 
+    Koeffizientenmatrix invertierbar ist.
+\end{bemerkung}
+
+Uns interessieren speziell die L"osungen inhomogener Gleichungssysteme.
+Dazu betrachtet man die erweiterte Matrix $[A,b]$, die aus der Matrix
+$A$ und dem Vektor $b$ als $n+1$-te Spalte besteht:
+
+\begin{satz}
+\label{SatzRangGleich}
+    Die Gleichung
+    \Beq{EquInhomogen}
+        A x = b \MyPunkt
+    \Eeq
+    ist genau dann l"osbar, wenn gilt
+    \Beq{EquRangGleich}
+        \rg(A) = \rg([A,b]) \MyPunkt
+    \Eeq
+\end{satz}
+\begin{beweis}
+    Man kann die linke Seite von \equref{EquInhomogen} als 
+    Linearkombination von Spaltenvektoren von $A$ betrachten. 
+    Die Faktoren der Linearkombination bilden die Elemente des 
+    L"osungsvektors $x$.
+
+    Der Vektor $b$ ist genau dann als Linearkombination der
+    Spaltenvektoren von $A$ darstellbar, wenn die maximale Anzahl linear
+    unabh"angiger Vektoren in $A$ und $[A,b]$ gleich ist. Dies ist 
+    gleichbedeutend mit der G"ultigkeit von \equref{EquRangGleich}.
+\end{beweis}
+
+Aus $$$$$ (Wegener 7.2, 7.3, 7.4) erh"alt man: % 7.2 aus 7.1
+
+\begin{korollar}
+\label{SatzGenauEine}
+    Ist \equref{EquInhomogen} l"osbar und $\rg(A) = n$, 
+    also $n \leq m$, gibt es genau einen Vektor $x$, der die 
+    Gleichung erf"ullt.
+\end{korollar}
+

@@ -1,0 +1,1222 @@
+%
+% Datei: bgh.tex (Textteile nach 'BGH82')
+%
+
+\MyChapter{Der Algorithmus von {Borodin,} Von zur Gathen und Hopcroft}
+
+Der Algorithmus \cite{BGH82}, der in diesem Kapitel dargestellt wird,
+verbindet die Vermeidung von Divisionen \cite{Stra73}, das Gau"s'sche
+Eliminationsverfahren (z. B. \cite{BS87} S. 735)
+und die parallele Berechnung von Termen \cite{VSBR83} miteinander, um
+die Determinante einer Matrix zu berechnen.
+
+% **************************************************************************
+
+\MySection{Das Gau"s'sche Eliminationsverfahren}
+\label{SecGauss}
+
+\index{Gau{\Mys}s'sches Eliminationsverfahren}
+Das Gau"s'sche Eliminationsverfahren wird dazu benutzt, lineare
+Gleichungssysteme der Form \[ Ax=b \] zu l"osen. Dazu wird die sogenannte
+{\em erweiterte Koeffizientenmatrix} betrachtet. Sie ist eine
+$n \times (n+1)$-Matrix, deren erste $n$ Spalten aus den Spalten der
+Koeffizientenmatrix $A$ bestehen und deren $(n+1)$-te Spalte aus dem
+Vektor $b$ besteht.
+
+Die Idee des Gau"s'schen Eliminationsverfahrens ist es, die erweiterte
+Koeffizientenmatrix so zu transformieren,
+da"s die darin enthaltene Matrix $A$ die Form einer {\em oberen
+Dreiecksmatrix} \index{Dreiecksmatrix} bekommt. F"ur eine solche
+$n \times n$-Matrix gilt:
+\[ \forall 1 \leq j < i \leq n: a_{i,j} = 0 \]
+Falls f"ur die Matrix
+\[ \forall 1 \leq i < j \leq n: a_{i,j} = 0 \]
+erf"ullt ist, nennt man sie {\em untere Dreiecksmatrix}.
+Zur Transformation werden \index{Zeilenoperationen!elementare}
+{\em elementare Zeilenoperationen} verwendet.
+Sie werden in Definition \ref{DefDet} der Determinanten einer Matrix
+unter D1 und D3 beschrieben. Sie haben nicht nur die dort genannten
+Beziehungen zur Determinanten einer Matrix, sondern noch zus"atzlich die
+Eigenschaft, da"s sie, angewandt auf die erweiterte Koeffizientenmatrix,
+die L"osungsmenge des linearen Gleichungssystems unver"andert lassen.
+
+F"ur die Determinantenberechnung wird die erweiterte Koeffizientenmatrix
+nicht weiter beachtet. Alle Operationen beziehen sich nur auf die Matrix
+$A$. Die Matrizenelemente unterhalb der
+Hauptdiagonalen \footnote{ Die Hauptdiagonale bilden $a_{1,1}$ bis
+$a_{n,n}$.} werden spaltenweise durch Nullen ersetzt, beginnend mit der
+ersten Spalte. Die Transformationen werden durch folgende Gleichungen
+beschrieben \footnote{ Das Gau"s'sche Eliminationsverfahren wird im
+weiteren Text so modifiziert, da"s Divisionen durch Null nicht
+vorkommen k"onnen. Dieser Fall wird deshalb schon hier au"ser Acht
+gelassen.}:
+\begin{eqnarray}
+    \label{Equ1GaussDef}
+    a_{i,j}^{(0)} & := & a_{i,j}
+\\  \label{Equ2GaussDef}
+    a_{i,j}^{(k)} & := & \left\{
+                            \begin{array}{lcr}
+                                a_{i,j}^{(k-1)} & : & i \leq k
+                            \\  a_{i,j}^{(k-1)}-a_{k,j}^{(k-1)}
+                                    \frac{ a_{i,k}^{(k-1)} }{
+                                           a_{k,k}^{(k-1)}  }
+                                               & : & i > k
+                            \end{array}
+                        \right.
+\end{eqnarray}
+Die so gewonnene Matrix $A^{(n)}$ ist die gesuchte obere Dreiecksmatrix.
+Betrachtet man Satz \ref{SatzDetPermut}, erkennt man, da"s sich die
+Determinante dieser Dreiecksmatrix dadurch berechnen l"a"st, da"s man
+die Elemente der Hauptdiagonalen miteinander multipliziert. Da man nur
+die in \ref{DefDet} erw"ahnten Operationen verwendet hat, erh"alt man so
+auch die Determinante der Matrix $A$.
+
+% **************************************************************************
+
+\MySection{Potenzreihenringe}
+\label{SecPotRing}
+
+Im darzustellenden Algorithmus spielen Potenzreihenringe eine wichtige
+Rolle. Deshalb werden in diesem Unterkapitel die f"ur uns interessanten
+Eigenschaften dieser Ringe behandelt. F"ur unsere Betrachtungen sind Ringe
+mit einer zus"atzlichen Eigenschaft von besonderem Interesse:
+
+\MyBeginDef
+\label{DefEinheit}
+    Sei $R$ ein Ring. Ein $x \in R$ wird als \index{Einheit!in einem Ring}
+    {\em Einheit} \footnote{nicht zu verwechseln mit Einselement!}
+    bezeichnet, wenn es ein $y \in R$ gibt, so da"s
+    \[ x * y = 1 \MyPunkt \] Gibt es in $R$ solche Elemente, so wird $R$ 
+    als { \em Ring mit Division durch Einheiten } bezeichnet. 
+\MyEndDef
+
+Falls in diesem
+Kapitel von Ringen die Rede ist, sind immer Ringe mit Division durch
+Einheiten gemeint, falls nicht ausdr"ucklich etwas anderes angegeben wird.
+
+Sei $M$ eine Menge von Unbestimmten.
+Dann hei"st $ R[M] $ \index{Ring!{\Myu}ber {\mit M}}
+{\em Ring "uber $M$}. F"ur $R[M]$ schreiben wir auch abk"urzend $R[]$.
+Die Elemente von $R[]$ sind Terme, in denen neben den
+Elementen von $R$ zus"atzlich Elemente von $M$ als Unbestimmte auftreten
+d"urfen.
+Da sich unser Interesse auf $n \times n$-Matrizen konzentriert, beschr"anken
+wir unsere Betrachtungen auf die Menge der Unbestimmten
+\[ \{ a_{i,j} \MySetProperty 1 \leq i,j \leq n \} \] und identifizieren
+die $a_{i,j}$ mit den entsprechenden Elemente einer $n \times n$-Matrix $A$.
+Wenn also in diesem Unterkapitel die Rede von Unbestimmten ist, sind immer
+die Unbestimmten $a_{i,j}$ gemeint.
+
+Analog zur Definition von $R[]$ wird $R[[M]]$ definiert als {\em
+Potenzreihenring "uber $M$}. \index{Potenzreihenring!{\Myu}ber {\mit M}}
+F"ur $R[[M]]$ wird auch $R[[]]$ geschrieben.
+Die Elemente von $R[[]]$
+besitzen folgendes Aussehen:
+\begin{itemize}
+\item
+      Sei $T$ eine Teilmenge \footnote{$T$ kann unendlich gro"s sein}
+      von $\Nat^{n^2}$.
+\item
+      F"ur ein $e\in T$ bezeichne $e_i$ das $i$-te Element.
+\item
+      F"ur $e \in T$ sei \[ k_{e_1,e_2,\ldots,e_{n^2}} \in R \]
+\item
+      Jedes $u \in R[[]]$ hat f"ur geeignete $k_i$ und eine geeignete Menge
+      $T$ die Form:
+      \Beq{EquAllgemeinePotenzreihe}
+         \sum_{e: \{e_1,e_2,\ldots,e_{n^2} \} \in T}
+                                                 k_{e_1,e_2,\cdots,e_{n^2}}
+             \prod_{i=1}^{n^2}a_i^{e_i}
+      \Eeq
+\end{itemize}
+Die Summe der Glieder von $u$, f"ur die gilt
+   \[ \sum_{i=1}^{n^2} e_i = p \]
+wird {\em homogene Komponente vom Grad
+$p$} \index{homogene Komponente} genannt. Die homogene Komponente
+vom Grad $0$ wird auch {\em konstanter Term} \index{konstanter Term}
+genannt.
+
+Der Ring $R[]$ enth"alt $R[[]]$ als Unterring und dieser wiederum als
+Unterring den Ring der Polynome "uber den Unbestimmten $M$.
+
+\sloppy
+Der Potenzreihenring $R[[]]$ besitzt eine f"ur uns besonders interessante
+Eigenschaft. Dazu zu\-n"achst der folgende Satz: \fussy
+\begin{satz}[Taylor]
+\index{Taylor!Satz von}
+\label{SatzTaylor}
+    Eine Funktion $f$ sei in \[ (x_0-\alpha,x_0+\alpha) \] mit
+    \[ \alpha > 0 \] $(n+1)$-mal differenzierbar. Dann gilt f"ur
+    \[ x \in (x_0-\alpha,x_0+\alpha) \] die {\em Taylorentwicklung}
+    \[
+        f(x)= \sum_{\nu = 0}^n \frac{ f^{(\nu)}(x_0) }{ \nu! }
+                  (x-x_0)^{\nu} + R_n(x)
+    \]
+    mit
+    \[
+        R_n(x):= \frac{ f^{(n+1)}(x_0+ \vartheta(x-x_0)) }{ (n+1)! }
+                 (x-x_0)^{n+1}
+    \]
+    wobei \[ \vartheta \in (0,1) \] und $x_0$ der sogenannte
+    {\em Entwicklungspunkt} ist.
+\end{satz}
+\begin{beweis}
+    \cite{Hild74} S. 33-35
+\end{beweis}
+Weitere Literatur zum Thema 'Taylorreihen' ist z. B. \cite{BS87} (S. 31 und
+269). Ein Beispiel f"ur die Anwendung von Satz \ref{SatzTaylor} ist die
+Funktion
+\Beq{Equ1TylorBeispiel}
+    f_1(x) := \frac{1}{1-x} \MyPunkt
+\Eeq
+Sie ist unendlich oft
+differenzierbar mit dem Entwicklungspunkt $x_0=0$ erh"alt man die
+Potenzreihe
+\Beq{Equ2TaylorBeispiel}
+    f_2(x) = \sum_{i=0}^{\infty} x^i \MyPunkt
+\Eeq
+Der Konvergenzradius \index{Konvergenzradius} (\cite{BS87} S. 366)
+betr"agt $1$, d. h. nur f"ur
+\[ |x| < 1 \] gilt \[ f_1(x)=f_2(x) \MyPunkt \]
+
+Satz \ref{SatzTaylor} l"a"st sich auch auf mehrere Unbestimmte
+verallgemeinern. F"ur uns ist dabei nur folgendes interessant:
+\begin{quote}
+     Seien \[ f,g \in R[[]] \MyPunkt \]
+     Sei $t$ der konstante Term von $g$. Dann gelte
+     \Beq{Equ1Konvergenz}
+         t=0 \MyPunkt
+     \Eeq
+     F"ur die Unbestimmten gelte \footnote{ $(-1,1)$ ist das offene
+     Intervall von $-1$ bis $1$ }
+     \Beq{Equ2Konvergenz}
+         a_{1,1},\ldots, a_{n,n} \in (-1,1) \MyPunkt
+     \Eeq
+     Dann folgt Satz \ref{SatzTaylor} folgt, da"s sich
+     in $R[[]]$ Divisionen der Form
+     \Beq{Equ1ZuErsetzen}
+         \frac{f}{1-g}
+     \Eeq
+     ersetzen lassen durch
+     \Beq{Equ1StattDivision}
+        f*(
+              \underbrace{1+g+g^2+\ldots}_{ (*) }
+          ) \MyPunkt
+     \Eeq
+\end{quote}
+Die Potenzreihe $g$ wird als {\em innere} Reihe bezeichnet.
+Die Terme $(*)$
+sind ebenfalls Potenzreihen und werden als
+{\em "au"sere} Reihen bezeichnet. Setzt man die {\em innere} Reihe in eine
+der {\em "au"seren} ein, erh"alt man wiederum eine Potenzreihe. Diese wird
+als {\em Gesamtreihe} bezeichnet.
+
+Damit die {\em Gesamtreihe} konvergiert, mu"s die {\em innere} Reihe gegen
+einen Punkt innerhalb des Konvergenzradius der {\em "au"seren} konvergieren.
+Die {\em "au"sere} stimmt in ihrer Form mit \equref{Equ2TaylorBeispiel}
+"uberein. Ihr Konvergenzradius betr"agt also $1$.
+Deshalb folgt die Konvergenz der {\em Gesamtreihe} daraus, da"s die
+{\em innere} Reihe die Bedingungen \equref{Equ1Konvergenz} und
+\equref{Equ2Konvergenz} erf"ullt.
+
+Bis hierhin haben wir zwar nur eine sehr spezielle Eigenschaft von $R[[]]$
+ausf"uhrlicher betrachtet, dies ist jedoch f"ur unsere Zwecke ausreichend.
+
+% **************************************************************************
+
+\MySection{Das Gau"s'sche Eliminationsverfahren ohne Divisionen}
+\label{SecGaussOhneDiv}
+
+Die M"oglichkeiten zur Vermeidung von Divisionen wurden von V. Strassen
+\cite{Stra73} allgemein untersucht. In diesem Unterkapitel wird dargestellt,
+wie sich Strassens Ergebnisse auf das Gau"s'sche Eliminationsverfahren
+anwenden lassen.
+
+Die Hauptidee zur Vermeidung von Divisionen ist es, alle Berechnungen nicht
+in einem Ring $R$ mit Division durch Einheiten
+durchzuf"uhren, sondern im zugeh"origen Potenzreihenring $R[[]]$. Um die
+Berechnungen in diesen Ring zu "ubertragen, wird das
+Kroneckersymbol \index{Kroneckersymbol} definiert als
+\[ \delta_{i,j} :=
+       \left\{
+           \begin{array}{rcl}
+               1 & : & i = j \\
+               0 & : & i \neq j
+           \end{array}
+       \right.
+\]
+Die Matrix $A$, deren Determinante zu berechnen ist, wird ersetzt durch
+die Matrix $A'$, die man aus $A$ erh"alt durch $$$$$
+\[ a _{i,j}' := a_{i,j} + \delta_{i,j} \MyPunkt \]
+D. h., jedes Matrizenelement $a_{i,j}$ wird ersetzt durch
+\[ a_{i,j}' - \delta_{i,j} \MyPunkt \]
+Wendet man nun das Gau"s'sche Eliminationsverfahren an, bekommt jede
+Division die Form \equref{Equ2ZuErsetzen} und kann somit ersetzt werden
+durch \equref{Equ2StattDivision}, wie durch das Beispiel in 
+Unterkapitel \ref{SecBeispielOhneDiv} deutlich wird.
+
+Da man als Ergebnis f"ur die Determinante von $A$ ein Element von $R$ statt
+eines Elementes von $R[[]]$ bekommen m"ochte, mu"s der Term aus $R[[]]$,
+der das Endergebnis beschreibt, ausgewertet werden. Dabei gibt es zwei
+Probleme:
+\begin{enumerate}
+\item
+      Durch die Art und Weise, wie die Divisionen beseitigt werden,
+      entstehen Potenzreihen. Sie sind unendlich lang und k"onnen deshalb
+      nicht komplett ausgewertet werden. Die Ergebnisse k"onnen somit
+      nicht ganz genau sein, so da"s man einen Grad festsetzen mu"s, bis zu 
+      dem die Reihen ausgewertet werden, um die gew"unschte Genauigkeit zu
+      erhalten.
+\item
+      Der Konvergenzradius der erw"ahnten Potenzreihen betr"agt $1$. Das
+      bedeutet, da"s alle Matrizenelemente aus dem Intervall
+      \[ (1,-1) \] stammen m"ussen.
+\end{enumerate}
+Zur L"osung dieser beiden Probleme sind einige Betrachtungen zur 
+Genauigkeit der durchzuf"uhrenden Rechnungen n"otig.
+
+Die Genauigkeitsbetrachtungen k"onnen unabh"angig von der zur 
+Zahlendarstellung verwendeten Basis durchgef"uhrt werden. F"ur uns ist es 
+jedoch ausreichend von der Basis $10$ auszugehen.
+
+Jede Matrix kann mit Hilfe von D3 aus \ref{DefDet} in eine 
+Dreiecksmatrix "uberf"uhrt werden, ohne da"s sich der Wert der Determinante
+"andert. Zur Berechnung der Determinante einer Dreiecksmatrix m"ussen nur 
+die Matrizenelemente in
+der Hauptdiagonalen miteinander multipliziert werden. Dies f"uhrt uns 
+zur Anzahl der maximal ben"otigten Stellen zur Darstellung einer 
+Determinate anhand der folgenden "Uberlegung:
+
+Es gelte \[ a * b = c \] f"ur geeignete Werte $a$, $b$ und $c$. Die
+Anzahl der Stellen, die man zur Darstellung von $x$ ben"otig wird mit $x_s$
+bezeichnet. Dann gilt offensichtlich:
+\[ a_s + b_s \geq c_s \MyPunkt \]
+Daraus ergibt sich die Anzahl der Stellen zur Darstellung der Determinante
+einer $n \times n$-Matrix wie folgt:
+\begin{quote}
+    Sei $s$ die Anzahl
+    der Stellen, die maximal zur Darstellung eines Matrizenelementes 
+    ben"otigt wird. Dann ben"otigt man zur Darstellung der Determinante 
+    maximal $s*n$ Stellen.
+\end{quote}
+Zur L"osung der o. g. beiden Probleme wird ein $m \in R$ gew"ahlt, f"ur
+das gilt: \[ m \geq 10^{s+1} \MyPunkt\] Dieses $m$ mu"s eine Einheit
+\footnote{siehe Definition \ref{DefEinheit}} in $R$ sein. Definiert man 
+mit Hilfe von $m$
+\begin{eqnarray*}
+    m_1 & := & \frac{ 1 }{ m } \\
+    m_2 & := & m^n \MyKomma
+\end{eqnarray*}
+dann gilt nach D3 von Definition \ref{DefDet}
+\[ \det(A) = m_2 * \det(m_1 * A) \MyPunkt \]
+So wird erreicht, da"s die Determinante einer Matrix zu berechnen ist, 
+deren Elemente aus dem Intervall \[ [-0.1,0.1] \] stammen.
+Sei $a$ ein beliebiges dieser Matrizenelemente. Dann gilt
+\[ a^{s+1} \leq \frac{ a }{ 10^s } \MyPunkt \]
+Da die Determinante maximal $s*n$ Stellen besitzt und jedes Matrizenelement
+entsprechend der obigen Argumentation mit maximal $s$ Stellen in die 
+Determinante eingehen kann, ist es ausreichend, von den Potenzreihen, die
+bei der Vermeidung der Divisionen entstehenden, nur die homogenen 
+Komponenten bis maximal zum Grad $s$ zu betrachten.
+
+% **************************************************************************
+
+\MySection{Beispiel zur Vermeidung von Divisionen}
+\label{SecBeispielOhneDiv}
+
+F"ur eine $3 \times 3$-Matrix wird in diesem Unterkapitel
+gezeigt, wie die Determinante mit Hilfe des Gau"s'schen
+Eliminationsverfahrens ohne Divisionen berechnet wird. Um die Darstellung
+zu vereinfachen, werden alle Potenzreihen bis zum 3. Glied entwickelt und
+dann ohne weitere "Anderung in der Rechnung verwendet.
+
+Es sei die Determinante der Matrix $A$ zu berechnen. Also:
+\Beq{Equ1BGHBeispiel}
+    \det(A) = \det \left( \left[
+            \begin{array}{ccc}
+                a_{1,1} & a_{1,2} & a_{1,3} \MatStrut \\
+                a_{2,1} & a_{2,2} & a_{2,3} \MatStrut \\
+                a_{3,1} & a_{3,2} & a_{3,3} \MatStrut
+            \end{array}
+        \right] \right)
+\Eeq
+Seien die Werte $m_1$ und $m_2$ so gew"ahlt, wie es in Unterkapitel
+\ref{SecGaussOhneDiv} beschrieben ist, d. h. es gilt:
+\begin{eqnarray*}
+    \det(A) & = & m_2 * \det( m_1 * A) \\
+    \forall 1 \leq i,j \leq 3 & : & -1 \leq m_1 a_{i,j} \leq 1
+\end{eqnarray*}
+Da die Rechnungen in $R[[]]$ durchgef"uhrt werden sollen, werden die
+Matrizenelemente auf folgende Weise ersetzt:
+\Beq{Equ2BGHBeispiel}
+   \forall 1 \leq i,j \leq 3 : \: a_{i,j}' = m_1 * a_{i,j} - \delta_{i,j}
+   \MyPunkt
+\Eeq
+So erh"alt \equref{Equ1BGHBeispiel} folgendes Aussehen:
+\[
+    \det(A) = m_2 * \det \left( \left[
+            \begin{array}{ccc}
+                1 + a_{1,1}' & 0 + a_{1,2}' & 0 + a_{1,3}' \MatStrut \\
+                0 + a_{2,1}' & 1 + a_{2,2}' & 0 + a_{2,3}' \MatStrut \\
+                0 + a_{3,1}' & 0 + a_{3,2}' & 1 + a_{3,3}' \MatStrut
+            \end{array}
+        \right] \right)
+\]
+Nun wird das Gau"s'sche Eliminationsverfahren angewendet.
+Vielfache der ersten Zeile werden von
+den folgenden Zeilen subtrahiert und man erh"alt:
+\begin{eqnarray*}
+    \lefteqn{ \det(A) = m_2 *} \\ 
+    & & \det \left( \left[
+            \begin{array}{ccc}
+                1 + a_{1,1}'
+            &   0 + a_{1,2}'
+            &   0 + a_{1,3}' \MatStrut
+            \\     0
+            &   (1 + a_{2,2}') - (0 + a_{1,2}')
+                \frac{ (0 + a_{2,1}') }{ (1 + a_{1,1}') }
+            &   (0 + a_{2,3}'  - (0 + a_{1,3}')
+                \frac{ (0 + a_{2,1}') }{ (1 + a_{1,1}') } \MatStrut
+            \\     0
+            &   (0 + a_{3,2}') - (0 + a_{1,2}')
+                \frac{ (0 + a_{3,1}') }{ (1 + a_{1,1}') }
+            &   (1 + a_{3,3}') - (0 + a_{1,3}')
+                \frac{ (0 + a_{3,1}') }{ (1 + a_{1,1}') } \MatStrut
+            \end{array}
+        \right] \right)
+\end{eqnarray*}
+Durch Ersetzung der Divisionen und Vereinfachung der Terme erh"alt man:
+\begin{eqnarray*}
+    \lefteqn{ \det(A) \approx m_2 * } \\
+    & & \det \left( \left[
+            \begin{array}{ccc}
+                1 + a_{1,1}'
+            &   0 + a_{1,2}'
+            &   0 + a_{1,3}' \MatStrut
+            \\     0
+            &   \begin{array}{c}
+                    (1 + a_{2,2}') - a_{1,2}'a_{2,1}' *
+                \\  (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3)
+                \end{array}
+            &   \begin{array}{c}
+                    0 + a_{2,3}'  - a_{1,3}'a_{2,1}' *
+                \\  (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3)
+                \end{array} \LMatStrut
+            \\     0
+            &   \begin{array}{c}
+                    (0 + a_{3,2}') - a_{1,2}'a_{3,1}' *
+                \\  (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3)
+                \end{array}
+            &   \begin{array}{c}
+                    (1 + a_{3,3}') - a_{1,3}'a_{3,1}' *
+                \\  (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3)
+                \end{array}
+            \end{array}
+        \right] \right)
+\end{eqnarray*}
+Durch die Art und Weise, wie die Matrizenelemente nach
+\equref{Equ2BGHBeispiel} ersetzt wurden, haben nach Ersetzung der
+Divisionen die Elemente der Hauptdiagonalen die Form
+\[ 1 + g_{i,j} \MyPunkt \] Alle anderen Elemente haben die Form
+\[ 0 + g_{i,j} \MyPunkt \] Der konstante Term der $g_{i,j}$ ist
+gleich $0$. So haben alle Matrizenelemente die gleiche Form wie vor der
+Subtraktion von Vielfachen der ersten Zeile von den anderen Zeilen.
+Deshalb k"onnen bei der Fortsetzung des Eliminationsverfahrens wiederum
+auftretende Divisionen auf die gleiche Weise ersetzt werden.
+
+Als n"achstes wird ein Vielfaches der zweiten Zeile von der dritten
+subtrahiert:
+\begin{eqnarray*}
+   \lefteqn{ \det(A) \approx m_2 * } \\
+   & & \det( \left( \left[
+            \begin{array}{ccc}
+                1 + a_{1,1}'
+            &   0 + a_{1,2}'
+            &   0 + a_{1,3}' \MatStrut
+            \\     0
+            &   \begin{array}{c}
+                    (1 + a_{2,2}') - a_{1,2}'a_{2,1}' *
+                \\  (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3)
+                \end{array}
+            &   \begin{array}{c}
+                    0 + a_{2,3}'  - a_{1,3}'a_{2,1}' *
+                \\  (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3)
+                \end{array} \LMatStrut
+            \\     0
+            &      0
+            &   (1 + a_{3,3}'') - a_{2,3}''a_{3,2}''
+                (1 - a_{2,2}'')
+            \end{array}
+        \right] \right)
+\end{eqnarray*}
+wobei gilt
+\begin{eqnarray*}
+    a_{2,2}'' & = & a_{2,2}' - a_{1,2}'a_{2,1}'
+                (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3) \\
+    a_{2,3}'' & = & a_{2,3}'  - a_{1,3}'a_{2,1}'
+                (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3) \\
+    a_{3,2}'' & = & a_{3,2}' - a_{1,2}'a_{3,1}'
+                (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3) \\
+    a_{3,3}'' & = & a_{3,3}' - a_{1,3}'a_{3,1}'
+                (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3) \MyPunkt
+\end{eqnarray*}
+Daraus folgt:
+\begin{eqnarray*}
+    \lefteqn{ \det(A) \approx } \\
+        & & m_2 * (1 + a_{1,1}') \\
+        & & * ((1 + a_{2,2}') - a_{1,2}'a_{2,1}' *
+                 (1 - a_{1,1}' - (a_{1,1}')^2 - (a_{1,1}')^3)) \\
+        & & * ((1 + a_{3,3}'') - a_{2,3}''a_{3,2}''(1 - a_{2,2}'')) \MyPunkt
+\end{eqnarray*}
+Setzt man in diese Gleichung mit Hilfe von \equref{Equ2BGHBeispiel} Werte
+f"ur die $a_{i,j}'$ ein, erh"alt man das Ergebnis f"ur die Determinante.
+
+% **************************************************************************
+
+\MySection{Parallele Berechnung von Termen}
+\label{SecVSBR}
+
+Durch die Methode von Strassen zur Vermeidung von Divisionen entstehen
+Terme, die es parallel auszuwerten gilt. In diesem Unterkapitel wird
+ein Verfahren \cite{VSBR83} beschrieben, welches diese Auswertung
+erm"oglicht. Die
+Beschreibung des Verfahrens ist auf die Verwendung im Rahmen des
+Kapitels angepa"st. Eine ausf"uhrliche Beschreibung ist auch in
+\cite{Wald87} ab S. 22 zu finden.
+
+Zun"achst wird die Berechnung von Termen formalisiert.
+Dazu wird die Menge \[  \{v_i \MySetProperty 1 \leq i \leq c \} \]
+mit $V$ bezeichnet. Die Menge der
+Elemente $a_{i,j}$ der $n \times n$-Matrix $A$, die hier als
+Unbestimmte auftreten, wird mit $X$ bezeichnet. Es wird definiert
+\[ \bar{V} := V \cup X \cup R \MyPunkt \]
+
+\MyBeginDef
+\label{DefProgramm}
+    Sei $R[]$ der bereits erw"ahnte Ring "uber den Elementen von $X$.
+    Sei $c \in \Nat$ gegeben. Seien $+$ und $*$ die
+    beiden Ringoperatoren f"ur Addition bzw. Multiplikation.
+    Es gelte \[ \circ \in \{+,*\} \MyPunkt \] Weiterhin gelte
+    \[ \forall 1\leq i\leq c: \: v_i', v_i'' \in \bar{V}
+           \backslash \{ v_i, \, v_{i+1}, \, \ldots, \, v_c \} \MyPunkt
+    \]
+    Jede Folge der Form
+    \[ v_i := v_i' \circ v_i'', \: i = 1, \, \ldots, \, c \]
+    hei"st dann { \em Programm "uber R[] } . \index{Programm "uber R[]}
+    Ein Element einer solchen Folge wird {\em Anweisung} genannt. Abh"angig
+    davon, ob $\circ$ die Addition oder die Multiplikation bezeichnet, wird
+    das $v_i$ auch als {\em Additions-} bzw.
+    {\em Multiplikationsknoten} bezeichnet. Falls das genaue Aussehen von
+    Anweisungen von untergeordnetem Interesse ist, werden diese zur
+    Abk"urzung durch ihren Additions- bzw. Multiplikationsknoten
+    repr"asentiert.
+\MyEndDef
+
+Jeder Term "uber $R[]$ l"a"st sich durch ein Programm "uber $R[]$
+berechnen. Um Aussagen "uber solche Programme machen zu k"onnen, sind
+eine Reihe weiterer Vereinbarungen erforderlich, die im folgenden
+aufgef"uhrt sind.
+
+Der durch eine Anweisung $v_i$ berechnet Term wird mit $f(v_i)$
+bezeichnet.
+
+Sei $x \in \bar{V}$. Seien $x',x'' \in V$.
+Dann wird der {\em Grad von $x$} mit $g(x)$
+bezeichnet und folgenderma"sen definiert:
+\[ g(x) := \left\{
+           \begin{array}{rcl}
+               0 & : & x \in R \\
+               1 & : & x \in X \\
+               g(x') + g(x'') & : & (x \in V) \und (x := x' * x'') \\
+               \max(g(x'),\, g(x'')) & : &
+                                    (x \in V) \und (x := x' + x'')
+           \end{array}
+           \right.
+\]
+Der Grad von $x$ stimmt nicht mit dem Grad des Polynoms "uberein,
+da"s dem Term $f(x)$ entspricht. Dazu ein Beispiel: \nopagebreak[3]
+\begin{center}
+\begin{tabbing}
+    \hspace{8em}    \= \hspace{8em} \= \kill
+    $v_1:= y * (-1)$ \> $f(v_1) = -y$ \> $g(v_1)=1$  \nopagebreak\\  
+    $v_2:= y + v_1 $ \> $f(v_2) = 0 $ \> $g(v_2)=1$ \\
+\end{tabbing}
+\end{center}
+
+Es wird o. B. d. A. angenommen, da"s f"ur jede Anweisung 
+\[ x := x' \circ x'' \] die Bedingung \[ g(x') \geq g(x'') \]
+erf"ullt ist.
+
+F"ur alle $a \in \Nat$ wird definiert:
+\begin{eqnarray*}
+   V_a & := & \{ u \in V \MySetProperty
+                 g(t) > a, \, u:= u' * u'', \, g(u') \leq a \}  \\
+   V_a'& := & \{ u \in V \MySetProperty
+                 g(t) > a, \, u:= u' + u'', \, g(u'') \leq a \}
+\end{eqnarray*}
+
+\MyBeginDef
+\label{DefTiefe}
+    Sei $v\in V$. Sei $v_1, \, \ldots , \, v_k$ die l"angste Folge von 
+    Elementen von $\bar{V}$, so da"s gilt
+    \begin{eqnarray*}
+        & & v_1 = v \\
+        \forall 1 \leq i \leq k-1 & : & (v_{i+1} = v_i') \oder 
+                                        (v_{i+1} = v_i'') \\
+        & & v_k \in F \cup X
+        \MyPunkt
+    \end{eqnarray*}
+    Dann bezeichnet $d(v)=k$ die {\em Tiefe von $v$}.
+\MyEndDef
+
+\MyBeginDef
+\label{Deffvw}
+    Sei $v,w \in V$.
+    Dann wird $f(v;w) \in R[]$ wie folgt definiert:
+
+    Bezeichnen $v$ und $w$ denselben Knoten, so gilt:
+    \[ f(v;w) := 1 \MyPunkt \]
+    Falls dies nicht erf"ullt ist und $w \in R \cup X$, dann gilt:
+    \[ f(v;w) := 0 \MyPunkt \]
+    Falls dies ebenfalls nicht erf"ullt ist und
+    \[ w:= w' + w'' \MyKomma \]
+    dann gilt \[ f(v;w) := f(v;w') + f(v;w'') \MyPunkt \]
+    Falls auch dies nicht erf"ullt ist, bleibt nur noch der Fall "ubrig
+    da"s gilt
+    \[ w:= w' * w'' \MyPunkt \] Daf"ur wird definiert
+    \[ f(v;w) := f(v;w') * f(w'') \MyPunkt \]
+\MyEndDef
+Durch die Art und Weise, wie $f(v;w)$ definiert ist, ergibt sich eine
+besondere Eigenschaft f"ur den Fall, da"s $g(w) < 2g(v)$ erf"ullt ist.
+Falls n"amlich in dem Programm, zu dem $v$ und $w$ geh"oren,
+der Knoten $v$ durch eine neue 
+Unbestimmte $v'$ ersetzt wird, dann ist $f(v;w)$ der Koeffizient von 
+$v'$ in $f(w)$. 
+
+In Verbindung mit $f(v;w)$ besitzen die Funktionen $g()$ und $d()$ 
+eine Eigenschaft, die weiter unten von Bedeutung ist:
+\begin{lemma}
+\label{SatzGrad}
+    \[ g(v) > g(w) \Rightarrow f(v;w) = 0 \]
+\end{lemma}
+\begin{beweis}
+    Der Beweis erfolgt durch Induktion nach $d(w)$.
+    \begin{MyDescription}
+    \MyItem{$ d(w) = 0 $ }
+        Es gilt:
+        \begin{eqnarray*}
+            g(w) = 0 & \Rightarrow & w \in R \\
+            g(v) > g(w) & \Rightarrow & v \in V \cup X 
+        \end{eqnarray*}
+        Also ist $f(v;w) = 0$ .
+    \MyItem{$ d(w) > 0 $ }
+        Das Lemma gelte f"ur alle $ u\in\bar{V}, \, d(u)<d(w)$.
+        Aus \ref{DefTiefe} folgt direkt, da"s
+        f"ur jede Anweisung \[ w:= w' \circ w'' \] gilt 
+        \[ d(w) > d(w'), \: d(w) > d(w'') \MyPunkt \]
+        Mit Hilfe von \ref{Deffvw} folgt daraus die G"ultigkeit
+        des Lemmas.
+    \end{MyDescription}
+\end{beweis}
+
+\begin{lemma}
+\label{SatzTiefe}
+    \[ d(v) > d(w) \Rightarrow f(v;w) = 0 \]
+\end{lemma}
+\begin{beweis}
+    analog \ref{SatzGrad}
+\end{beweis}
+
+Es lassen sich nun zwei Aussagen formulieren.
+Dazu gelte jeweils $v,w \in V$ und $0 < g(v) \leq a < g(w)$.
+
+\begin{lemma}
+\label{Satz1VSBR}
+    \[
+       f(v;w) =
+           \sum_{u\in V_a} (f(v;u) * f(u;w)) +
+           \sum_{u\in V_a'} (f(v;u'') * f(u;w))
+    \]
+\end{lemma}
+\begin{beweis}
+    Der Beweis erfolgt durch Induktion nach $d(w)$. Aufgrund der
+    Struktur der zu beweisenden Aussage sind die Beweise von
+    Induktionsanfang und Induktionsschlu"s nicht voneinander 
+    getrennt.
+    
+    Es gilt:
+    \[ d(w) \leq 1 \Rightarrow w \in R \cup X \MyPunkt \]
+    Dies steht im Widerspruch zur Voraussetzung
+    \[ 0 < a < d(w) \MyPunkt \] Der Fall $d(w)= 1$ kann also nicht
+    auftreten. Im folgenden sei deshalb $d(w)>1$.
+
+    Vier F"alle sind zu unterscheiden:
+    \begin{MyDescription}
+    \MyItem{ $ w:= w' + w'', \: g(w'') \leq a $ }
+        Das Lemma gelte f"ur $w'$.
+        Aus der Voraussetzung folgt:
+        \[ w \in V'_a \MyPunkt \]
+        Aus \ref{SatzTiefe} folgt:
+        \[ f(w;w') = 0 \MyPunkt \]
+        Au"serdem gilt:
+        \[ g(w'') \leq a \Rightarrow
+           \forall u \in V'_a: \: f(u;w'') = 0 \MyPunkt
+        \]
+        Nach \ref{Deffvw} gilt: \[ f(w,w) = 1 \MyPunkt \]
+        So ergibt sich:
+        \begin{eqnarray*}
+            f(v;'w) & = &
+                \sum_{u \in V_a} (f(v;u) * f(u,w')) \\
+              & & + \sum_{u \in V'_a} (f(v;u'') * f(u;w')) \\
+            & = &
+                \sum_{u \in V_a} (f(v;u) * (f(u,w') + f(u;w''))) \\
+              & & + \sum_{u \in V'_a} (f(v;u'') * (f(u;w') + f(u;w''))) \\
+            & = &
+                \sum_{u \in V_a} (f(v;u) * f(u,w)) \\
+              & & + \sum_{u \in V'_a \backslash \{w\} } (f(v;u'') * f(u;w))
+        \end{eqnarray*}
+        Es folgt mit Hilfe von \ref{Deffvw}:
+        \begin{eqnarray*}
+            f(v;w) & = & f(v;w') + f(v;w'') \\
+            & = & 
+                f(v;w') + f(v;w'') * f(w;w) \\
+            & = & 
+                \sum_{u \in V_a} (f(v;u) * f(u,w)) \\
+              & & + \sum_{u \in V'_a \backslash \{w\} }
+                     (f(v;u'') * f(u;w)) + f(v;w'') * f(w;w) \\
+            & = &
+                \sum_{u \in V_a} (f(v;u) * f(u,w)) \\
+              & & + \sum_{u \in V'_a} (f(v;u'') * f(u;w))
+        \end{eqnarray*}
+    \MyItem{ $ w:= w' + w'', \: g(w'') > a $ }
+        Das Lemma gelte f"ur $w'$ und $w''$.
+        \begin{eqnarray*}
+            f(v;w) & = & f(v;w') + f(v;w'') \\
+            & = &
+                \sum_{u \in V_a} (f(v;u)*f(u;w')) +
+                \sum_{u \in \bar{V_a}} (f(v;u'')*f(u;w')) \\
+            & & + \sum_{u \in V_a} (f(v;u)*f(u;w'')) +
+                  \sum_{u \in \bar{V_a}} f(v;u'')*f(u;w'')) \\
+            & = &
+                \sum_{u \in V_a} (f(v;u) * (f(u;w') + f(u;w''))) \\
+            & & + \sum_{u \in \bar{V_a}} (f(v;u'')*(f(u;w') + f(u;w''))) \\
+            & = &
+                \sum_{u \in V_a} (f(v;u) * f(u;w)) +
+                \sum_{u \in \bar{V_a}} (f(v;u'') * f(u;w))
+        \end{eqnarray*}
+    \MyItem{ $ w:= w' * w'', \: g(w') \leq a $ }
+        Es gilt: 
+        \begin{eqnarray*}
+            w & \in & V_a \\
+            f(v;w) & = & f(v;w) * f(w;w) \MyPunkt
+        \end{eqnarray*}
+        Andererseits gilt:
+        \begin{eqnarray*}
+            \forall u \in V_a \backslash \{w\} & : & f(u;w') = 0 \\
+            \Rightarrow
+            \forall u \in V_a \backslash \{w\} & : &
+                f(u;w) = f(w'') * f(u;w') = f(w'') * 0 = 0
+        \end{eqnarray*}
+        Also folgt:
+        \[ \sum_{u \in V_a} (f(v;u) * f(u;w)) = f(v;w) * f(w;w) = f(v;w)
+           \MyPunkt
+        \]
+        Weiterhin folgt aus \ref{SatzGrad}:
+        \begin{eqnarray*}
+            \lefteqn{ \forall u \in V'_a : \: f(u;w') = 0 } \\
+            & \Rightarrow &
+               \sum_{u \in V'_a} (f(u'') * f(u;w)) \\
+            & & = \sum_{u \in V'_a} (f(u'') * f(w'') * f(u;w')) = 0
+        \end{eqnarray*}
+        Also ist das Lemma f"ur diesen Fall richtig.    
+    \MyItem{ $ w:= w' * w'', \: g(w') > a $ }
+         Das Lemma gelte f"ur $w'$.
+         \begin{eqnarray*}
+            f(v;w) & = & f(w'') * f(v;w') \\
+            & = & f(w'') *
+                \left(
+                    \sum_{u\in V_a} (f(v;u) * f(u;w')) +
+                    \sum_{u\in V_a'} (f(v;u'') * f(u;w'))
+                \right) \\
+            & = &
+                \sum_{u\in V_a} (f(v;u) * f(w'') * f(u;w')) +
+                \sum_{u\in V_a'} (f(v;u'') * f(w'') * f(u;w')) \\
+            & = &
+                \sum_{u\in V_a} (f(v;u) * f(u;w)) +
+                \sum_{u\in V_a'} (f(v;u'') * f(u;w))
+        \end{eqnarray*}
+   \end{MyDescription}
+\end{beweis}
+  
+\begin{lemma}
+\label{Satz2VSBR}
+    \[
+       f(w) = 
+           \sum_{u\in V_a} (f(u) * f(u;w)) +
+           \sum_{u\in V_a'} (f(u'') * f(u;w))
+    \]
+\end{lemma}
+\begin{beweis}
+    Bis auf den Unterschied, da"s die auftretenden Terme entsprechend
+    unterschiedlich sind, ist der Beweis identisch zum Beweis von
+    \ref{Satz1VSBR}.
+\end{beweis}
+
+Mit Hilfe von \ref{Satz1VSBR} und \ref{Satz2VSBR} l"a"st sich ein
+Verfahren zur parallelen Berechnung von Termen angeben, das im
+folgenden beschrieben wird.
+
+Gegeben sei ein Programm der L"ange $c$,
+d. h. \[ V = \{v_1, \, v_2, \, \ldots, v_c\} \MyPunkt \]
+Es ist $f(v_c)$ zu berechnen. Die Berechnung erfolgt stufenweise.
+Seien $v,w \in V$.
+In Stufe $0$ werden alle $f(w)$ mit \[ g(w)=1 \]  und alle
+$f(v;w)$ mit \[ g(w) - g(v) = 1 \] berechnet.
+
+In Stufe $i$ werden alle $f(w)$ mit
+\[ 2^{i-1} < g(w) \leq 2^i \] und alle $f(v;w)$ mit
+\[ 2^{i-1} < g(w) - g(v) \leq 2^i \] berechnet. Dabei werden die Ergebnisse
+der vorangegangenen Stufen benutzt.
+
+Auf diese Weise ist $f(v_c)$ nach
+\[ \lc \log(g(v_c)) \rc \] Stufen berechnet.
+
+In Stufe $i$ werden zun"achst die $f(w)$ mit Hilfe von \ref{Satz2VSBR}
+berechnet. Dazu wird $a=2^{i-1}$ gew"ahlt:
+\begin{eqnarray}
+    f(w) \nonumber
+    & = & \nonumber
+        \sum_{u\in V_a} (f(u) * f(u;w)) +
+        \sum_{u\in V_a'} (f(u'') * f(u;w)) \\
+    & = & \label{EquStepIfw}
+        \sum_{u\in V_a} (f(u')*f(u'')* f(u;w)) +
+        \sum_{u\in V_a'} (f(u'') * f(u;w))
+\end{eqnarray}
+Anhand der Definitionen erkennt man, da"s f"ur alle auftretenden 
+$f(\ldots)$ gilt: \[ g(f(\ldots)) \leq 2^{i-1} \MyPunkt \]
+Also wurden alle zu benutzenden Terme bereits in einer der vorangegangenen
+Stufen berechnet. 
+
+Man erkennt anhand der bisher angestellten Betrachtungen "uber Programme
+zur Berechnung von Termen, da"s der Aufwand f"ur alle Programme der
+L"ange $c$ gleich ist. Da eine Aufgabe, die in $a$ Schritten von 
+$b$ Prozessoren erledigt wird, auch in $2a$ Schritten von $b/2$ 
+Prozessoren erledigt werden kann, erfolgt die Analyse des Aufwandes 
+f"ur eine bestimmte Stufe $i$ zun"achst mit Hilfe der durchschnittlich f"ur
+eine Stufe zu erwartenden erforderlichen Operationen \footnote{diese 
+Betrachtungsweise kennt man in der Literatur unter dem Begriff 
+{\em Rescheduling}}. Anschlie"send werden
+die Werte nach oben abgesch"atzt, um obere Schranken zu bekommen.
+
+F"ur eine bestimmte Stufe l"a"st sich die Gr"o"se der Mengen $V_a$ und
+$V_a'$ nicht genau vorherbestimmen. Falls die Berechnung in $z$ Stufen 
+durchgef"uhrt wird, dann gilt jedoch
+\begin{eqnarray*}
+    & & 0 \leq i,j \leq z \\
+    & & i \neq j \\
+    & & a_k := 2^{k-1} \\
+    & & V_{a_i} \cap V_{a_k} = V'_{a_i} \cap V'_{a_k} = \emptyset \\
+    & & \sum_{0 \leq i \leq z} |V_{a_i}| \leq c \\
+    & & \sum_{0 \leq i \leq z} |V'_{a_i}| \leq c 
+\end{eqnarray*}
+Die Mengen $V_a$ und $V'_a$ besitzen also durchschnittlich h"ochstens
+\[ \frac{c}{z} = \frac{c}{ \lc \log(g(v_c)) \rc } \]
+Elemente. Dieser Wert wird mit $m$ bezeichnet.
+
+Aus den vorangegangenen "Uberlegungen folgt, da"s \equref{EquStepIfw} in
+\[ \lc \log(m) \rc + 3 =
+   \lc \log \lb \frac{c}{ \lc \log(g(v_c)) \rc } \rb \rc + 3
+\]
+Schritten von
+\[ 2m = 2 \frac{c}{ \lc \log(g(v_c)) \rc } \] 
+Prozessoren berechnet werden kann.
+
+Nachdem in Stufe $i$ die $f(w)$ berechnet worden sind, werden die $f(v;w)$
+mit Hilfe von \ref{Satz1VSBR} ausgerechnet. Dazu wird $a= g(v) + 2^{i-1}$ 
+gew"ahlt:
+\begin{eqnarray*}
+    f(v;w)
+    & = &
+        \sum_{u\in V_a} (f(v;u) * f(u;w)) +
+        \sum_{u\in V_a'} (f(v;u'') * f(u;w)) \\
+    & = &
+        \sum_{u\in V_a} (f(u'') * f(v;u') * f(u;w)) +
+        \sum_{u\in V_a'} (f(v;u'') * f(u;w)) \\
+\end{eqnarray*}
+Anhand der Definitionen erkennt man, da"s alle $f(v;u')$, $f(u;w)$ und
+$f(v;u'')$ bereits berechnet wurden. F"ur $f(u'')$ gibt es kritische
+F"alle, die separat untersucht werden m"ussen:
+\begin{MyDescription}
+\MyItem{ $g(u') \geq g(u'') > 2^i, \: f(v;u') = 0$ }
+    Der Fall ist kein Problem, da der Werte des jeweiligen gesamten Terms
+    gleich Null ist.
+\MyItem{ $g(u') \geq g(u'') > 2^i, \: f(v;u') \neq 0$ }
+    Es mu"s gelten:
+    \[ g(u') \geq g(v) \MyPunkt \]
+    Daraus ergibt sich:
+    \begin{eqnarray*}
+        g(u) & = & g(u') + g(u'') \\
+             & > & g(v) + 2^i \\
+             & \geq & g(w) \\
+             & \Rightarrow & f(u;w) = 0
+    \end{eqnarray*}
+    Der Wert des Terms ist also wiederum gleich Null.
+\end{MyDescription}
+
+F"ur die Analyse des Aufwandes gelten die gleichen Bemerkungen wie f"ur
+die Berechnung der $f(w)$.
+
+Insgesamt kann $f(v_c)$ in
+\[
+        2\lc \log(g(v_c)) \rc (\lc \log(m) \rc + 3) =
+        2\lc \log(g(v_c)) \rc
+        \lb \lc \log \lb \frac{c}{ \lc \log(g(v_c)) \rc } 
+                     \rb 
+             \rc + 3
+        \rb
+\]
+Schritten von
+\[
+   2m = 2 \frac{c}{ \lc \log(g(v_c)) \rc } 
+\] 
+Prozessoren berechnet werden.
+
+Absch"atzungen der Werte nach oben ergeben
+\Beq{Equ1VSBRAnalyse} 
+    2\lc \log(g(v_c)) \rc * (\lc \log(c) \rc + 3)
+\Eeq
+Schritte und
+\Beq{Equ2VSBRAnalyse} 
+    2c 
+\Eeq 
+
+Prozessoren.
+
+F"ur das bis hierhin beschriebene und analysierte Verfahren gibt es einen
+Sonderfall, der mit geringerem Aufwand gel"ost werden kann.
+\MyBeginDef
+\label{DefHomogen}
+    Sei $v_1,\, \ldots ,\, v_c$ ein Programm im Sinne von \ref{DefProgramm}.
+    Falls f"ur alle Additionsknoten $v_i:= v_i'+ v_i''$ dieses Programms 
+    gilt:
+    \[ g(v_i') = g(v_i'') \MyKomma \]
+    so wird das Programm als {\em homogen} bezeichnet.
+\MyEndDef
+F"ur homogene Programme sind alle Mengen $V_a'$ leer. Mit dieser 
+Feststellung ergeben sich aus \ref{Satz1VSBR} und \ref{Satz2VSBR} zwei
+Folgerungen f"ur homogene Programme:
+\begin{korollar}
+\label{Satz3VSBR}
+    \[
+       f(v;w) =
+           \sum_{u\in V_a} (f(v;u) * f(u;w))
+    \]
+\end{korollar}
+
+\begin{korollar}
+\label{Satz4VSBR}
+    \[
+       f(w) = 
+           \sum_{u\in V_a} (f(u) * f(u;w))
+    \]
+\end{korollar}
+
+Werden im angegebenen Verfahren zur parallelen Berechnung von Termen 
+die Folgerungen
+\ref{Satz3VSBR} und \ref{Satz4VSBR} statt der Lemmata \ref{Satz1VSBR} und
+\ref{Satz2VSBR} benutzt, so f"uhrt das zu leicht verringertem
+Berechnungsaufwand. Dann kann $f(v_c)$ analog zur obigen Analyse 
+f"ur $f(v_c)$ bei nicht homogenen Programmen in
+\[
+        2\lc \log(g(v_c)) \rc
+        \lb \lc \log \lb \frac{c}{ \lc \log(g(v_c)) \rc } 
+                     \rb 
+             \rc + 2
+        \rb
+\] Schritten von 
+\[
+    \frac{c}{ \lc \log(g(v_c)) \rc } 
+\] Prozessoren berechnet werden. Die nach oben abgesch"atzten Werte sind
+\Beq{Equ3VSBRAnalyse}
+    2\lc \log(g(v_c)) \rc * (\lc \log(c) \rc + 2)
+\Eeq
+Schritte und
+\Beq{Equ4VSBRAnalyse}
+    c
+\Eeq 
+Prozessoren.
+
+% **************************************************************************
+
+\MySection{Das Gau"s'sche Eliminationsverfahren parallelisiert}
+
+Das Thema dieses Unterkapitels ist es, wie das in \ref{SecVSBR}
+beschriebene Verfahren benutzt werden kann, um mit Hilfe des in
+\ref{SecGaussOhneDiv} angegebenen
+Gau"s'schen Eliminationsverfahrens ohne Divisionen parallel die
+Determinante einer $n \times n$-Matrix zu berechnen.
+
+Im folgenden wird beschrieben, wie ein Programm im Sinne von
+\ref{SecVSBR} anhand der Ergebnisse von \ref{SecGaussOhneDiv}
+aufgebaut wird. Sei $s$ die Anzahl der Stellen, die zur Darstellung eines 
+Matrizenelements maximal ben"otigt werden. F"ur alle Potenzreihen werden
+die homogenen Komponenten bis maximal zum Grad $s$ betrachtet.
+
+Es gibt drei wesentliche Elementaroperationen f"ur Potenzreihen, die 
+zun"achst auf ihren Aufwand hin untersucht werden. Da sich nach
+\ref{SecVSBR} die Anzahl der Prozessoren und der Schritte aus der
+Programml"ange ergibt, wird im folgenden nur die Anzahl der Anweisungen
+im Sinne von \ref{DefProgramm} betrachtet:
+\begin{MyDescription}
+\MyItem{Addition}
+    Dieser Fall gilt f"ur {\em Subtraktion} analog. Es werden die
+    homogenen Komponenten gleichen Grades addiert. Da die homogenen 
+    Komponenten bis zum Grad $s$ betrachtet werden, sind hierf"ur 
+    $s+1$ Anweisungen erforderlich.
+\MyItem{Multiplikation}
+    Seien $a$ und $b$ die zu multiplizierenden Potenzreihen. F"ur eine
+    Potenzreihe $x$ bezeichne $x_i$ deren homogene Komponente vom
+    Grad $i$. Das Ergebnis der zu Multiplikation von $a$ und $b$ sei $c$.
+    Man erh"alt $c$ mit:
+    \[ c_i := \sum_{j=0}^{i} a_j * b_{i-j} \MyPunkt \]
+    Da f"ur $c$ auch nur die homogenen Komponenten bis zum
+    Grad $s$ berechnet werden m"ussen, folgt mit Hilfe der Gleichung
+    \[ 2^i = \sum_{j=0}^{i-1} 2^j + 1 \] f"ur die Anzahl der Anweisungen
+    bei Benutzung der Bin"arbaummethode nach \ref{SatzAlgBinaerbaum}:
+    \begin{eqnarray*}
+        & & \sum_{i=0}^s 
+            \lb 
+                i + \sum_{j=0}^{\lc \log(i) \rc-1} 2^j 
+            \rb \\
+        & = &
+            \sum_{i=0}^s \lb i + 2^{\lc \log(i) \rc} - 1 \rb \\
+        & \leq &
+            \sum_{i=0}^s \lb i + 2^{\log(i) + 1} - 1 \rb \\
+        & = &
+            \sum_{i=0}^s \lb 3i - 1 \rb \\
+        & = & 3 \sum_{i=0}^s i - (s+1) \\
+        & = & \frac{3}{2} s (s + 1) - (s+1) \\
+        & = & \frac{3s^2 + s - 2}{2}
+    \end{eqnarray*}
+    \MyPunktA{30em}
+\MyItem{Division}
+    Die Divisionen werden entsprechend der Ausf"uhrungen in
+    \ref{SecPotRing} und \ref{SecGaussOhneDiv} durch Additionen und
+     Multiplikationen ersetzt (vgl. S. \pageref{Equ1ZuErsetzen}).
+    Da nur die homogenen Komponenten bis zum Grad $s$ betrachtet werden,
+    erfolgt die Potenzreihenentwicklung wie in \equref{Equ1StattDivision}
+    und \equref{Equ2StattDivision} nur bis zum $s$-ten Glied.
+
+    Somit sind
+    $s$ Multiplikationen und $s-1$ Additionen von Potenzreihen sowie
+    die Addition des konstanten Terms durchzuf"uhren. In Verbindung mit
+    den vorangegangenen Analysen von Addition und Multiplikation ergibt
+    sich f"ur die Anzahl der Anweisungen:
+    \begin{eqnarray*}
+        &   & s * \lb \frac{3s^2 + s - 2}{2} \rb + (s-1) * (s+1) + 1 \\
+        & = & \frac{3s^3 + 3s^2 - 2s}{2}
+    \end{eqnarray*}
+    \MyPunktA{30em}
+\end{MyDescription}
+
+Als n"achstes wird untersucht, wieviele der einzelnen Elementaroperationen
+zur Berechnung der Determinante benutzt werden. Dazu muessen vorher noch
+zwei Lemmata erw"ahnt werden:
+
+\begin{lemma}
+\label{SatzSumK}
+    Sei $n \in \Nat_0$. Dann gilt:
+    \[ \sum_{k=1}^n k = \frac{ n(n+1) }{ 2 } \]
+\end{lemma}
+\begin{beweis}
+    Der Beweis erfolgt durch Induktion "uber $n$.
+    \begin{MyDescription}
+    \MyItem{$n=1$}
+        Der Satz besitzt offensichtlich G"ultigkeit.
+    \MyItem{$n>1$}
+        Der Satz gelte f"ur $n<i$. Es ist zu zeigen, da"s er dann auch
+        f"ur $n=i$ gilt:
+        \begin{eqnarray*}
+            \sum_{k=1}^i k & = & i + \sum_{k=1}^{i-1} k \\
+            & = & 
+                i + \frac{ (i-1)i }{ 2 } \\
+            & = & \frac{ 2i+i^2-i }{ 2 } \\
+            & = & \frac{ i(i+1) }{ 2 }
+        \end{eqnarray*}
+    \end{MyDescription}
+\end{beweis}
+
+\begin{lemma}
+\label{SatzSumK2}
+    Sei $n \in \Nat_0$. Dann gilt:
+    \[ \sum_{k=1}^n k^2 = \frac{ n(n+1)(2n+1) }{ 6 } \]
+\end{lemma}
+\begin{beweis}
+    Der Beweis erfolgt durch Induktion "uber $n$.
+    \begin{MyDescription}
+    \MyItem{$n=1$}
+        Der Satz ist offensichlich richtig.
+    \MyItem{$n>1$}
+        Der Satz gelte f"ur $n<i$. Es ist zu zeigen, da"s er dann auch
+        f"ur $n=i$ gilt:
+        \begin{eqnarray*}
+            \sum_{k=1}^i k^2 & = & i^2 + \sum_{k=1}^{i-1} \\
+            & = & 
+                i^2 + \frac{ (i-1)i(2(i-1)+1) }{ 6 } \\
+            & = & 
+                \frac{ 6i^2+(i^2-i)(2i-1) }{ 6 } \\
+            & = & 
+                \frac{ 2i^3 + 3i^2 + i }{ 6 } \\
+            & = & 
+                \frac{ i(i+1)(2i+1) }{ 6 }
+        \end{eqnarray*}
+    \end{MyDescription}
+\end{beweis}
+
+Das in \ref{SecGauss} beschriebene Verfahren verwendet die Gleichungen
+\ref{Equ1GaussDef} und \equref{Equ2GaussDef}. Werden mit Hilfe dieser 
+Gleichungen zun"achst alle Matrizenelemente transformiert, betr"agt 
+die Anzahl der Berechnungen neuer Elemente:
+\begin{eqnarray*}
+   &   & \sum_{i=1}^{n-1} \sum_{j=i+1}^n (n-(j-1)) \\
+   & = & \sum_{i=2}^n \sum_{j=i}^n (n-(j-1)) \\
+   & = & \sum_{i=2}^n \sum_{j=1}^{n-(i-1)} j \\
+   & \MyStack{nach \ref{SatzSumK}}{=} &
+         \sum_{i=2}^n \frac{ (n-(i-1))*((n-(i-1))+1) }{2} \\
+   & = & \frac{1}{2} \sum_{i=2}^n ((n-i+1)*(n-i+2)) \\
+   & = & \frac{1}{2} \sum_{i=2}^n (n^2+3n-2ni+i^2-3i+2) \\
+   & = & \frac{1}{2}
+         \lb (n-1)(n^2+3n+2)
+             + \sum_{i=2}^n i^2
+             - \sum_{i=2}^n 2ni
+             - \sum_{i=2}^n 3i
+         \rb \\
+   & \MyStack{nach \ref{SatzSumK},\ref{SatzSumK2}}{=} &
+         \frac{1}{2}
+         \lb (n^3+2n^2-n-2) +
+             + \frac{1}{6} n(n+1)(2n+1) - 1 \right. \\
+   & &   \left.
+             - 2n \lb\frac{ n(n+1) }{ 2 } - 1 \rb
+             - 3 \lb \frac{ n(n+1) }{ 2 } - 1 \rb
+         \rb \\
+   & = &
+          \frac{1}{2}
+          \lb (n^3+2n^2-n-2) +
+              + \frac{ 2n^3+3n^2+n }{ 6 } - 1 \right. \\
+   & &   \left.
+              - ( n^3+n^2 - 2n)
+              - \lb \frac{ 3(n^2+n) }{ 2 } - 3 \rb
+          \rb \\
+   & = & \frac{1}{6}( n^3- n)
+\end{eqnarray*}
+F"ur jede einzelne Transformation eines Matrixelements
+werden nach \equref{Equ2GaussDef}
+eine Subtraktion, eine Multiplikation und eine Division durchgef"uhrt.
+Da alle Rechnungen in $R[[]]$ erfolgen, werden dabei Potenzreihen 
+miteinander verkn"upft, wof"ur der Aufwand
+gemessen in durchzuf"uhrenden Anweisungen bereits analysiert worden 
+ist (s. o.).
+F"ur die identische Abbildung nach \equref{Equ1GaussDef} wird kein Aufwand
+in Rechnung gestellt. So kommt man auf
+\begin{eqnarray}
+   & & \nonumber
+       \frac{1}{6}( n^3 - n) *
+       \lb
+           s + 1
+           + \frac{3s^2 + s - 2}{2}
+           + \frac{3s^3 + 3s^2 - 2s}{2}
+       \rb \\
+  & = & \label{AnwNeueElem}
+% Form:
+%    1/4*n^3*s^3 + 1/2*n^3*s^2 + 1/12*n^3*s - 1/4*n*s^3 - 1/2*n*s^2
+%    - 1/12*n*s;
+         \frac{1}{4}
+       \lb n^3 s^3 + 2n^3 s^2 + \frac{n^3 s}{3} - n s^3 - 2 n s^2
+       - \frac{n s}{3} \rb
+\end{eqnarray}
+Anweisungen, um eine gegebene Matrix mit Hilfe des Gau"s'schen Verfahrens
+in eine obere Dreiecksmatrix zu "uberf"uhren. Zu Berechnung der
+Determinante sind im Anschlu"s daran noch die Elemente der Hauptdiagonalen
+miteinander zu multiplizieren. Dies kann mit $n-1$ Multiplikationen
+geleistet werden, denen
+\begin{eqnarray}
+   & & \nonumber
+     (n-1) * 
+     \frac{3s^2 + s - 2}{2} \\
+   & = & \label{AnwDiagMult}
+*    1 + 3/2*n*s^2 + 1/2*n*s - n - 3/2*s^2 - 1/2*s;
+     \frac{1}{2} ( 3 n s^2 + n s - 2n - 3 s^2 - s + 2)
+\end{eqnarray}
+Anweisungen entsprechen. So hat man bereits das Ergebnis als Element
+von $R[[]]$. Um die Determinante als Element von $R$ zu erhalten, m"ussen
+nun noch die homogenen Komponenenten bis zum Grad $s$ addiert werden.
+Dies kann mit Hilfe von $s$ Anweisungen erfolgen. Abgesehen von diesen 
+Additionen ist das Programm homogen im Sinne von \ref{DefHomogen}.
+Deshalb ist es von Vorteil, die in \ref{SecVSBR} beschriebene Methode
+auf das Programm ohne die letzten Additionen anzuwenden und diese
+Additionen mit Hilfe der Bin"arbaummethode nach \ref{SatzAlgBinaerbaum}
+durchzuf"uhren. Die Addition der homogenen Komponenten kann so in 
+\[ \lc \log(s+1) \rc \] Schritten von \[ \lf \frac{s+1}{2} \rf \]
+Prozessoren geleistet werden.
+
+Man erh"alt das Gesamtergebnis
+f"ur die Programml"ange ohne die letzten Additionen als
+Summe von \equref{AnwNeueElem} und \equref{AnwDiagMult}:
+\[ % \label{Gesamt}
+%  1 + 1/4*n^3*s^3 + 1/2*n^3*s^2 + 1/12*n^3*s - 1/4*n*s^3 + n*s^2 + 5/12*n*
+%  s - n - 3/2*s^2 - 1/2*s;
+   \frac{1}{4} 
+   \lb
+       n^3 s^3 + 2 n^3 s^2 + \frac{1}{3}n^3 s - n s^3 + n s^2 + 
+       \frac{5}{3}n s - 4 n - 6 s^2 - 2 s + 4
+   \rb
+\]
+Anweisungen. Dieser Wert wird entsprechend der Terminologie in
+\ref{SecVSBR} mit $c$ bezeichnet. Da bei allen Rechnungen nur die
+homogenen Komponenten bis zum Grad $s$ beachtet werden, gilt
+\[ g(v_c) = s \MyPunkt \]
+Aus $c$ und $g(v_c)$ erh"alt man mit Hilfe der Analyseergebnisse
+\equref{Equ3VSBRAnalyse} und \equref{Equ4VSBRAnalyse} aus
+\ref{SecVSBR} f"ur die in diesem Kapitel beschriebene Methode zur
+parallelen Determinantenberechnung einen Aufwand von
+\begin{eqnarray*}
+    & & 2\lc \log(s) \rc * (\lc \log(c) \rc + 2) + \lc \log(s+1) \rc \\
+    & = &
+        2\lc \log(s) \rc \\
+    & &
+        * \lb
+            \lc
+            \log\lb
+   \frac{1}{4} 
+   \lb
+       n^3 s^3 + 2 n^3 s^2 + \frac{1}{3}n^3 s - n s^3 + n s^2 + 
+       \frac{5}{3}n s - 4 n - 6 s^2 - 2 s + 4
+   \rb
+            \rb
+            \rc + 2
+        \rb \\
+    & & + \lc \log(s+1) \rc
+\end{eqnarray*}
+Schritten und
+\begin{eqnarray*}
+  \lefteqn{ \max \lb c \: , \lf \frac{s}{2} \rf \rb } \\
+  & = & c \\
+  & = & 
+   \frac{1}{4} 
+   \lb
+       n^3 s^3 + 2 n^3 s^2 + \frac{1}{3}n^3 s - n s^3 + n s^2 + 
+       \frac{5}{3}n s - 4 n - 6 s^2 - 2 s + 4
+   \rb
+\end{eqnarray*}
+Prozessoren. Man erkennt an diesen Werte eine beachtenswerte Eigenschaft
+des Algorithmus: die Gr"o"senordnungen der Schritte und Prozessoren
+sind abh"angig von der Gr"o"senordnung der Matrizenelemente.
+
+Betrachtet man $s$ als Konstante, so kann der Algorithmus in
+\[ O(\log(n)) \] Schritten von \[ O(n^3) \] Prozessoren bearbeitet werden.
+Ist $s=n$, so kann der Algorithmus in
+\[ O(\log^2(n)) \] Schritten von \[ O(n^6) \] Prozessoren bearbeitet
+werden. Allgemein kann er in
+\[ O(\log(n)\log(s)) \] Schritten von 
+\[ O(n^3 s^3) \] Prozessoren abgearbeitet werden.
+

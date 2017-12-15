@@ -1,0 +1,35 @@
+% $$$$$
+{\large \bf Hier habe ich ein Problem: \\
+ \normalsize \bf Es ist mir in der K"urze der Zeit noch nicht gelungen,
+     den folgenden Satz so umzuarbeiten und zu beweisen, da"s ein 
+     Term in Abh"angigkeit von $n$ f"ur die Anzahl der Iterationen
+     herauskommt. Es mu"s auf jeden Fall auch Folgerung
+     \ref{SatzNormNaheInvers} einflie"sen. Bisher rechne ich mit
+     $d* \log(n), d\in \Rationals_{>0}$ als Ergebnis weiter. 
+     Hast Du eine Idee?
+}
+
+\begin{satz}
+    Sei $c$ eine Konstante. Es gelte $||R(B)||= q < 1$. 
+    (Ab hier w"ortlich in Englisch:)
+    \Beq{EquNewtonBedingung}
+        q = 1 - \frac{ 1 }{ n^{O(1)} } \: \mbox{ as $ n \rightarrow \infty$ } 
+    \Eeq 
+    Then $O(\log(n))$ iterations of the algorithm of this section suffice
+    in order to compute a matrix $\tilde{A}^{-1}$ such that
+    \Beq{hilf} 
+        ||A^{-1} - \tilde{A}^{-1}|| \leq 2^{-n^c} ||B||
+    \Eeq
+    The latter precision suffices for all practical purposes and cannot
+    be reduced further if \[ | (\log||B||)| \leq n^{O(1)} \] 
+    and if the entries of $A^{-1}$ are to be computed by binary 
+    numbers f the form $a2^{-k}$ where $a$ and $k$ are integers, 
+    \[ |a| < 2^m, 0 \leq k < m, \: m = n^{O(1)} \]
+\end{satz}
+\begin{beweis}
+    (nirgend zu finden; Ungleichung \equref{hilf} soll laut
+    Ver"offentlichung aus Ungleichung \equref{EquPanDifferenzUngleichung}
+    folgen)
+\end{beweis}
+
+V

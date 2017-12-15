@@ -1,0 +1,61 @@
+
+Dieses Verzeichnis enthaelt die Programme zur Diplomarbeit.
+'main.m' ist das Hauptprogramm. Alle anderen '*.m'-Dateien enthalten
+Testprogramme.
+
+Die Verzeichnisse 'IMP' und 'DEF' sind fuer die kompilierten Versionen der
+'*.i'- und '*.d'-Dateien vorgesehen.
+
+*****************************************************
+***** Informationen ueber die Quelltextdateien: *****
+
+    <kein Eintrag>  in Arbeit
+    +               Eintippen beendet
+    *               eingetippt und getestet
+    
+        * cali.d      CArdinal LIst
+        * cali.i
+        * data.d
+        * data.i
+        + det.d
+        + det.i
+        + frag.d
+        + frag.i
+        * func.d
+        * func.i
+        + hash.d
+        + hash.i
+        * inli.d      INteger LIst
+        * inli.i
+        + main.m
+        + mali.d      MAtrix LIst
+        + mali.i
+        + mat.d
+        + mat.i
+        * list.d
+        * list.i
+        * listtest.m
+        + pram.d
+        + pram.i
+        + pramtest.m
+        + reli.d      REal LIst
+        + reli.i
+        + rema.d      REal MAtrix
+        + rema.i
+        * rnd.d
+        * rnd.i
+        * rndtest.m
+        + simptype.d
+        + simptype.i
+        * str.d
+        * str.i
+        * strtest.m
+        * sys.d
+        * sys.i
+        * sysmath.d
+        * sysmath.i
+        + type.d
+        + type.i
+        * typetest.m
+
+

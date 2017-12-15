@@ -1,0 +1,44 @@
+Dazu beobachten wir zun"achst, da"s unter der Bedingung, da"s 
+\equref{EquResidualLessOne} erf"ullt ist, auch gilt: 
+\Beq{EquPanInverseSumme}
+    A^{-1} = \lb \sum_{i=0}^{\infty}R^i(B) \rb B \MyKomma
+\Eeq
+Diese Gleichung erh"alt man folgenderma"sen:
+\[ A^{-1} = (A^{-1}B^{-1})B = (BA)^{-1}B = (E_n - R(B))^{-1}B =
+   \lb \sum_{i=0}^{\infty}R^i(B) \rb B \MyPunkt
+\]
+
+Betrachten wir nun:
+\begin{eqnarray}
+    B_k^{*} & := & 
+                \lb \prod_{h=0}^{k-1}(E_n + R(B))^{2^h} \rb B \nonumber \\
+            & = & (\:(E_n + R^2(B))\,(E_n + R^4(B))\,\dots \, 
+                  (E_n + R^{2^{k-1}}(B))\: ) B  \nonumber \\
+            & = & \lb \sum_{i=0}^{2^k-1} R^i(B) \rb B \label{TermPanBStern}
+\end{eqnarray}
+Subtrahiert man $B_k^{*}$ bzw. Term \equref{TermPanBStern} auf beiden 
+Seiten von Gleichung \equref{EquPanInverseSumme}, erh"alt man:
+\Beq{EquPanInverseDifferenz}
+    A^{-1} - B_k^{*} = \lb \sum_{i=2^k}^{\infty} R^i(B) \rb B \MyPunkt 
+\Eeq
+Zur Abk"urzung wird definiert
+\[ q:= ||R(B)|| \MyPunkt \]
+Bildet man die Norm von beiden Seiten von \equref{EquPanInverseDifferenz},
+erh"alt man mit Hilfe der in Definition \ref{DefMatrixNorm} erw"ahnten
+Eigenschaften von Matrixnormen:
+\Beq{EquPanDifferenzUngleichung}
+    ||A^{-1} - B_k^{*}|| \leq \sum_{i=2^k}^{\infty} q^i ||B|| 
+    = q^{2^k} \frac{ ||B|| }{ 1 - q }  \MyPunkt 
+\Eeq
+$$$$$
+
+Vergleicht man \equref{EquNewtonBedingung} und \ref{SatzNormNaheInverse},
+erkennt man eine Bedingung, die man nicht "ubersehen darf:
+um eine Matrix $A$ durch Berechnung einer N"aherungsinversen nach dem
+in Unterkapitel \ref{SecGuessInverse} und anschlie"sender Anwendung der
+Newton-Methode n"aherungsweise zu invertieren, mu"s diese Matrix 
+die Bedingung
+\Beq{EquWellConditioned}
+     \cond(A) < n^{O(1)} 
+\Eeq erf"ullen.
+

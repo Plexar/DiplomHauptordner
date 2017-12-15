@@ -1,0 +1,190 @@
+\begin{thebibliography}{BvzGH82}
+
+\bibitem[Ach67]{Achi67}
+N.~I. Achieser.
+\newblock {\rm {Vorlesungen "uber Approximationstheorie}}.
+\newblock Akademie-Verlag, Berlin, 1967.
+
+\bibitem[Atk78]{Atki78}
+K.~E. Atkinson.
+\newblock {\rm {An Introduction to Numerical Analysis}}.
+\newblock Wiley, New York, 1978.
+
+\bibitem[Ber84]{Berk84}
+S.~J. Berkowitz.
+\newblock {On Computing the Determinant in Small Parallel Time Using a Small
+  Number of Processors}.
+\newblock {\rm Information Processing Letters 18},  147--150, 1984.
+
+\bibitem[BM75]{BM75}
+A.~Borodin und I.~Munro.
+\newblock {\rm {The Computational Complexity of Algebraic and Numeric
+  Problems}}.
+\newblock American Elsevier, New York, 1975.
+
+\bibitem[Bod59]{Bode59}
+E.~Bodewig.
+\newblock {\rm {Matrix Calculus}}.
+\newblock {North-Holland Pub. Co.}, 1959.
+
+\bibitem[BS86]{BS86}
+I.~N. Bronstein und K.~A. Semendjajew.
+\newblock {\rm {Taschenbuch der Mathematik, Erg"anzende Kapitel}}.
+\newblock Verlag Harri Deutsch, Thun und Frankfurt/Main, 4. Ausgabe, 1986.
+
+\bibitem[BS87]{BS87}
+I.~N. Bronstein und K.~A. Semendjajew.
+\newblock {\rm {Taschenbuch der Mathematik}}.
+\newblock Verlag Harri Deutsch, Thun und Frankfurt/Main, 23. Ausgabe, 1987.
+
+\bibitem[BT70]{BT70}
+H.~Behnke und P.~Thullen.
+\newblock {\rm {Theorie der Funktionen mehrerer komplexer Ver"anderlicher}}.
+\newblock Springer Verlag, 1970.
+
+\bibitem[BvzGH82]{BGH82}
+A.~Borodin, J.~von~zur Gathen, und J.~Hopcroft.
+\newblock Fast {P}arallel {M}atrix and {GCD} {C}omputation.
+\newblock {\rm Information and Control 52},  241--256, 1982.
+
+\bibitem[CLR86]{DCLR86}
+M.~Dal Cin, J.~Lutz, und T.~Risse.
+\newblock {\rm {Programmierung in Modula-2}}.
+\newblock Teubner Verlag, 2. Ausgabe, 1986.
+
+\bibitem[Csa74]{Csan74}
+L.~Csanky.
+\newblock {\rm {On the Parallel Complexity of Some Computational Problems}}.
+\newblock PhD thesis, Computer Science Division, University of California,
+  Berkeley, 1974.
+
+\bibitem[Csa76]{Csan76}
+L.~Csanky.
+\newblock Fast {P}arallel {M}atrix {I}nversion {A}lgorithms.
+\newblock {\rm Siam Journal on Computing},  618--623, 1976.
+
+\bibitem[CW90]{CW90}
+D.~Coppersmith und S.~Winograd.
+\newblock {Matrix Multiplikation via Arithmetic Progressions}.
+\newblock {\rm Journal of Symbolic Computation 9},  251--280, 1990.
+
+\bibitem[D"o77]{Doer77}
+W.~D"orfler.
+\newblock {\rm Mathematik f"ur Informatiker}, Jahrgang Band 1.
+\newblock Hanser Verlag, 1977.
+
+\bibitem[Dwy51]{Dwye51}
+P.~S. Dwyer.
+\newblock {\rm {Linear Computations}}.
+\newblock John Wiley and Sons, New York, 1951.
+
+\bibitem[EMR88]{EM88}
+G.~Engeln-M"ullges und F.~Reutter.
+\newblock {\rm {Formelsammlung zur Numerischen Mathematik mit
+  Modula2-Programmen}}.
+\newblock BI-Wissenschaftsverlag, 1988.
+
+\bibitem[Fra49]{Fram49}
+J.~S. Frame.
+\newblock {A Simple Recurrent Formula for Inverting a Matrix}.
+\newblock {\rm Bulletins of the American Mathematic Society 55},  1045, 1949.
+
+\bibitem[GvL83]{GL83}
+G.~H. Golub und C.~F. van Loan.
+\newblock {\rm {Matrix Computation}}.
+\newblock The John Hopkins University Press, Baltimore, 1983.
+
+\bibitem[Hau52]{Haup52}
+O.~Haupt.
+\newblock {Einf"uhrung in die Algebra}, 1952.
+
+\bibitem[Hil74]{Hild74}
+F.~B. Hildebrand.
+\newblock {Introduction to Numerical Analysis}, 1974.
+
+\bibitem[H"o73]{Hoer73}
+L.~H"orsmander.
+\newblock {\rm {An Introduction to Complex Analysis in Several Variables}}.
+\newblock North Holland Publishing Company, 1973.
+
+\bibitem[Hou64]{Hous64}
+A.~Housholder.
+\newblock {The Theory of Matrices in Numerical Analysis}, 1964.
+
+\bibitem[IK73]{Isaa73}
+E.~Isaacson und H.~B. Keller.
+\newblock {Analyse numerischer Verfahren}, 1973.
+
+\bibitem[Kel82]{Kell82}
+W.~Keller.
+\newblock {Fast Algorithms for the Characteristic Polynomial}, 1982.
+\newblock {Diplomarbeit, Institut f"ur Angewandte Mathematik, Univ. Z"urich}.
+
+\bibitem[Kry31]{Kryl31}
+A.~N. Krylov.
+\newblock { 7. Ser. Classe Mathem. }.
+\newblock {\rm Bulletins of the Academie of Sciences of URSS},  491--538, 1931.
+
+\bibitem[LF80]{LF80}
+R.~Ladner und M.~Fischer.
+\newblock {Parallel Prefix Computations}.
+\newblock {\rm Journal of the ACM 27},  831--838, 1980.
+
+\bibitem[MM64]{MM64}
+M.~Marcus und H.~Ming.
+\newblock {\rm A {S}urvey of {M}atrix {T}heory and {M}atrix {I}nequalities}.
+\newblock Allyn and Bacon, Boston, 1964.
+
+\bibitem[Pan85]{Pan85}
+V.~Pan.
+\newblock {Fast and Efficient Parallel Algorithms for the Exact Inversion of
+  Integer Matrices}.
+\newblock {\rm Lecture Notes on Computer Science 206},  504--521, 1985.
+
+\bibitem[PR85a]{PR85}
+V.~Pan und J.~Reif.
+\newblock {Efficient Parallel Solution of Linear Systems}.
+\newblock {\rm {Proceedings of the 17th Annual ACM Symposium on Theory of
+  Computing}},  143--152, 1985.
+
+\bibitem[PR85b]{PR85a}
+V.~Pan und J.~Reif.
+\newblock Fast and Efficient Parallel Solution of Linear Systems.
+\newblock Interner {B}ericht TR-02-85, Center for Research in Computer
+  Technology, Aiken Computation Laboratory, Harvard University, 1985.
+
+\bibitem[Sam42]{Samu42}
+P.~A. Samuelson.
+\newblock {A Method for Determining Explicitly the Coefficients of the
+  Characteristic Equation}.
+\newblock {\rm Annals of Mathematical Statistics 13},  424--429, 1942.
+
+\bibitem[Str73]{Stra73}
+V.~Strassen.
+\newblock Vermeidung von {D}ivisionen.
+\newblock {\rm J. Reine Angew. Math. 264},  184--202, 1973.
+
+\bibitem[vM67]{Mang67}
+H.~von Mangoldt.
+\newblock {Einf"uhrung in die h"ohere Mathematik}, 1967.
+
+\bibitem[VSBR83]{VSBR83}
+L.~Valiant, S.~Skyum, S.~Berkowitz, und C.~Rackoff.
+\newblock {Fast Parallel Computation of Polynomials Using Few Processors}.
+\newblock {\rm SIAM Journal on Computing 12 (4)},  641--644, 1983.
+
+\bibitem[Wal87]{Wald87}
+I.~Wald.
+\newblock {Automatische Parallelisierung von Registermaschinen}, 1987.
+\newblock Diplomarbeit, Johann Wolfgang Goethe-Universit"at, Frankfurt am Main.
+
+\bibitem[Weg89]{Wege89}
+I.~Wegener.
+\newblock {\rm {Effiziente Algorithmen f"ur grundlegende Funktionen}}.
+\newblock B. G. Teubner, Stuttgart, 1989.
+
+\bibitem[Zur64]{Zurm64}
+R.~Zurm"uhl.
+\newblock {Matrizen}, 1964.
+
+\end{thebibliography}

@@ -1,0 +1,133 @@
+
+! Datei: beisp1.sim 
+  Datum: 15.02.91 
+
+  Beispielprogramm zur Implementierung durch Uebersetzung in Simula.
+  ( Kapitel: Implementierung ) ;
+
+simulation begin
+
+    ! Algorithmus unabhaengige Deklarationen ;
+
+    process class prozessorgruppe;
+    begin
+        integer ProzessorAnzahl;
+        integer SchrittAnzahl;
+
+        procedure arbeiten;
+        begin
+            SchrittAnzahl:= 0;
+            Schleifenanfang:
+                hold(1);
+                SchrittAnzahl:= SchrittAnzahl+1;
+            if ProzessorAnzahl>0 then goto Schleifenanfang;
+        ProzessorAnzahl:= 0;
+        end arbeiten;
+
+        procedure PlusProzessor;
+        begin
+            ProzessorAnzahl:= ProzessorAnzahl+1;
+        end PlusProzessor;
+
+        procedure MinusProzessor;
+        begin
+            ProzessorAnzahl:= ProzessorAnzahl-1;
+            passivate;
+        end MinusProzessor;
+
+        ProzessorAnzahl:= 0;
+    end prozessorgruppe;        
+
+    process class parallel(gruppe,index);
+        ref(prozessorgruppe) gruppe;
+        integer index;
+    begin
+        procedure SchrittGrenze;
+        ! zwischen zwei zu zaehlenden Schritten aufzurufen,
+          jedoch nie am Prozeduranfang oder -ende;
+        begin
+           hold(1);
+        end SchrittGrenze;
+
+        gruppe.PlusProzessor;
+        INNER;
+        gruppe.MinusProzessor;
+    end parallel;
+
+    class vektor;
+    begin
+        integer array wert(1:10);
+        integer i;
+
+        procedure eingabe;
+        begin
+            for i:= 1 step 1 until 10 do
+                wert(i):= inint;
+        end eingabe;
+
+        procedure ausgabe;
+        begin
+            for i:= 1 step 1 until 10 do
+                outint(wert(i),0);
+        end ausgabe;
+    end vektor;
+
+    ! Algorithmus;
+
+    ref(vektor) a,b,hilf1,hilf2;
+    ref(prozessorgruppe) prozessoren;
+    integer i;    
+
+    parallel class zuweisung(senke,quelle);
+        ref(vektor) senke, quelle;
+    begin
+        senke.wert(index):= quelle.wert(index);
+    end zuweisung;
+    
+    parallel class VektorVertauschung(a,b,hilf1,hilf2);
+        ref(vektor) a,b,hilf1,hilf2;
+    begin
+        ref(prozessorgruppe) prozessoren;
+    
+        prozessoren:- new prozessorgruppe;
+
+        ! startparallel;
+            ! zuw hilf1(i),a(i);
+            activate new zuweisung(prozessoren,0,hilf1,a);
+
+            ! zuw hilf2(i),b(i);
+            activate new zuweisung(prozessoren,0,hilf2,b);
+            prozessoren.arbeiten;
+        ! parallelende;
+
+        ! startparallel;
+            ! zuw a(i),hilf2(i);
+            activate new zuweisung(prozessoren,0,a,hilf2);
+
+            ! zuw b(i),hilf1(i);
+            activate new zuweisung(prozessoren,0,b,hilf1);
+            prozessoren.arbeiten;
+        ! parallelende;
+    end VektorZuweisung;
+    
+    a:- new vektor;
+    b:- new vektor;
+
+    ! eingabe a,b;
+    a.eingabe;
+    b.eingabe;
+
+    ! parallel(i,n);
+    prozessoren:- new prozessorgruppe;
+    for i:= 1 step 1 until 10 do
+        activate 
+            new VektorVertauschung(prozessoren,i,
+                                   a,b,hilf1,hilf2);
+    prozessoren.arbeiten;
+    ! parallelende;
+     
+    ! ausgabe a,b;    
+    a.ausgabe;
+    b.ausgabe;
+end Hauptprogramm;
+

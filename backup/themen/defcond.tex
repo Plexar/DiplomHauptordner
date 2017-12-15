@@ -1,0 +1,16 @@
+Vergleicht man \ref{SatzNormNaheInvers} mit den in \ref{SecNewton} 
+gestellten Anforderungen an eine N"aherungsinverse f"ur eine effiziente
+Verwendbarkeit, erkennt man, da"s die Matrix, auf die die hier beschriebenen
+Methoden angewendet wird eine weitere Bedingung erf"ullen mu"s. Deshalb 
+wird schon hier definiert:
+\[  
+   \cond(A) := 
+   \left\{
+       \begin{array}{rcl}
+            ||A^T A||_1 ||A^{-1}||^2  & : & 
+                \mbox{ $A$ invertierbar } \\
+            \infty & : & \mbox{ $A$ nicht invertierbar }
+       \end{array}
+   \right.
+\]
+

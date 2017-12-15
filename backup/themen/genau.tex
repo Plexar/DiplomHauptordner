@@ -1,0 +1,302 @@
+\MySubSubSection{Genauigkeit der Rechnung}
+\label{BGH82Par7}
+Um die Besprechung der hier vorgeschlagenen Art der Vermeidung von
+Divisionen abzuschlie"sen, fehlt noch die Betrachtung der Genauigkeit
+der Berechnungen. Zu diesem Zweck wird im vorliegenden Abschnitt eine 
+Art der Zahlendarstellung beschrieben und im Hinblick auf die
+Rechengenauigkeit hin untersucht.
+
+\MyBeginDef
+    Seien $\base$, $\accuracy$ und $\ExpBound$ Elemente von $\Nat$.
+    Dann hei"st die Menge \[ \LogRep(\base,\accuracy,\ExpBound) \]
+    {\em Menge der logarithmischen Darstellungen} zu $\base$, $\accuracy$
+     und $\ExpBound$.
+    $\base$ wird als {\em Basis}, $\accuracy$ als {\em Genauigkeit} und
+    $\ExpBound$ als {\em Schranke der Exponenten} bezeichnet.
+    
+    Sei $a$ ein Vektor mit $\accuracy$ vielen Komponenten die mit $a_i$
+    bezeichnet werden, wobei gilt \[ 0 \leq i \leq \accuracy-1 \]
+    Die Elemente
+    von $\LogRep(\base,\accuracy,\ExpBound)$ sind alle Terme der Form
+    \[ v \base^m\sum_{i=0}^{\accuracy-1}a_i\base^i \]
+    mit
+    \begin{eqnarray*}
+        m & \in & \Nat_0 \\
+        m & \leq & \ExpBound \\
+        \forall 0 \leq i \leq \accuracy-1 & : & a_i \in \Nat_0 \\
+        \forall 0 \leq i \leq \accuracy-1 & : & 0 \leq a_i \leq \base-1 \\
+        v & \in & \{ 1,-1 \}
+    \end{eqnarray*}
+    Dabei wird $m$ als {\em Exponent der logarithmischen Darstellung}
+    und die Summe als {\em Mantisse der logarithmischen
+    Darstellung} bezeichnet. $v$ ist das {\em Vorzeichen}.
+\MyEndDef
+Ein Beispiel f"ur eine Menge {\em logarithmischer Darstellungen} w"are
+\[ \LogRep(10,20,200) \]
+was folgendes bedeutet:
+\begin{itemize}
+    \item Die Darstellung erfolgt zur Basis $10$, d. h. im gewohnten
+          Dezimalsystem.
+    \item Es wird mit $20$ Stellen Genauigkeit dargestellt, d. h. eine
+          Zahl kann, abgesehen von mit Hilfe des {\em Exponenten}
+          hervorgerufenen f"uhrenden oder folgenden Nullen, aus bis zu
+          $20$ Ziffern bestehen.
+    \item Die Schranke f"ur {\em Exponenten} ist $200$, d. h. der
+          maximale Betrag einer Zahl, die dargestellt werden kann, ist
+          \[ 10^{200}*(10^{20}-1) \]
+          also eine Zahl mit $220$ Stellen, von denen jedoch die $200$
+          nur aus $0$ bestehen.
+    \item Ein Element von \[ \LogRep(10,20,200) \] k"onnte z. B. sein
+          \[ 49845943345 * 10^{145} \]
+          $a_i$ mit \[ \forall j \geq i : a_j= 0 \] werden beim
+          Aufschreiben weggelassen.
+\end{itemize}
+
+\MyBeginDef
+    Sei \[ L = \LogRep(\base,\accuracy,\ExpBound) \] gegeben. Eine Zahl
+    \[ a \in \Rationals \] hei"st {\em logarithmisch darstellbar
+    bez"uglich $L$}, wenn es ein \[ l \in L \] gibt, so da"s die Auswertung
+    des Terms $l$ den Wert von $a$ ergibt. In diesem Fall gilt also
+    \[ l = a \]
+\MyEndDef
+
+\begin{bemerkung}
+    Seien $L$ und $L'$ zwei Mengen logarithmischer Darstellungen. Es gelte
+    \[ \accuracy' > \accuracy \] 
+    Dabei bezeichne $\accuracy$ die Genauigkeit von $L$ und $\accuracy'$ 
+    diejenige von $L'$. Sei $z$ logarithmisch darstellbar 
+    bez"uglich $L$. Dann $z$ auch logarithmisch darstellbar bez"uglich
+    $L'$.
+\end{bemerkung}
+
+\begin{bemerkung}
+\label{OhnedivSatz4}
+    F"ur jedes \[ z \in \Rationals \] gibt es eine Menge $L$ von
+    logarithmischen Darstellungen, so da"s $z$ logarithmisch darstellbar
+    bez"uglich $L$ ist. 
+
+    Dazu ist gegebenenfalls die Basis $\base$ so zu w"ahlen, da"s keine
+    Periode entsteht, wie z. B. bei \[ \frac{1}{3} \] beim Versuch einer
+    Darstellung zur Basis $10$.
+\end{bemerkung}
+
+\MyBeginDef
+    Sei \[ L = \LogRep(\base,\accuracy,\ExpBound) \] eine Menge 
+    logarithmischer Darstellungen.
+    Seien $x$, $y$ und $z$ logarithmisch darstellbar.
+    Sei \[ f: \Rationals \times \Rationals \rightarrow \Rationals \]
+    eine Abbildung und es gelte \[ f(x,y)=z \]
+    Sei $z'$ logarithmisch darstellbar. Es gelte \[ n \in \Nat_0 \] und
+    \[ j \in \Nat_0 \] $n$ bezeichnet die 
+    Anzahl der Stellen, die {\em genau} (s. u.) sollen. $j$ bezeichnet die
+    Stelle in der logarithmischen Darstellung, ab der die f"uhrenden 
+    (und somit nicht zu beachtenden) Nullen der von $z'$ beginnen.
+    D. h. $z'$ besitzt \[ \accuracy-j \] f"uhrende Nullen in der
+    logarithmischen Darstellung, die f"ur die Betrachtung der Genauigkeit
+    nicht beachtet werden.
+    Damit nicht insgesamt von mehr Stellen die Rede ist, als
+    eine Zahl in der logarithmischen Darstellung besitzen kann, mu"s
+    also gelten \[ n+(\accuracy-j) \leq \accuracy \].
+    Bei \[ j = \accuracy \] besitzt die Zahl keine f"uhrenden Nullen.
+    $z'$ wird {\em auf n Stellen genau bez"uglich $z$} genannt, wenn gilt
+    \begin{eqnarray*}
+        \forall i \geq j & : & z'_i = 0 \\
+        \frac{ |z - z'| }{ \base^m } & < & \frac{\base^(j-n)}{2} \\
+    \end{eqnarray*}
+    wobei $m$ der Exponent von $z'$ ist.
+
+    Diese Definition gelte entsprechend auch f"ur $q$-stellige $f$ mit
+    \[ q \neq 2 \] 
+\MyEndDef
+F"ur das $z$ in der obigen Definition erh"alt man ein passendes $z'$, wenn
+man $z$ mit Hilfe der $4$-$5$-Rundung unabh"angig von der Position 
+des Kommas auf $n$ f"uhrende Stellen rundet. 
+
+\MyBeginDef
+    Sei \[ z \in \Rationals \] und \[ n \in \Nat \]
+    Sei $L$ eine Menge logarithmischer Darstellungen. Sei $j$ das Element 
+    von $\Nat$, f"ur das gilt \[ \base^j \geq z \]
+    Dann wird die {\em Rundungsfunktion auf $n$ f"uhrende Stellen} definiert
+    durch 
+    \[ \round(z,n):= 
+           \left(
+           \left\lfloor
+               \frac{ z }{ \base^{j-n} } + \frac{1}{2}
+           \right\rfloor
+           \right) \base^{j-n}
+    \]
+\MyEndDef
+Somit ist \[ \round(z,n) \] auf $n$ Stellen genau bez"uglich $z$.
+
+\MyBeginDef
+    Sei \[ z \in \Rationals \].
+    Sei $L$ eine Menge logarithmischer Darstellungen.
+    Dann hei"st $\RepErr(z)$ {\em Darstellungsfehler von $z$ bez"uglich
+    $L$} und wird definiert durch \[ \RepErr(z):= |z-\round(z,\accuracy)| \]
+\MyEndDef
+
+\MyBeginDef
+    Sei $L$ eine Menge logarithmischer Darstellungen.
+    Sei \[ z \in \Rationals \].
+    Dann ist die  {Anzahl n"otiger Stellen von $z$ bez"uglich $L$}
+    definiert durch
+    \[ \necess(z,L):= \min\{i: \forall j \geq i: z_j=0\} \]
+    Abk"urzend wird auch einfach \[ \necess(z) \] geschrieben, wenn der
+    Bezug auf $L$ offensichtlich ist.
+\MyEndDef
+Das bedeutet, da"s $0$ gar keine n"otigen Stellen besitzt und jede Zahl
+ungleich $0$ mindestens eine.
+
+Mit Hilfe von Bemerkung \ref{OhnedivSatz4}
+kann man f"ur jedes \[ z \in \Rationals \] die Anzahl n"otiger
+Stellen betrachten. Bei einer fest gew"ahlten Basis $\base$ kann von
+den Grundrechenarten nur die Division ein Ergebnis liefert, das sich
+bez"uglich dieser Basis nicht darstellen l"a"st.
+
+Nach den Definitionen einiger Begriffe nun zur Betrachtung der Genauigkeit
+der bis hierhin dargestellten M"oglichkeit zur Determinantenberechnung ohne
+Divisionen:
+
+Zun"achst wird betrachtet, wie sich die vier Grundrechenarten Addition,
+Subtraktion, Multiplikation und Division im Hinblick auf die Exaktheit
+der obigen {\em logarithmischen Darstellung} auswirken. Seien $a$ und $b$
+{\em logarithmisch darstellbar} bez"uglich einer gegebenen Menge $L$
+logarithmischer Darstellungen. Dann sind folgende Fragen von Interesse
+(exemplarisch f"ur die Addition formuliert):
+\begin{itemize}
+    \item Ist auch \[ a+b \] logarithmisch darstellbar?
+    \item Seien $necess(a)$ und $\necess(b)$ bekannt.
+          Wie gro"s ist dann \[ necess(a+b) \]
+    \item F"ur welches logarithmisch
+          darstellbare $d$ ist \[ |a+b-\round(c,\accuracy)|-d \]
+          minimal? W"unschenswert ist nat"urlich \[ d=0 \]
+    \item Was ist zu tun, um den Darstellungsfehler bei Berechnungen
+          minimal zu halten?
+\end{itemize}
+F"ur die anderen Grundrechenarten ist in den obigen Punkten jeweils das
+$+$ durch $-$, $*$ bzw. $/$ zu ersetzen.
+
+Allgemein ist das Ergebnis einer Verkn"upfung dann logarithmisch
+darstellbar, wenn die Anzahl seiner n"otigen Stellen die Genauigkeit
+$\accuracy$ nicht "ubersteigt. Wie entwickelt sich also die Anzahl der
+n"otigen Stellen im Laufe einer Rechung? F"ur die Grundrechenarten wird
+dies im folgenden kurz betrachtet. Dazu seinen $a$ und $b$ gegeben und 
+$c$ jeweils das Ergebnis der Verkn"upfung von $a$ und $b$. Unter dem 
+{\em schlimmsten Fall} wird der Fall verstanden, in dem 
+\[ \necess(c)-\max(\necess(a),\necess(b)) \] maximal wird, da eine 
+Steigerung der Anzahl der n"otigen Stellen die Rundung es Ergebnisses
+erforderlich machen kann und dadurch zu Ungenauigkeiten f"uhrt.
+\begin{itemize} 
+    \item[Addition und Subtraktion]
+         Der schlimmste Fall tritt ein, wenn $a$ und $b$ das gleiche 
+         Vorzeichen besitzen und jede Stelle in der logarithmischen 
+         Darstellung der beiden Zahlen den Wert $\base-1$ hat. In diesem
+         Fall gilt \[ \necess(c) \leq \max(\necess(a),\necess(b))+1 \]
+         Ein Beispiel ist
+         \begin{eqnarray*}
+             a & = & 9 \\
+             b & = & 9 
+         \end{eqnarray*}
+         Somit ist \[ c = 18 \]
+    \item[Multiplikation]
+         Der schlimmste Fall tritt ein, wenn jede Stelle in der
+         logarithmischen Darstellung von $a$ und $b$ den Wert $\base-1$ 
+         besitzt. In diesem Fall gilt
+         \[ \necess(c) \leq \necess(a)+\necess(b) \]
+    \item[Division]
+         Es sei \[ \frac{a}{b} \] zu berechnen. Es gibt zwei F"alle:
+         \begin{itemize}
+             \item[$b$ teilt $a$]
+                  Dieser Fall ist das Gegenteil zu \[ a=bc \]. Somit gilt
+                  \[ \necess(c) \leq \necess(a)-\necess(b)+1 \]
+                  Ein Beispiel ist 
+                  \begin{eqnarray*}
+                      a & = & 99 \\
+                      b & = & 1
+                  \end{eqnarray*}
+                  Dann ist \[ c = 99 \] was die obige Ungleichung erf"ullt.
+             \item[$b$ teilt $a$ nicht]
+                  In diesem Fall h"angt die Anzahl der n"otigen Stellen 
+                  f"ur $c$ von den genauen Werten f"ur $a$ und $b$ ab. 
+                  Da keine Teilbarkeit gegeben ist, gilt jedoch auf jeden
+                  Fall \[ \necess(c) > \necess(a)-\necess(b)+1 \]. F"ur
+                  einzelne Betrachtungen der Entwicklung der n"otigen 
+                  Stellen im Laufe einer Rechnung k"onnte man f"ur den 
+                  schlimmsten Fall der Division eine nach intuitiver
+                  Beurteilung als ausreichend erscheinende Annahme treffen,
+                  wie z. B. 
+                  \[ \necess(c) \leq 2\max(\necess(a),\necess(b)) \]
+         \end{itemize}
+\end{itemize}
+Es ist zu beachten, da"s selbst dann, wenn alle Eingabewerte f"ur einen
+Algorithmus so gew"ahlt sind, da"s der schlimmste Fall bez"uglich der Anzahl
+der n"otigen Stellen des Ergebnisses maximal oft auftritt, es bei l"angeren
+Rechnungen nicht m"oglich ist, zu erreichen, da"s der schlimmste Fall bei
+jeder Verkn"upfung auftritt. Im allgemeinen tritt er tats"achlich nur bei
+einem relativ geringen Prozentsatz aller Vern"upfungen auf, so da"s die 
+obigen Werte f"ur $\necess(c)$ als obere Schranke zu betrachten sind.
+
+Darstellungsfehler entstehen dadurch, da"s
+logarithmisch nicht darstellbare Ergebnisse durch Rundung darstellbar
+gemacht werden. Nach der ersten Rundung im Laufe einer Rechnung ist das
+betroffene Zwischenergebnis bez"uglich des tats"achlich richtigen Wertes
+noch auf $\accuracy$ Stellen genau.
+
+Man k"onnte jetzt sehr ausf"uhrliche
+Betrachtungen dar"uber anstellen, wie sich Ungenauigkeiten bei l"angeren
+Rechnungen auswirken. Bei der Betrachtung des im vorliegenden Text
+darzustellenden Algorithmus zur Determinantenberechnung erkennt man jedoch,
+da"s er, abgesehen von einer Stelle, keine gr"o"seren Probleme bei der
+Genauigkeit aufwirft, als allgemein "ublich. Die eine Stelle, die
+besondere Probleme macht und hier betrachtet werden soll, ist die Art
+und Weise, wie Divisionen vermieden werden.
+
+Dies geschieht mit Hilfe von Reihenentwicklungen. Diese
+Reihen erfordern besondere Beachtung bei der Betrachtung der Genauigkeit
+der Berechnungen weil sie
+unendlich viele Glieder besitzen, die man nat"urlich nicht alle
+ausrechnen kann. Somit ist es n"otig die Berechnung auf bestimmte Glieder zu
+beschr"anken. Ihre Auswahl bestimmt entscheident die Genauigkeit der
+Rechnung.
+
+Dazu sei die Reihenentwicklung von \[ \frac{1}{1-g} \] im Hinblick auf die
+oben beschriebene {\em logarithmische Darstellung} betrachtet. Die
+Reihe zum obigen Term hat die Form \[ 1 + g + g^2 + g^3 + \ldots \] D. h.
+das Glied $n$ der Reihe hat die Form \[ g^n \].
+
+Es wird vorausgesetzt, da"s die Darstellungen zur Basis $10$ erfolgen und
+eine Genauigkeit $\accuracy$ (s. o.) gegeben ist.
+Wenn man beachtet, da"s im vorliegende Fall die m"oglichen Werte f"ur $g$
+aus dem Intervall \[ (-0.1,0.1) \] stammen und unter dieser Voraussetzung
+die m"oglichen logarithmischen Darstellungen der Glieder \[ g \] und 
+\[ g^{\accuracy+1} \] miteinander vergleicht, erkennt man, da"s f"ur 
+die Exponenten $m$ und $m'$ in der logarithmischen Darstellung der beiden 
+Glieder gilt: \[ |m-m'| \geq \accuracy \]
+Die Verkn"upfung zweier logarithmisch dargestellter Werte (s. o.), 
+l"auft so ab,
+da"s der Exponent des kleineren Wertes dem des gr"o"seren angeglichen
+angeglichen wird, wobei die Mantisse nat"urlich Nachkommastellen bekommt,
+die jedoch nach dem Angleichen durch Rundung beseitigt werden. Falls die
+Differenz der Exponenten $\accuracy$ betr"agt kann bei einer Addition, wie
+z. B. der Addition eines weiteren Reihengliedes zum bisherigen 
+Zwischenergebnis, nach der Rundung noch maximal der Wert $1$ hinzu kommen.
+Jedes Reihenglied h"oheren Grades w"urde nach Angleichen der Exponenten 
+und Runden nur noch $0$ betragen.
+
+Es ist also nicht sehr zweckm"a"sig, "uber \[ g^{\accuracy+1} \] hinaus
+noch Glieder auszurechnen, da sie durch die Rundung auf $\accuracy$ Stellen
+das Ergebnis in der logarithmischen Darstellung nicht mehr beeinfl"ussen
+w"urden. Falls $g$ kein einzelner Wert oder eine einzelne Unbestimmte, 
+sondern ein Polynom mit einem Grad gr"o"ser als 1 oder wiederum eine 
+Potenzreihe ist, gen"ugt es demnach, alle homogenen Komponenten bis zum
+Grad $\accuracy+1$ auszurechnen.
+% $$$$ Referenz auf Def. von 'homogene Komponente'
+
+Leider wird somit das Ziel, durch Vermeidung von Divisionen die
+Genauigkeit m"oglichst vollkommen exakt zu machen, wiederum nicht erreicht.
+Aber man kann bei einer gen"ugend hohen Wahl von $\accuracy$, wie z. B.
+\[ 3n \] f"ur die Berechnung der Determinante einer $n \times n$-Matrix,
+hoffen, da"s Ergebnis zumindest auf $n$ Stellen genau bez"uglich des
+tats"achlichen Ergebnisses ist.
+
+

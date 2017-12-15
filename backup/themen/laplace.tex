@@ -1,0 +1,68 @@
+\begin{satz}[Entwicklungssatz von Laplace]
+\label{SatzLaplace}
+\index{Laplace!Entwicklungssatz von}
+    Sei $k$ eine nat"urliche Zahl mit
+    \[ 1 \leq k \leq n-1 \] Sei $D_n$ die Determinante der Matrix $A$.
+
+    F"ur die nat"urliche Zahl $i$ gelte \[ 1 \leq i \leq {n \choose k} \]
+    Sei $D_k^{(2i-1)}$ die Determinante einer Untermatrix $A_k^{(2i-1)}$ von
+    $A$, die aus $k$ Spalten der ersten $k$ Zeilen gebildet werde.
+    Sei $D_{n-k}^{(2i)}$ die Determinante einer Untermatrix $A_{n-k}^{(2i)}$
+    von
+    $A$, die aus den f"ur $A_k^{(2i-1)}$ nicht gew"ahlten $n-k$ Zeilen und
+    Spalten gebildet werde.
+
+    F"ur jedes $i$ werde eine andere der \[ {n \choose k} \] m"oglichen
+    Auswahlen f"ur die $k$ Spalten f"ur $A^{(2i-1)}$ getroffen.
+
+    F"ur eine Untermatrix $A_k^{(2i-1)}$ bezeichne \[ f(A_k^{(2i-1)}) \] die
+    $n$-Permutation, die die Spalten von $A$ so vertauscht, da"s
+    $A_k^{(2i-1)}$ aus den ersten $k$ und $A_{n-k}^{(2i)}$
+    aus den weiteren $n-k$ Zeilen und Spalten von $A$ besteht.
+
+    Dann gilt:
+    \begin{equation}
+    \label{EquSatzLaplace}
+    D_n = \sig(f(A_k^1)) D_k^1 D_{n-k}^2 + \sig(f(A_k^3)) D_k^3 D_{n-k}^4
+          + \cdots
+          + \sig \left( f \left( A_k^{2{n \choose k}-1} \right) \right)
+            D_k^{2{n \choose k}-1} D_k^{2{n \choose k}}
+    \end{equation}
+\end{satz}
+
+\begin{korollar}[Zeilen- und Spaltenentwicklung]
+\label{SatzEntw}
+\index{Zeilenentwicklung}
+\index{Spaltenentwicklung}
+\index{Entwicklung!nach Zeilen und Spalten}
+     Seien \[ 1 \leq p \leq n \] und \[ 1 \leq q \leq n \] beliebig.
+     Dann gilt die {\em Entwicklung nach Zeile $p$}
+     \[ \det(A)= \sum_{j=1}^n (-1)^{p+j} a_{p,j} \det(A_{(p|j)} \]
+     und die {\em Entwicklung nach Spalte $q$}
+     \[ \det(A)= \sum_{i=1}^n (-1)^{i+q} a_{i,q} \det(A_{(i|q)} \]
+\end{korollar}
+\begin{beweis}
+    Die Aussage folgt aus Satz \ref{SatzLaplace} f"ur \[ k=1 \]
+\end{beweis}
+
+Das n"achste Lemma behandelt als Vorarbeit f"ur die darauffolgenden
+S"atze den Fall einer Zeilen- bzw. Spaltenentwicklung, bei der jedoch
+als Faktoren f"ur die Unterdeterminanten die Matrizenelemente der
+falschen Zeile benutzt werden.
+
+\begin{lemma}
+\label{SatzFalscheEntw}
+    Seien \[ 1 \leq p,p' \leq n \] und \[ 1 \leq q,q' \leq n \] mit
+    \[ p \neq p' \] und \[ q \neq q' \] Dann gilt:
+    \[ \sum_{j=1}^n (-1)^{p+j} a_{p',j} \det(A_{(p|j)} = 0 \] und
+    \[ \sum_{i=1}^n (-1)^{i+q} a_{i,q'} \det(A_{(i|q)} = 0 \]
+\end{lemma}
+\begin{beweis}
+    Betrachte die Berechnung der Unterdeterminanten in den obigen
+    Gleichungen nach \equref{EquDet}. Beim
+    Vergleich mit der Berechnung der Determinante einer Matrix, die
+    zwei gleiche Zeilen enth"alt, erkennt man, da"s die Terme nach dem
+    Ausmultiplizieren geklammerter Faktoren "ubereinstimmen. Nach Satz
+    \ref{SatzDetPermut} ist die Determinante in diesem Fall gleich $0$.
+\end{beweis}
+

@@ -1,0 +1,97 @@
+\contentsline {chapter}{\numberline {1}Vorbemerkungen}{7}
+\contentsline {section}{\numberline {1.1}Einf\active@dq \dq@prtct {u}hrung}{7}
+\contentsline {section}{\numberline {1.2}Das Berechnungsmodell}{8}
+\contentsline {section}{\numberline {1.3}Bezeichnungen}{9}
+\contentsline {section}{\numberline {1.4}Das Pr\active@dq \dq@prtct {a}fixproblem}{10}
+\contentsline {section}{\numberline {1.5}L\active@dq \dq@prtct {o}sungen grundlegender Probleme}{13}
+\contentsline {chapter}{\numberline {2}Grundlagen aus der Linearen Algebra}{17}
+\contentsline {section}{\numberline {2.1}Matrizen und Determinanten}{17}
+\contentsline {section}{\numberline {2.2}Der Rang einer Matrix}{20}
+\contentsline {section}{\numberline {2.3}L\active@dq \dq@prtct {o}sbarkeit linearer Gleichungssysteme}{22}
+\contentsline {section}{\numberline {2.4}Das charakteristische Polynom}{25}
+\contentsline {chapter}{\numberline {3}Die Algorithmen von Csanky}{27}
+\contentsline {section}{\numberline {3.1}Die Stirling'schen Ungleichungen}{27}
+\contentsline {section}{\numberline {3.2}Der Entwicklungssatz von Laplace}{28}
+\contentsline {section}{\numberline {3.3}Determinantenberechnung durch 'Divide and Conquer'}{30}
+\contentsline {section}{\numberline {3.4}Die Linearfaktorendarstellung}{32}
+\contentsline {section}{\numberline {3.5}Die Newton'schen Gleichungen f\active@dq \dq@prtct {u}r Potenzsummen}{34}
+\contentsline {section}{\numberline {3.6}Die Adjunkte einer Matrix}{37}
+\contentsline {section}{\numberline {3.7}Der Satz von Frame}{38}
+\contentsline {section}{\numberline {3.8}Determinantenberechnung mit Hilfe des Satzes von Frame}{40}
+\contentsline {chapter}{\numberline {4}Der Algorithmus von {Borodin,} Von zur Gathen und Hopcroft}{45}
+\contentsline {section}{\numberline {4.1}Das Gau\active@dq \dq@prtct {s}'sche Eliminationsverfahren}{45}
+\contentsline {section}{\numberline {4.2}Potenzreihenringe}{46}
+\contentsline {section}{\numberline {4.3}Das Gau\active@dq \dq@prtct {s}'sche Eliminationsverfahren ohne Divisionen}{48}
+\contentsline {section}{\numberline {4.4}Beispiel zur Vermeidung von Divisionen}{50}
+\contentsline {section}{\numberline {4.5}Parallele Berechnung von Termen}{52}
+\contentsline {section}{\numberline {4.6}Das Gau\active@dq \dq@prtct {s}'sche Eliminationsverfahren parallelisiert}{59}
+\contentsline {chapter}{\numberline {5}Der Algorithmus von Berkowitz}{65}
+\contentsline {section}{\numberline {5.1}Toepliz-Matrizen}{65}
+\contentsline {section}{\numberline {5.2}Der Satz von Samuelson}{68}
+\contentsline {section}{\numberline {5.3}Determinantenberechnung mit Hilfe des Satzes von Samuelson}{72}
+\contentsline {chapter}{\numberline {6}Der Algorithmus von Pan}{83}
+\contentsline {section}{\numberline {6.1}Diagonalisierbarkeit}{83}
+\contentsline {section}{\numberline {6.2}Das Minimalpolynom}{87}
+\contentsline {section}{\numberline {6.3}Die Methode von Krylov}{91}
+\contentsline {section}{\numberline {6.4}Vektor- und Matrixnormen}{94}
+\contentsline {section}{\numberline {6.5}Wahl einer N\active@dq \dq@prtct {a}herungsinversen}{96}
+\contentsline {section}{\numberline {6.6}Iterative Matrizeninvertierung}{98}
+\contentsline {section}{\numberline {6.7}Determinatenber. mit Hilfe der Methoden von Krylov und Newton}{99}
+\contentsline {chapter}{\numberline {7}Implementierung}{103}
+\contentsline {section}{\numberline {7.1}Erf\active@dq \dq@prtct {u}llte Anforderungen}{103}
+\contentsline {section}{\numberline {7.2}Bedienung des Programms}{104}
+\contentsline {section}{\numberline {7.3}Die Modulstruktur}{105}
+\contentsline {section}{\numberline {7.4}Anmerkungen zur Implementierung}{109}
+\contentsline {chapter}{\numberline {8}Nachbetrachtungen}{111}
+\contentsline {section}{\numberline {8.1}Vergleich der Algorithmen}{111}
+\contentsline {section}{\numberline {8.2}Ausblick}{113}
+\contentsline {chapter}{Literatur}{114}
+\contentsline {chapter}{Stichwortverzeichnis}{116}
+\contentsline {chapter}{\numberline {A}Implementierung der parallelen Determinantenberechnung}{121}
+\contentsline {section}{\numberline {A.1}Programmodul 'main`}{121}
+\contentsline {section}{\numberline {A.2}Definitionsmodul 'Det`}{126}
+\contentsline {section}{\numberline {A.3}Implementierungsmodul 'Det`}{126}
+\contentsline {section}{\numberline {A.4}Definitionsmodul 'Pram`}{163}
+\contentsline {section}{\numberline {A.5}Implementierungsmodul 'Pram`}{164}
+\contentsline {section}{\numberline {A.6}Programmodul 'algtest`}{169}
+\contentsline {chapter}{\numberline {B}Unterst\active@dq \dq@prtct {u}tzungsmodule}{187}
+\contentsline {section}{\numberline {B.1}Definitionsmodul 'Cali`}{187}
+\contentsline {section}{\numberline {B.2}Implementierungsmodul 'Cali`}{188}
+\contentsline {section}{\numberline {B.3}Definitionsmodul 'Data`}{188}
+\contentsline {section}{\numberline {B.4}Implementierungsmodul 'Data`}{190}
+\contentsline {section}{\numberline {B.5}Definitionsmodul 'Frag`}{195}
+\contentsline {section}{\numberline {B.6}Implementierungsmodul 'Frag`}{197}
+\contentsline {section}{\numberline {B.7}Definitionsmodul 'Func`}{201}
+\contentsline {section}{\numberline {B.8}Implementierungsmodul 'Func`}{201}
+\contentsline {section}{\numberline {B.9}Definitionsmodul 'Hash`}{203}
+\contentsline {section}{\numberline {B.10}Implementierungsmodul 'Hash`}{204}
+\contentsline {section}{\numberline {B.11}Definitionsmodul 'Inli`}{210}
+\contentsline {section}{\numberline {B.12}Implementierungsmodul 'Inli`}{211}
+\contentsline {section}{\numberline {B.13}Definitionsmodul 'List`}{211}
+\contentsline {section}{\numberline {B.14}Implementierungsmodul 'List`}{215}
+\contentsline {section}{\numberline {B.15}Definitionsmodul 'Mali`}{222}
+\contentsline {section}{\numberline {B.16}Implementierungsmodul 'Mali`}{223}
+\contentsline {section}{\numberline {B.17}Definitionsmodul 'Mat`}{224}
+\contentsline {section}{\numberline {B.18}Implementierungsmodul 'Mat`}{225}
+\contentsline {section}{\numberline {B.19}Definitionsmodul 'Reli`}{228}
+\contentsline {section}{\numberline {B.20}Implementierungsmodul 'Reli`}{228}
+\contentsline {section}{\numberline {B.21}Definitionsmodul 'Rama`}{229}
+\contentsline {section}{\numberline {B.22}Implementierungsmodul 'Rema`}{232}
+\contentsline {section}{\numberline {B.23}Definitionsmodul 'Rnd`}{245}
+\contentsline {section}{\numberline {B.24}Implementierungsmodul 'Rnd`}{246}
+\contentsline {section}{\numberline {B.25}Definitionsmodul 'Simptype`}{249}
+\contentsline {section}{\numberline {B.26}Implementierungsmodul 'Simptype`}{250}
+\contentsline {section}{\numberline {B.27}Definitionsmodul 'Str`}{252}
+\contentsline {section}{\numberline {B.28}Implementierungsmodul 'Str`}{254}
+\contentsline {section}{\numberline {B.29}Definitionsmodul 'Sys`}{258}
+\contentsline {section}{\numberline {B.30}Implementierungsmodul 'Sys`}{260}
+\contentsline {section}{\numberline {B.31}Definitionsmodul 'SysMath`}{262}
+\contentsline {section}{\numberline {B.32}Implementierungsmodul 'SysMath`}{263}
+\contentsline {section}{\numberline {B.33}Definitionsmodul 'Type`}{265}
+\contentsline {section}{\numberline {B.34}Implementierungsmodul 'Type`}{267}
+\contentsline {chapter}{\numberline {C}Testprogramme}{273}
+\contentsline {section}{\numberline {C.1}Programmodul 'listtest`}{273}
+\contentsline {section}{\numberline {C.2}Programmodul 'pramtest`}{274}
+\contentsline {section}{\numberline {C.3}Programmodul 'rndtest`}{275}
+\contentsline {section}{\numberline {C.4}Programmodul 'strtest`}{276}
+\contentsline {section}{\numberline {C.5}Programmodul 'typetest`}{277}

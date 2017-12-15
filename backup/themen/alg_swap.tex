@@ -1,0 +1,31 @@
+\begin{satz}[Parallele Vertauschung von Vektoren]
+\label{SatzAlgSwap}
+\index{Algorithmus!parallele Vertauschung}
+    Gegeben seien zwei Vektoren $x$ und $y$ der L"ange $n$. Ihre Komponenten
+    lassen sich parallel in \[ 2 \] Schritten von \[ 2n \] Prozessoren
+    paarweise vertauschen.
+\end{satz}
+\begin{beweis}
+    Seien $a$ und $b$ zwei Vektoren.
+    \begin{enumerate}
+    \item
+         Parallel f"ur $i=1$ bis $n$:
+         \begin{enumerate}
+         \item
+              \[ a_i := x_i \]
+         \item
+              \[ b_i := y_i \]
+         \end{enumerate}
+         (ein Schritt; $2n$ Prozessoren)
+    \item
+         Parallel f"ur $i=1$ bis $n$:
+         \begin{enumerate}
+         \item
+              \[ x_i := b_i \]
+         \item
+              \[ y_i := a_i \]
+         \end{enumerate}
+         (ein Schritt; $2n$ Prozessoren)
+    \end{enumerate}
+\end{beweis}
+

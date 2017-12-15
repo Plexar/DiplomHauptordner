@@ -1,0 +1,14 @@
+
+Dieses Verzeichnis enthaelt Kopien einzelner Kapitel oder Kapitelteile.
+Die Kopien wurden angefertigt, bevor die Kapitel weiter veraendert 
+worden sind.
+Die Dateinamen geben an, aus welchem Kapitel der Diplomarbeit das Textstueck
+stammt und in welcher Reihenfolge die Dateien in diesem Verzeichnis ge-
+speichert wurden. Dazu sind die Endungen der Dateinamen durch eine Ord-
+nungszahlen ersetzt worden; z. B. 'schrank.tex' durch
+'schrank.42'.
+
+Die Ordnungszahlen werden fr Kopieraktionen, nicht fr die Anzahlen der 
+Dateien vergeben. D. h., falls die Dateien 'text.1' und 'text.3' existieren,
+so heit das, da 'text.tex' bei der zweiten Kopieraktion nicht kopiert 
+wurde!

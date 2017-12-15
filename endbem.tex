@@ -1,0 +1,197 @@
+%
+% Datei: endbem.tex
+%
+\MyChapter{Nachbetrachtungen}
+\label{ChapEndbem}
+
+In diesem Kapitel werden die Ergebnisse dieser Arbeit abschlie"send 
+betrachtet und bewertet.
+
+\MySection{Vergleich der Algorithmen}
+% Csanky: schnellster, am einfachsten zu implementieren, jedoch Divisionen
+% BGH: relativ gesehen sehr langsam, Implementierung sehr aufw"andig,
+%      nur f"ur positive ganze Zahlen (mit Tricks: ...)
+% Berk: etwas langsamer als 'Csanky', etwas schwieriger zu implementieren,
+%       keine Divisionen!
+% Pan: nicht f"ur alle Matrizen verwendbar; nur ganze Zahlen
+
+In diesem Unterkapitel werden die vier haupts"achlich in dieser Arbeit 
+behandelten Algorithmen zusammenfassend miteinander verglichen.
+
+Auf die Algorithmen wird, wie in Unterkapitel \ref{SecBez} definiert 
+wird, mit Hilfe der Anfangsbuchstaben ihrer Autoren
+Bezug genommen: C-Alg., BGH-Alg., B-Alg. und P-Alg..
+
+Der Vergleich wird nach folgenden Kriterien durchgef"uhrt:
+\begin{itemize}
+\item
+      Werden Divisionen benutzt?
+\item
+      Werden Fallunterscheidungen durchgef"uhrt?
+\item
+      Wie gro"s ist die Anzahl der Schritte?
+\item
+      Wie gro"s ist die Anzahl der Prozessoren?
+\item
+      Welche Einschr"ankungen f"ur die Anwendbarkeit gibt es?
+\item
+      Wie aufwendig ist die Implementierung?
+\item
+      Welche "Ahnlichkeiten in der Methodik gibt es? 
+\end{itemize}
+Im Anschlu"s an diesen Vergleich wird eine Bewertung der Algorithmen 
+anhand der genannten Gesichtspunkte vorgenommen.
+
+Zun"achst sei angemerkt, da"s keiner der Algorithmen Fallunterscheidungen
+verwendet. Dies vereinfacht eine Betrachtung aus der Sicht des 
+Schaltkreisentwurfs.
+
+Es kommen lediglich B-Alg. und BGH-Alg. ohne Divisionen aus und k"onnen 
+somit in beliebigen Ringen angewendet werden. C-Alg. und P-Alg. k"onnen nur
+in K"orpern verwendet werden, falls man exakte Ergebnisse verlangt
+
+P-Alg. darf nur auf ganzzahlige Matrizen
+angewendet werden. Da P-Alg. Divisionen verwendet, ist es jedoch auch dann
+nicht gew"ahrleistet, da"s er die Determinante exakt liefert. Hinzu kommt
+bei P-Alg. als erheblicher Nachteil die eingeschr"ankte Verwendbarkeit, auch 
+wenn sich dies in der praktischen Anwendung nicht sehr stark auswirkt. 
+Diese Eigenschaft von P-Alg. ist mit dem Laufzeitverhalten von `Quicksort'
+vergleichbar, das im {\em Average Case} sehr gut, jedoch im {\em Worst 
+Case} sehr schlecht ist. P-Alg. ist theoretisch nur eingeschr"ankt 
+verwendbar, praktisch jedoch nahezu uneingeschr"ankt, da zuf"allig
+zusammengestellte Matrizen mit sehr hoher Wahrscheinlichkeit invertierbar
+sind und die Bedingungen f"ur P-Alg. erf"ullen.
+
+Betrachtet man die Anzahl der Schritte, stellt man fest, da"s C-Alg. 
+am schnellsten ist, gefolgt von B-Alg. und P-Alg.. Das Schlu"slicht 
+bildet mit einigem Abstand BGH-Alg. 
+
+Bez"uglich der Anzahl der Prozessoren hat P-Alg. die Nase vorn, gefolgt
+von C-Alg. und B-Alg.. Das Schlu"slicht bildet BGH-Alg. wiederum mit
+Abstand. Zu beachten ist der sehr gute Wert f"ur die Prozessoren bei P-Alg.,
+der sich vermutlich kaum weiter verbessern l"a"st.
+
+Auf einem Rechner mit einem Prozessor ist P-Alg. der effizienteste, da
+er insgesamt die wenigsten Operationen ben"otigt. Er wird gefolgt von 
+C-Alg. B-Alg. liegt hier an dritter Stelle gefolgt von BGH-Alg..
+
+Betrachtet man den Aufwand f"ur die Implementierung gemessen in Anzahl der
+Quelltextzeilen\footnote{Dies besitzt in der Praxis in Verbindung mit
+den anderen Eigenschaften der Algorithmen eine nicht zu untersch"atzende 
+Bedeutung.}, stellt man fest, da"s C-Alg. bei weitem am einfachsten 
+zu implementieren ist. Ihm folgt P-Alg. dichtauf. Die Implementierung
+von B-Alg. ist bereits etwas aufwendiger, aber noch zumutbar. BGH-Alg.
+bildet auch in diesem Punkt mit relativ gro"sem Abstand das Schlu"slicht.
+
+Bei der Betrachtung der Verfahren, die die einzelnen Algorithmen verwenden,
+erkennt man Parallelen zwischen C-Alg. und B-Alg. sowie zwischen 
+BGH-Alg. und P-Alg.. Sowohl in C-Alg. als auch in B-Alg. wird jeweils
+ein Satz verwendet, der zum Zeitpunkt der Ver"offentlichung der Algorithmen
+bereits seit mehreren Jahrzehnte bekannt war. Die beiden S"atze sind 
+durch diverse Umformungen f"ur die parallele Determinanteberechnung nutzbar
+gemacht worden. In BGH-Alg. und P-Alg. hingegen werden jeweils mehrere
+auch separat bedeutsame Verfahren zu einem Algorithmus in Verbindung 
+gebracht.
+
+Unter dem Gesichtspunkt, da"s BGH-Alg. nicht der einzige divisionsfreie
+Algorithmus mit polynomiellem Aufwand ist, besitzt er wegen des
+erforderlichen Implementierungsaufwandes und seiner relativen Langsamkeit
+nur theoretisches Interesse. 
+
+C-Alg. ist am brauchbarsten f"ur schnelle Erstellung einer Implementierung,
+falls das Vorhandensein von Divisionen nicht weiter st"ort.
+
+P-Alg. sollte verwendet werden, falls es im wesentlichen auf Geschwindigkeit
+ankommt und die Einschr"ankungen f"ur die Anwendbarkeit sowie die
+Existenz von Divisionen nicht st"oren.
+
+B-Alg. ist der Algorithmus unter den vieren mit den ausgewogensten
+Leistungsmerkmalen und geht insgesamt als Sieger aus dem Vergleich hervor.
+Er besitzt eine ausreichende Effizienz, kommt ohne Divisionen aus und
+unterliegt keinen sonstigen Einschr"ankungen, wie z. B. P-Alg.. Im
+Zweifelsfall sollte immer B-Alg. verwendet werden.
+
+Um zum Abschlu"s einen Eindruck von der Effizienz der
+Algorithmen im direkten Vergleich
+zu liefern, sind f"ur Tabelle \ref{TabVergleich} die aus den
+Aufwandsanalysen hervorgegangene Terme beispielhaft ausgewertet worden.
+In der Tabelle werden bei den Anzahlen der Prozessoren die guten
+Werte f"ur P-Alg. und die auff"allig schlechten Werte f"ur BGH-Alg.
+besonders deutlich.
+
+\begin{table}[htb]
+    \begin{center}
+    \begin{tabular}{|c||r|r||r|r||r|r||r|r|}
+        \hline
+        n & \multicolumn{2}{|c||}{C-Alg.}   & 
+            \multicolumn{2}{|c||}{BGH-Alg.} &
+            \multicolumn{2}{|c||}{B-Alg.}   &
+            \multicolumn{2}{|c|}{P-Alg.} \\
+        \cline{2-9}
+          & Schr. & Proz. & Schr. & Proz. &
+            Schr. & Proz. & Schr. & Proz. \\
+        \hline
+        2 & 9 & 8  & 16 & 24  & 12 & 4  & 15 & 8 \\ \hline
+        4  & 16 & 128  & 55 & 1486  & 19 & 27  & 31 & 64 \\ \hline
+        6  & 25 & 648  & 99 & 15343  & 27 & 361  & 53 & 216 \\ \hline
+        8  & 25 & 2048  & 118 & 81284  & 36 & 2234  & 53 & 512 \\ \hline
+        10  & 36 & 5000  & 172 & 298460  & 41 & 6417  & 81 & 1000 \\ \hline
+        12  & 36 & 10368  & 180 & 867715  & 49 & 15670  & 81 & 1728 \\ \hline
+        14  & 36 & 19208  & 196 & 2145346  & 49 & 41922  & 81 & 2744 \\ \hline
+        16  & 36 & 32768  & 205 & 4708392  & 53 & 72317  & 81 & 4096 \\ \hline 
+        18  & 49 & 52488  & 265 & 9431425  & 59 & 120961  & 115 & 5832 \\ \hline
+        20  & 49 & 80000  & 275 & 17574870  & 69 & 194580  & 115 & 8000 \\ \hline
+    \end{tabular}
+    \end{center}
+    \caption{Vergleich der Algorithmen}
+    \label{TabVergleich}
+\end{table}
+
+% $$$ Reihenentwicklung Grad >n fuer BGH-Alg. sch"adlich
+%     Algorithmen auch ohne Parallelisierung interessant
+
+\MySection{Ausblick}
+
+Zum Schlu"s folgt noch eine kurze Liste weiterer Themen, auf die man bei der 
+Bearbeitung der vorliegenden Arbeit st"o"st:
+
+\begin{itemize}
+\item Analyse von Schaltkreisen f"ur die beschriebenen Algorithmen
+      % \cite{ ... Ingos Buch}
+\item Betrachtung von Matrizen mit Elementen aus $\Complex$
+      % Diagonalisierbarkeit in $\Complex$ !? --> Methode von Krylov
+\item Analyse verschiedener Varianten der beschriebenen Algorithmen
+      % Pan: 3 Verfahren zur iterativen Invertierung
+      %      etliche Verfahren zur Bestimmung der N"aherungsinversen
+      % Berk: Wahl von \epsilon; Wahl der Parallelisierung von
+      %       Algorithmusteilen
+      % BGH: etliche M"oglichkeiten, die Konvergenz der Potenzreihen
+      %      sicherzustellen
+\item Analyse des Aufwandes f"ur die Aufgabenverteilung zwischen mehreren
+      Prozessoren
+\item Betrachtung anderer Rechnermodelle (insbesondere Rechnermodelle
+      ohne gemeinsamen Speicher f"ur die Prozessoren)
+      % CREW, Arten der Zugriffsregelung
+      % kein gemeinsamer Speicher (Analyse des Kommunikationsaufwandes)
+% \item Suche weiterer Algorithmen  % selbstverst"andlich ...
+\item Analyse des Speicherplatzverbrauchs
+%\item Implementierung von Flie"skommazahlen mit einer beliebigen Anzahl von
+%      Stellen
+% Implementierung:  Zahlen beliebiger L"ange 
+% $$$$$            (--> Satz "uber maximale Gr"o"se der Eigenwerte)
+\end{itemize}
+
+Es bleibt also einiges zu tun... . F"ur dieses Mal soll das jedoch alles 
+sein.
+\vspace{5ex}
+
+Wenn die Gedanken wieder leichter flie"sen...
+\begin{verse}
+    Himmlische Stille rauscht durch die Nacht \\
+    Samtenes Schweigen str"omt durch die Luft \\
+    glitzernd breitet sich das Tal in der Ferne \\[2ex]
+    
+    kein Laut \\
+    ohne Hast l"a"st die Ruhe verbreiten ihr Gl"uck
+\end{verse}
+

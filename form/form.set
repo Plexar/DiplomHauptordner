@@ -1,0 +1,39 @@
+
+MaxTermSize      2000
+NwriteStatistics
+LineLength       79
+ConstIndex       128
+PreBuffer        200
+PreVariables     20
+Symbols          100
+Indices          100
+Vectors          100
+Functions        100
+Sets             50
+SetStore         200
+Expressions      100
+MaxNames         250
+NameBuffer       4096
+MaxWildcards     40
+InputSize        32768
+CompilerOutput   50000
+MaxStatements    100
+MaxLevels        500
+FunctionLevels   10
+MaxBracket       200
+FilePatches      64
+    LargePatches     128
+LargePatches     20
+TermsInSmall     200000
+    SmallSize        450000
+SmallSize        200000
+    SmallExtension  600000
+SmallExtension   270000
+    LargeSize        2000000
+LargeSize        400000
+SortIOsize       8192
+ScratchSize      8192
+NumberStoreCache 5
+SizeStoreCache   4096
+Workspace        100000
+

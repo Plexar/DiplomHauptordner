@@ -1,0 +1,1294 @@
+%
+% Datei: vorbem.tex
+%
+\MyChapter{Vorbemerkungen}
+\label{ChapIntro}
+
+% **************************************************************************
+
+\MySection{Einf"uhrung}
+
+Die Berechnung der Determinante einer quadratischen Matrix ist ein
+Problem,
+dessen effiziente L"osung in vielen Bereichen von Interesse ist, in der
+Informatik z. B. in der Computergrafik und der Kodierungstheorie.
+
+Ein Problem in der analytischen Geometrie ist es, die 
+Lage von geometrischen Objekten zueinander festzustellen und 
+Schnittpunkte oder -ebenen zu berechnen. Ein Teilproblem dabei ist die
+Pr"ufung der linearen Unabh"angigkeit von Vektoren. Es
+l"a"st sich auf die Berechnung einer Determinante zur"uckf"uhren.
+
+Ein weiterer Bereich, in dem die Determiantenberechnung angewendet wird,
+ist
+die theoretische Physik. Dort wird in vielen Theorien auf Matrizen zu
+Beschreibung der verschiedenen Sachverhalte zur"uckgegriffen. In der
+Einstein'sche Relativit"atstheorie z. B. wird die {\em Tersorrechnung},
+die die Eigenschaften sich von Koordinatensystem zu Koordinatensystem
+"andernder Ma"szahlen untersucht, ausgibig verwendet. Die Determinante ist
+eine solche Ma"szahl. Beim Studium von Literatur, die diese Thematiken
+behandelt (z. B. \cite{BS86} ab S. 70), st"o"st man immer wieder auf
+Matrizen und ihre Determinanten.
+
+Seitdem
+sich die Forschung im Bereich der Informatik zunehmend mit 
+Parallelrechnern
+be\-sch"af\-tigt, werden f"ur alle bekannten Probleme Algorithmen gesucht, 
+die die Tatsache, da"s auf einem Parallelrechner mehrere Prozessoren 
+gleichzeitig an der L"osung desselben Problems arbeiten, besonders 
+effizient ausnutzen.
+
+Betrachtet man eine Matrix aus der Sicht der Informatik als Datenstruktur,
+so dr"angt sich die Benutzung dieser Datenstruktur in Parallelrechnern 
+geradezu auf, denn intuitiv, ohne zun"achst alle Probleme ausgearbeitet 
+zu haben, kann man auf die Idee kommen, die Matrizenelemente jeweils
+einzelnen Prozessoren oder Gruppen von Prozessoren zuzuordnen, die das 
+zugrundeliegende Problem f"ur dieses Matrizenelement bearbeiten. 
+Selbstverst"andlich ist die praktische Verwendung dieser Idee nicht in 
+jedem Fall ganz so einfach.
+
+So war die effiziente Parallelisierung der Determinantenberechnung lange
+Zeit ein ungel"ostes Problem, bis 1976, als Laszlo Csanky einen in jenen 
+Tagen "uberraschenden Algorithmus ver"offentlichte \cite{Csan76}. Es 
+folgten eine Reihe weiterer Algorithmen verschiedener Autoren mit 
+vergleichbaren Leistungsmerkmalen.
+
+In all diesen Ver"offentlichungen wird vorrangig die Gr"o"senordnung 
+der Laufzeiten und Anzahlen der Prozessoren betrachtet. Es werden in
+einzelnen Ver"offentlichungen auch bereits einige Vergleiche mit den 
+anderen Algorithmen durchgef"uhrt. So ist es w"unschenswert einen 
+"Uberblick "uber die existierenden Algorithmen zu bekommen und sie 
+insgesamt miteinander zu vergleichen.
+
+Die vorliegende Diplomarbeit behandelt vier Algorithmen zur 
+parallelen De\-ter\-mi\-nan\-ten\-be\-rech\-nung\footnote{ \cite{Csan76}, 
+\cite{BGH82}, \cite{Berk84} und \cite{Pan85}}. Dabei wird auf die 
+Verwendung von Gr"o"senordnungen ( O-Notation ) in Aufwandsanalysen 
+weitgehend verzichtet.
+Um den Einsteig in das Thema zu 
+erleichtern, wird zus"atzlich noch der Entwicklungssatz von
+Laplace zur Berechnung der Determinante erw"ahnt.
+
+Die Darstellung der vier Algorithmen in den zugeh"origen Kapiteln
+\ref{ChapCsanky} bis \ref{ChapPan} umfa"st neben den Grundlagen und der 
+Algorithmen selbst, jeweils eine Analyse der Rechenzeit und des Grades der
+Parallelisierung\footnote{Diese Begriffe sind in Kapitel \ref{SecBez}
+definiert.}. Da in der Praxis die Gr"o"se des ben"otigen 
+Speicherplatzes kein vorrangiges Problem mehr darstellt, wird dieser 
+Wert nicht analysiert. Matrizen mit Elementen aus $\Complex$ werden nicht
+betrachtet. In diesen vier Kapitel wird versucht, auf Unterschiede
+und Gemeinsamkeiten der Algorithmen einzugehen.
+
+Im Anschlu"s an die Darstellung der Algorithmen wird in Kapitel 
+\ref{ChapImplemen} ihre Implementierung beschrieben. Die Quelltexte 
+sind im Anhang zu finden.
+Schlie"slich erfolgt in Kapitel \ref{ChapEndbem}
+ein zusammenfassender Vergleich der Algorithmen.
+
+Der Text soll es erm"oglichen, die Algorithmen ohne weitere Literatur 
+anhand
+von Grundkenntnissen aus der Mathematik und Informatik zu verstehen. 
+Aus diesem Grund und um einheitliche Bezeichnungen zu vereinbaren sind 
+Grundlagen, insbesondere aus der Linearen Algebra, an den ben"otigten 
+Stellen aufgef"uhrt. F"ur den Fall, da"s die im Text enthaltenen
+Informationen nicht ausreichen, sind die benutzten Quellen an den
+jeweiligen Stellen angegeben.
+
+Alle Betrachtungen abstrahieren von technischen Problemen bei der 
+Konstruktion von Parallelrechnern. Dazu wird das Rechnermodell der
+PRAM benutzt. Die Beschreibung dieses Modells erfolgt in 
+Kapitel \ref{SecModell}. 
+
+Vor anderen Teilen dieser Diplomarbeit sollten zun"achst die Kapitel 
+\ref{SecModell} und \ref{SecBez} gelesen werden. Alle 
+weiteren Teile von Kapitel \ref{ChapIntro} sowie Kapitel \ref{ChapBase}
+sind als Sammlung von Grundlagen zu verstehen, auf die bei Bedarf 
+zur"uckgegriffen werden kann\footnote{Im Text kommen h"aufig 
+Punkte und Kommata als Satzzeichen direkt im Anschlu"s an
+abgesetzte Gleichungen vor. An einigen Stellen, besonders hinter
+Vektoren und Matrizen, fehlen diese Satzzeichen aus technischen 
+Gr"unden.}.
+
+% **************************************************************************
+
+\MySection{Das Berechnungsmodell}
+\label{SecModell}
+\index{Berechnungsmodell} \index{PRAM} \index{CRCW}
+\index{Modellrechner}
+In diesem Kapitel wird der f"ur Komplexit"atsbetrachtungen verwendete
+Modellrechner beschrieben. Es ist die 
+{\em Arbitrary Concurrent Read Concurrent Write Parallel Random Access 
+  Machine ( arbitrary CRCW PRAM) }.
+Sie besteht aus
+gleichen Prozessoren, die alle auf denselben Arbeitsspeicher zugreifen.
+Innerhalb einer Zeiteinheit k"onnen diese
+Prozessoren, und zwar alle gleichzeitig,
+zwei Operanden aus dem Speicher lesen, eine der in Tabelle \ref{Csan76Tab2}
+aufgef"uhrten Operationen ausf"uhren und
+das Ergebnis wieder im Speicher ablegen. Falls beim
+Schreiben mehrere Prozessoren auf eine Speicherzelle zugreifen, mu"s der
+Algorithmus unabh"angig davon korrekt sein, welcher Prozessor seinen
+Schreibzugriff tats"achlich ausf"uhrt.
+\begin{table}[htb]
+    \begin{center}
+    \begin{tabular}{|p{4cm}|c|}
+        \hline
+        Operation & Symbol \\
+        \hline
+        \hline
+        Addition & $+$ \\
+        \hline
+        Subtraktion & $-$ \\
+        \hline
+        Multiplikation & $*$ \\
+        \hline
+        Division (Ergebnis in $\Rationals$) & $/$ \\
+        \hline
+        Division (Ergebnis in $\Integers$) & div \\
+        \hline
+        $ x - (x \; \mbox{div} \; y) * y $ & $x$ mod $y$ \\
+        \hline
+    \end{tabular}
+    \end{center}
+    \caption{Operationen des Modellrechners}
+    \label{Csan76Tab2}
+\end{table}
+Da die
+Komplexit"at der vier haupts"achlich interessierenden 
+Algorithmen nicht nur auf ihre Gr"o"senordnung hin
+untersucht wird, sondern die Ausdr"ucke zur Beschreibung der Komplexit"at
+genau angegeben werden sollen, ist es erforderlich, von Details
+der Implementierung, die die Konstanten
+beeinflussen, zu abstrahieren, so da"s die Aussagen allgemeing"ultig sind.
+Aus diesem Grund wird
+\begin{itemize}
+    \item f"ur die Verarbeitung von Schleifenbedingungen,
+    \item f"ur die Verarbeitung von Verzweigungsbedingungen,
+    \item f"ur die Ein- und Ausgabe von Daten,
+    \item f"ur die Initialisierung von Speicherbereichen,
+    \item und f"ur komplexe Adressierungsarten
+          (z. B. indirekte Adressierung) beim Zugriff auf Speicherbereiche
+\end{itemize}
+kein zus"atzlicher Aufwand in Rechnung gestellt. Es werden also nur die
+arithmetischen Operationen gez"ahlt.
+
+Zu beachten ist, da"s bei einer PRAM jeder Aufwand zur Verteilung von
+Aufgaben auf verschiedene Prozessoren vernachl"assigt wird. Diese 
+Eigenschaft bietet die M"oglichkeit zur Kritik, da so jedes
+Problem deutlich vereinfacht wird, jedoch in der Praxis die Organisation der 
+Aufgabenverteilung nicht unerheblichen Aufwand erfordert.
+Eine genaue Analyse der 
+Auswirkungen dieser Vernachl"assigung ist umfangreich und nicht 
+Thema des vorliegenden Textes.
+
+% **************************************************************************
+
+\MySection{Bezeichnungen}
+\label{SecBez}
+
+In diesem Kapitel werden die verwendeten Begriffe und Symbole 
+definiert.
+
+Um auf die in der Arbeit haupts"achlich behandelten Algorithmen 
+einfach Bezug
+nehmen zu k"onnen, werden mit Hilfe der Namen ihrer Autoren die
+folgenden Abk"urzungen vereinbart:
+\begin{itemize}
+\item
+      C-Alg. steht f"ur den Algorithmus von Csanky 
+      (Unterkapitel \ref{SecAlgFrame} ab S. \pageref{SecAlgFrame}).
+\item
+      BGH-Alg. steht f"ur den Algorithmus von Borodin, von zur Gathen 
+      und Hopcroft (Unterkapitel \ref{SecAlgBGH} ab 
+      S. \pageref{SecAlgBGH}).
+\item
+      B-Alg. steht f"ur den Algorithmus von Berkowitz 
+      (Unterkapitel \ref{SecAlgBerk} ab S. \pageref{SecAlgBerk}).
+\item
+      P-Alg. steht f"ur den Algorithmus von Pan
+      (Unterkapitel \ref{SecAlgPan} ab S. \pageref{SecAlgPan}).
+\end{itemize}
+
+\index{Bezeichnungen!nat{\Myu}rliche Zahlen}
+Die Menge der positiven ganzen Zahl {\em ohne Null} wird mit \[ \Nat \]
+bezeichnet. Die Menge der
+positiven ganzen Zahl einschlie"slich der Null wird mit \[ \Nat_0 \]
+bezeichnet. Falls nicht im Einzelfall anders festgelegt erfolgen alle
+Darstellungen von Zahlen zur Basis $10$.
+
+\index{Bezeichnungen!Schritt}
+Der Vorgang, in dem beliebig viele Prozessoren gleichzeitig je
+zwei Operanden aus dem Arbeitsspeicher lesen, aus diesen Operanden
+ein Ergebnis berechnen und dieses Ergebnis wieder im
+Arbeitsspeicher ablegen, wird als ein {\em Schritt} bezeichnet.
+
+\index{Zeitkomplexit{\Mya}t}
+\index{Parallelisierungsgrad}
+Die {\em parallele Zeitkomplexit"at eines Algorithmus} bezeichnet die
+Anzahl der Schritte, die dieser ben"otigt, um die L"osung\footnote{Die
+von uns betrachteten Probleme besitzen nur eine L"osung.}
+f"ur das
+zugrunde liegende Problem zu berechnen.
+Die maximale Anzahl der Prozessoren, die dabei gleichzeitig
+besch"aftigt werden, wird mit {\em Parallelisierungsgrad des
+Algorithmus} bezeichnet.
+
+Falls nicht im Einzelfall anders festgelegt, gilt folgende 
+Regelung: Gro"sbuchstaben bezeichnen
+Matrizen und Kleinbuchstaben Zahlen oder Vektoren, $A$ bezeichnet eine
+$n \times n$-Matrix, indizierte
+Kleinbuchstaben beziehen sich auf die Elemente der mit dem zugeh"origen 
+Gro"sbuchstaben bezeichneten
+Matrix.
+
+Die in Tabelle \ref{Csan76Tab1} aufgelisteten Schreibweisen werden
+benutzt.
+\index{Bezeichnungen!Indizierung}
+\index{Einheitsmatrix} \index{Nullmatrix}
+\index{Permutation}
+\begin{table}[htb]
+    \begin{center}
+    \begin{tabular}{|p{10cm}|c|}
+        \hline
+            Begriff & Schreibweise \\
+        \hline\hline
+            Element in Zeile $i$, Spalte $j$ von $A$ & $ a_{i,j} $ \\
+        \hline
+            $i$-tes Element des Vektors $v$ & $v_i$ \\
+        \hline
+            Matrix, die aus A durch Streichen der Zeilen $v$ und der
+            Spalten $w$ entsteht (dabei seien $v$ und $w$
+            echte Teilmengen der Menge der Zahlen von $1$ bis $n$; diese
+            Mengen werden hier als durch Kommata getrennt Zahlenfolge
+            geschrieben) & $ {A}_{(v|w)} $ \\
+        \hline
+            Einheitsmatrix (Elemente der Haupt\-di\-ago\-na\-len gleich $1$;
+            alle anderen Elemente gleich $0$)
+            mit $n$ Zeilen und Spalten & $E_n$ \\
+        \hline
+            Einheitsmatrix (Anzahl der
+            Zeilen und Spalten aus dem Zusammenhang klar) & $E$ \\
+        \hline
+            Nullmatrix (alle Elemente sind gleich 0) mit $m$ Zeilen und
+            $n$ Spalten & $0_{m,n}$ \\
+        \hline
+            Nullvektor (alle Elemente sind gleich 0) der L"ange $m$ &
+            $0_m$ \\
+        \hline
+            Logarithmus von $x$ zur Basis $2$      & $\log(x)$ \\
+        \hline
+            Menge aller $n$-stelligen Permutationen & $\permut_n$ \\
+        \hline
+            \begin{minipage}{10em}
+                \begin{math} \displaystyle
+                     \lim_{n\rightarrow \infty}
+                     \left( 1 + \frac{1}{n} \right)^n
+                \end{math}
+            \end{minipage} \LMatStrut
+            $(\: = 2.718281\ldots)$ &  \MathE  \\
+        \hline
+            Logarithmus von $x$ zur Basis $\MathE$ & $\ln(x)$ \\
+        \hline
+            Anzahl der Elemente der Menge $M$ & $|M|$ \\
+        \hline
+    \end{tabular}
+    \end{center}
+    \caption{Bezeichnungen}
+    \label{Csan76Tab1}
+\end{table}
+
+% **************************************************************************
+
+\MySection{Das Pr"afixproblem}
+Von einer effizienten L"osung des Pr"afixproblems wird an verschiedenen
+Stellen Gebrauch gemacht. Es ist also von "ubergreifendem Interesse und
+wird deshalb hier behandelt (\cite{LF80},
+\cite{Wege89} S. 83 ff.). Es l"a"st sich folgenderma"sen formulieren:
+\begin{quote}
+\index{Pr{\Mya}fixproblem}
+\label{PagePraefixproblem}
+    Gegeben sei die Halbgruppe \[ (M,\circ) \MyPunkt \] 
+    D. h. die Verkn"upfung 
+    $\circ$ ist assoziativ auf $M$. Weiterhin seien 
+    \[ x_1,x_2,x_3,\ldots,x_{n} \]
+    Elemente aus $M$. Es wird definiert
+    \[ p_i := x_1 \circ x_2 \circ x_3 \circ \ldots \circ x_i \MyPunkt \]
+    Das Pr"afixproblem besteht darin, alle Elemente der Menge
+    \[ \{ p_i | 1 \leq i \leq n \} \] zu berechnen.
+\end{quote}
+Es sind u. a. zwei M"oglichkeiten\footnote{die sich zu einer dritten 
+zusammenfassen lassen (Satz \ref{SatzAlgPraefix})} denkbar, dies mit 
+parallelen Algorithmen zu erreichen.
+\begin{itemize}
+    \item Die erste M"oglichkeit:
+        \begin{enumerate}
+            \item L"ose das Pr"afixproblem parallel f"ur
+                  \[ x_1,\ldots,x_{\lceil n/2 \rceil} \]
+                  und
+                  \[ x_{\lceil n/2+1 \rceil},\ldots,x_n \MyKomma \]
+                  so da"s nach diesem Schritt
+                  \[ p_1,\ldots,p_{\lceil n/2 \rceil} \]
+                  bereits berechnet sind.
+            \item
+                  Berechne aus \[ p_{\lceil n/2 \rceil} \] und
+                  der L"osung des Problems f"ur
+                  \[ x_{\lceil n/2+1 \rceil},\ldots,x_n \]
+                  parallel in einem weiteren Schritt
+                  \[ p_{\lceil n/2+1 \rceil},\ldots,p_n \]
+        \end{enumerate}
+    \item
+        Die zweite M"oglichkeit, die hier kurz dargestellt werden soll,
+        sieht folgenderma"sen aus (o. B. d. A. sei $n$ eine Zweierpotenz):
+        \begin{enumerate}
+            \item
+                Berechne parallel in einem Schritt
+                \[ x_1 \circ x_2, x_3 \circ x_4, \ldots,
+                   x_{n-1} \circ x_n \]
+            \item
+                L"ose das Pr"afixproblem f"ur diese
+                $n/2$ Werte. Damit werden alle $p_i$ mit geradem $i$
+                berechnet.
+            \item
+                Die noch fehlenden $p_i$ f"ur ungerade $i$ k"onnen nun
+                parallel in einem weiteren Schritt aus der L"osung f"ur die
+                $n/2$ Werte und den $x_i$ mit ungeradem $i$ berechnet
+                werden.
+        \end{enumerate}
+\end{itemize}
+Diese beiden M"oglichkeiten k"onnen zu einem Algorithmus zusammengefa"st
+werden:
+\begin{satz}
+\label{SatzAlgPraefix}
+\index{Algorithmus!Pr{\Mya}fixproblem}
+    Gegeben sei die Halbgruppe \[ (M,\circ) \MyPunkt \] 
+    Das Pr"afixproblem
+    f"ur $n$ Elemente \[ x_1,x_2,\ldots,x_n \] von $M$ l"a"st sich
+    von \[ \lf \frac{3}{4}n \rf \] Prozessoren in
+    \[ \lceil \log(n) \rceil \] Schritten l"osen.
+\end{satz}
+\begin{beweis}
+    O. B. d. A. sei $n$ eine Zweierpotenz. In dem Fall, da"s $n$ keine
+    Zweierpotenz ist, wird $n$ durch die n"achst h"ohere Zweierpotenz $n'$
+    ersetzt und alle Verkn"upfungen mit Elementen $x_i$ von $M$ f"ur
+    \[ i>n \] werden nicht durchgef"uhrt. 
+
+    Benutze folgenden Algorithmus:
+    \begin{enumerate}
+    \item
+          Wenn \[ n=1 \] dann ist $x_1$ das Ergebnis.
+    \item
+          Wenn \[ n=2 \] dann ist \[ x_1, x_1 \circ x_2 \]
+          das Ergebnis.
+    \item
+          Schritte \ref{StepPraefix3a} und \ref{StepPraefix3b} parallel:
+          \begin{enumerate}
+          \item \label{StepPraefix3a}
+                \begin{enumerate}
+                \item \label{StepPraefix3a1}
+                      Berechne parallel in einem Schritt
+                      \[ x_1 \circ x_2,\ldots,
+                         x_{n/2-1} \circ x_{n/2}
+                      \]
+                \item \label{StepPraefix3a2}
+                      Benutze den Algorithmus rekursiv zur L"osung des
+                      Problems f"ur die in Schritt \ref{StepPraefix3a1}
+                      erhaltenen $n/4$ Werte. Auf diese Weise sind die
+                      $p_i$ f"ur
+                      \[ 1 \leq i \leq n/2 \] mit geraden $i$, u. a.
+                      auch $p_{n/2}$, bereits berechnet.
+                \end{enumerate}
+          \item \label{StepPraefix3b}
+                Benutze den Algorithmus rekursiv zur L"osung des Problems
+                f"ur \[ x_{n/2+1},\ldots,x_n \]
+          \end{enumerate}
+    \item Schritte \ref{StepPraefix4a} und \ref{StepPraefix4b} parallel:
+          \begin{enumerate}
+          \item \label{StepPraefix4a}
+               F"ur $i$ gelte \[ 1 \leq i \leq n/2 \MyPunkt \]
+               Wenn $n/2 > 2$, dann
+               berechne parallel in einem Schritt mit Hilfe der $p_i$
+               aus \ref{StepPraefix3a2} und der $x_i$ mit ungeradem $i$
+               die fehlenden $p_i$ mit ungeradem $i$.
+          \item \label{StepPraefix4b}
+                Berechne aus $p_{n/2}$ und den Ergebnissen von 
+                \ref{StepPraefix3b} die $p_i$ mit
+                \[ n/2+1 \leq i \leq n \MyPunkt \]
+          \end{enumerate}
+    \end{enumerate}
+    Zur Analyse des Algorithmus bezeichnet $s(n)$ die Anzahl der Schritte,
+    die er ben"otigt, um das Pr"afixproblem f"ur $n$ Eingabewerte zu
+    l"osen, und $p(n)$ die Anzahl der Prozessoren, die dabei besch"aftigt
+    werden k"onnen.
+    \begin{itemize}
+    \item Hier wird zun"achst die Anzahl der Schritte betrachtet.
+          Es gilt \[ s(1) = 0,\,s(2) = 1,\, s(4) = 2 \MyPunkt \]
+          Bei der Betrachtung des Algorithmus erkennt man, da"s folgende
+          Rekursionsgleichung G"ultigkeit besitzt:
+          \Beq{Berk84Equ6}
+              \forall n>4: \: s(n) = \max(s(n/4)+1,\,s(n/2)) + 1 \MyPunkt
+          \Eeq
+          Wenn man diese Formel auf $s(n/2)$ anwendet und das Ergebnis in
+          die obige Formel einsetzt, erh"alt man
+          \[ \forall n>4: \: s(n) = 
+                 \max(\: s(n/4)+1,\, \max(s(n/8)+1,\, s(n/4))+1 \:) \:+ 1 
+          \]
+          Aufgrund der Assoziativit"at der $\max$-Funktion ist dies
+          gleichbedeutend mit
+          \begin{MyEqnArray}
+             \MT \forall n>4: \: s(n) \MT = \MT
+                 \max(s(n/4)+1,\, s(n/8)+2,\, s(n/4)+ 1) + 1 \MNl
+             \Rightarrow 
+             \MT \forall n>4: \: s(n) \MT = \MT s(n/4)+2 
+          \end{MyEqnArray}
+          Es gilt also f"ur jedes $i$:
+          \[ \forall n>4: \: s(n) = s(n/2^{2i}) + 2i \]
+          Mit \[ i = \frac{\log(n)}{2} \] erh"alt man als Endergebnis 
+          \[ s(n) = \log(n) \MyPunkt \]
+    \item F"ur die Anzahl der besch"aftigten Prozessoren $p(n)$ gilt:
+          \[ p(1) = 0, p(2) = 1, p(4)= 2 \]
+          Ferner gilt offensichtlich folgende Rekursionsgleichung:
+          \Beq{Berk84Equ8}
+              \forall n>4:\: p(n)= 
+              \max(n/2+n/4,\, p(n/4)+p(n/2),\, n/4+p(n/2))
+          \Eeq
+          Beim Ausrechnen der Werte von $p(8)$, $p(16)$ und $p(32)$
+          mit Hilfe dieser Rekursionsgleichung gelangt man zu der
+          Vermutung, da"s gilt:
+          \Beq{Berk84Equ7}
+              \forall n>4: \: p(n) = \frac{3}{4} n 
+          \Eeq
+          Dies wird durch Induktion bewiesen. Zu beachten
+          ist, da"s nach Voraussetzung nur die Potenzen von $2$ als Werte
+          f"ur $n$ in Frage kommen. 
+          
+          Sei also nun \[ n>4 \] und es gelte
+          \begin{eqnarray*}
+              p(n) & = & \frac{3}{4}n \\
+              p(n/2) & = & \frac{3}{8}n \MyPunkt
+          \end{eqnarray*}
+          Es ist zu zeigen, da"s dann auch
+          \[ p(2n)= \frac{3}{2}n \]
+          richtig ist.
+          Nach der Rekursionsgleichung \equref{Berk84Equ8} gilt
+          \[ p(2n) = \max(3/2*n, p(n/2)+p(n), n/2 + p(n)) \]
+          Die Anwendung der Induktionsvoraussetzung f"uhrt zu
+          \[ p(2n) = \max(3/2*n, 3/8*n + 3/4*n, n/2 + 3/4*n) \] und somit zu
+          \[ p(2n) = \frac{3}{2}n \] was zu zeigen war. F"ur die Anzahl der 
+          ben"otigen Prozessoren gilt also
+          \[ \forall n > 4: \: p(n) = \frac{3}{4}n \]
+          Da die L"osung des Problems f"ur \[ n \leq 4 \] einfach ist, wird
+          die Quantifizierung nicht weiter beachtet.
+    \end{itemize}
+    Damit die Aussagen nicht nur f"ur Zweierpotenzen, werden die Werte
+    f"ur $s(n)$ und $p(n)$ mit Gau"sklammern versehen. F"ur $p(n)$ ist
+    dies ohne weitere Begr"undung problematisch. Betrachtet man den 
+    Algorithmus jedoch genauer, stellt man fest, da"s beim ersten 
+    ausgef"uhrten Schritt die meisten Prozessoren besch"aftigt werden. 
+    Die Anzahl dieser Prozessoren gibt der Term in Gau"sklammern an.
+\end{beweis}
+
+% **************************************************************************
+
+\MySection{L"osungen grundlegender Probleme}
+In diesem Kapitel werden Algorithmen zur L"osung einiger
+grundlegender Probleme angegeben und auf ihre Komplexit"at hin untersucht.
+
+\begin{satz}[Bin"arbaummethode]  % $$$ wird benutzt (nicht loeschen)
+\label{SatzAlgBinaerbaum}
+    Wird das Pr"afixproblem (siehe Beschreibung Seite
+    \pageref{PagePraefixproblem}) dahingehend vereinfacht, da"s nur
+    $p_n$ zu berechnen ist, so l"a"st sich dieses vereinfachte Problem in
+    \[ \lc \log(n) \rc \] Schritten von \[ \lf \frac{n}{2} \rf \] 
+    Prozessoren l"osen.
+\end{satz}
+\begin{beweis}
+    Verkn"upfe die $x_i$ nach dem Schema in Abbildung \ref{PicBinBaum}.
+    \begin{figure}[htb]
+    \begin{center}
+        \input{bilder/pbinbaum}
+        \caption{Bin"arbaummethode}
+        \label{PicBinBaum}
+    \end{center}
+    \end{figure}
+    Falls $n$ keine Zweierpotenz ist, werden die Verkn"upfungen mit den 
+    $x_j$, f"ur die gilt \[ n < j \leq 2^{\lc \log(n) \rc} \MyKomma \]
+    nicht durchgef"uhrt. Die L"osung des Problems erfordert offensichtlich
+    den angegebenen Aufwand.
+    \mbox{ \hspace{4em} \hfill }
+\end{beweis}
+
+\begin{korollar}[Parallele Grundrechenarten]
+\label{SatzAlgRechnen}             % $$$ wird benutzt (nicht loeschen)
+\index{Algorithmus!parallele Grundrechenarten}
+    Seien $n$ Zahlen durch die gleiche Rechenoperation miteinander zu
+    verkn"upfen. Diese Rechenoperation sei eine der Grundrechenarten
+    Addition oder Multiplikation. Die Verkn"upfung kann in
+    \[ \lc \log(n) \rc \] Schritten von
+    \[ \lf \frac{n}{2} \rf \] Prozessoren durchgef"uhrt
+    werden.
+\end{korollar}
+\begin{beweis}
+    Aufgrund der Assoziativit"at der Rechenoperationen folgt
+    dies direkt aus Satz \ref{SatzAlgBinaerbaum}. 
+    \mbox{ \hspace{4em} \hfill }
+\end{beweis}
+
+\begin{satz}[Parallele Matrizenmultiplikation]
+\label{SatzAlgMatMult}            % $$$ wird benutzt (nicht loeschen)
+\index{Algorithmus!parallele Matrizenmultiplikation}
+    Sei $A$ eine $m \times p$-Matrix und $B$ eine $p \times n$-Matrix.
+    Sie lassen sich in
+    \[ \lceil \log(p) \rceil + 1 \] Schritten von
+    \[ m * n * p \] Prozessoren miteinander
+    multiplizieren.
+\end{satz}
+\begin{beweis}
+    Sei $C$ die $m \times n$-Ergebnismatrix. 
+    Sie wird mit Hilfe der Gleichung
+    \[ c_{i,j} = \sum_{k=1}^p a_{i,k} b_{k,j} \]
+    berechnet. Dazu werden zuerst parallel in einem Schritt
+    \[ d_{i,k,j} := a_{i,k} b_{k,j} \] mit
+    \begin{eqnarray*}
+         1 \leq & i & \leq m \\
+         1 \leq & j & \leq n \\
+         1 \leq & k & \leq p 
+    \end{eqnarray*} von
+    \[ m * n * p \] Prozessoren berechnet.
+    Die Ergebnismatrix erh"alt man dann nach der Gleichung
+    \[ c_{i,j} = \sum_{k=1}^p d_{i,k,j} \]
+    Die Berechnung der Matrix $C$ aus den $d_{i,k,j}$ kann nach
+    \ref{SatzAlgRechnen} f"ur ein Matrizenelement in
+    \[ \lceil \log(p) \rceil \] Schritten von
+    \[ \lf \frac{p}{2} \rf \] Prozessoren durchgef"uhrt
+    werden, also f"ur
+    die gesamte Matrix in genauso vielen Schritten von
+    \[ m * n * \lf \frac{p}{2} \rf \] Prozessoren.
+    Die Werte
+    f"ur Schritte und Prozessoren zusammengenommen ergeben die Behauptung.
+\end{beweis}
+
+Zwei $n \times n$-Matrizen lassen sich also in 
+\[ \lceil \log(n) \rceil + 1 \] Schritten von
+\[ n^3 \] Prozessoren miteinander multiplizieren.
+
+Die \label{PageAlg2MatMult}
+Matrizenmultiplikation l"a"st sich asymptotisch, d. h. f"ur $n \to \infty$
+auch mit
+\[ O(n^{2+\gamma}), \: \gamma = 0.376 \]
+Prozessoren durchf"uhren \cite{CW90}. Gegen"uber \ref{SatzAlgMatMult} 
+ergibt sich wegen des erheblichen konstanten Aufwandes nur f"ur gro"se $n$ 
+eine Verbesserung. Es wird jeweils gesondert darauf hingewiesen, falls
+auf diese M"oglichkeit zur"uckgegriffen wird.
+
+% **************************************************************************
+% **************************************************************************
+% **************************************************************************
+
+\MyChapter{Grundlagen aus der Linearen Algebra}
+\label{ChapBase}
+
+In diesem Kapitel werden die f"ur den gesamten weiteren Text wichtigen 
+Begriffe und S"atze aus der Linearen Algebra behandelt. Falls in sp"ateren
+Kapiteln an einzelnen Stellen weitergehende Grundlagen insbesondere aus 
+anderen Bereichen n"otig sind, werden diese an den jeweiligen Stellen 
+behandelt.
+
+Da es sich bei dem Inhalt dieses Kapitels um
+Grundlagen handelt, sind einige Beweise etwas oberfl"achlicher bzw. 
+fehlen ganz.
+
+Literatur:
+\begin{itemize}
+\item
+      \cite{MM64} Kapitel 1 und 2
+\item
+      \cite{Doer77} Kapitel 6, 9 und 12
+\item
+      \cite{BS87} ab Seite 148
+\end{itemize}
+
+Im folgenden sind $A$ und $B$ $n \times n$-Matrizen. F"ur uns reichen
+Betrachtungen im K"orper der rationalen Zahlen aus.
+
+% **************************************************************************
+
+\MySection{Matrizen und Determinanten}
+\label{SecMatUndDet}
+
+In diesem Kapitel werden die grundlegendsten Begriffe "uber Matrizen
+und Determinanten aufgef"uhrt, um eine Grundlage f"ur den weiteren 
+Text zu vereinbaren. 
+
+\MyBeginDef
+\index{invertierbar}
+\label{DefInvertierbar}
+    $A$ hei"st {\em invertierbar}, wenn es eine
+    Matrix $B$ gibt, so da"s \[ AB = BA = E_n \]
+    In diesem Fall hei"st $B$ {\em Inverse von $A$} und wird auch mit
+    \[ A^{-1} \] bezeichnet.
+\MyEndDef
+
+\MyBeginDef
+\index{Transponierte}
+    Falls f"ur die Matrizen $A$ und $B$ gilt
+    \[ b_{i,j} = a_{j,i} \] so hei"st $B$ { \em Transponierte von $A$}.
+    F"ur die Transponierte von $A$ wird auch $A^T$ geschrieben.
+\MyEndDef
+
+\MyBeginDef
+\label{DefTr}
+\index{Spur}
+    \[ \tr(A) := \sum_{i=1}^n a_{i,i} \]
+    hei"st {\em Spur der Matrix $A$}.
+\MyEndDef
+
+\MyBeginDef
+\index{Permutation}
+\index{Inversion}
+    Eine bijektive Abbildung
+    \[ f : \{1,\ldots,n \} \rightarrow \{1, \ldots, n \} \]
+    hei"st {\em $n$-Permutation}.
+    Sei \[ 1 \leq i < j \leq n \] Falls gilt
+    \[ f(i) > f(j) \MyKomma \] so hei"st diese Bedingung {\em Inversion der
+    $n$-Permutation}.
+\MyEndDef
+
+\[ \permut_n \] bezeichnet die Menge aller $n$-Permutationen. Zusammen mit
+der Konkatenation von Abbildungen bildet sie eine Gruppe, die
+{\em symmetrische Gruppe $\permut_n$}.
+
+\MyBeginDef
+\index{Signatur einer Permutation}
+\label{DefSig}
+    Sei $f$ eine $n$-Permutation. Dann hei"st
+    \begin{equation}
+    \label{EquDefSig}
+        \sig(f) := \prod_{1 \leq i < j \leq n} \frac{f(i)-f(j)}{i - j}
+    \end{equation}
+    {\em Signatur von $f$}.
+\MyEndDef
+
+Die so definierte Signatur besitzt folgende Eigenschaften:
+\begin{itemize}
+\item 
+      Es gilt
+      \[ \forall f \in \permut_n: \sig(f) \in \{ 1,-1 \} \]
+      Aus der Permutationseigenschaft ergibt sich, da"s es f"ur jede 
+      Differenz, die als Faktor im Z"ahler von \equref{EquDefSig} auftaucht,
+      eine Differenz im Nenner mit dem gleichen Betrag existiert, so da"s 
+      der Wert des gesamten Produktes den Betrag $1$ besitzt. Das Vorzeichen
+      wird durch die Anzahl der Inversionen beeinflu"st.
+\item
+      Falls die Anzahl der Inversionen der $n$-Permutation $f$ gerade ist,
+      so gilt \[ \sig(f)= 1 \MyKomma \] andernfalls gilt
+      \[ \sig(f) = -1 \]
+\item
+
+      Die Anzahl der $n$-Permutationen $f$ mit \[ \sig(f)=1 \MyKomma \]
+      ist gleich
+      der Anzahl der $n$-Permutationen $g$ mit \[ \sig(g)=-1 \MyPunkt \]
+      (\cite{Doer77} Seite 196)
+\end{itemize}
+
+Die Permutationen mit \[ \sig(f)=1 \] nennt man {\em gerade}, die anderen 
+{\em ungerade}.
+
+\MyBeginDef
+\index{Determinante!Definition}
+\label{DefDet}
+    Seien \[ A,B \in \Rationals^{n^2} \]
+    Sei \[ \det : \: \Rationals^{n^2} \rightarrow \Rationals \]
+    eine Abbildung mit folgenden Eigenschaften:
+    \begin{MyDescription}
+    \MyItem{D1}
+        Entsteht $B$ aus $A$ durch Multiplikation einer Zeile mit
+        \[ r \in \Rationals \] so gilt:
+        \[ \det(B) = r \det(A) \]
+    \MyItem{D2}
+        Enth"alt $A$ zwei gleiche Zeilen, so gilt:
+        \[ \det(A) = 0 \]
+    \MyItem{D3}
+        Entsteht $B$ aus $A$ durch Addition des $r$-fachen einer Zeile zu
+        einer anderen, so gilt:
+        \[ \det(B) = \det(A) \]
+    \MyItem{D4} F"ur die Einheitsmatrix gilt:
+        \[ \det(E_n) = 1 \]
+    \end{MyDescription}
+    Dann hei"st
+    \[ \det(A) \] {\em Determinante der Matrix $A$}.
+\MyEndDef
+
+\MyBeginDef
+\label{DefZeilenOp}
+\index{Zeilenoperationen!elementare}
+\index{Spaltenoperationen!elementare}
+    Die auf einer Matrix definierten Operationen
+    \begin{itemize}
+    \item 
+          Vertauschung zweier Zeilen 
+    \item 
+          Multiplikation einer Zeile mit einem 
+          Faktor\footnote{vgl. D1 in \ref{DefDet}}
+    \item 
+          Addition des Vielfachen einer Zeile zu einer 
+          anderen\footnote{vgl. D3 in \ref{DefDet}}
+    \end{itemize}
+    werden {\em elementare Zeilenoperationen} genannt. Die entsprechenden
+    Operationen auf Matrizenspalten werden 
+    {\em elementare Spaltenoperationen} genannt.
+\MyEndDef
+
+\begin{satz}
+\label{SatzDetPermut}
+    \begin{equation}
+    \label{EquDet}
+       g(A) =
+       \sum_{f \in \permut_n} 
+           \sig(f) a_{1,f(1)} a_{2,f(2)} \ldots a_{n,f(n)}
+    \end{equation}
+    besitzt die Eigenschaften aus \ref{DefDet}.
+\end{satz}
+\begin{beweis}
+    Da es sich hier um Grundlagen handelt, wird der Beweis weniger
+    ausf"uhrlich angegeben:
+    \begin{MyDescription}
+    \MyItem{D1}
+         F"ur jede Permutation kommt im entsprechenden Summanden in
+         \equref{EquDet} aus jeder Zeile der Matrix genau ein Element als
+         Faktor vor. Falls eine Zeile mit $r$ multipliziert wurde, kann
+         man also aus jedem Summanden $r$ ausklammern und erh"alt die
+         Behauptung.
+    \MyItem{D2}
+         Seien Zeile $i$ und Zeile $j$ gleich $(i \neq j)$.
+         Berechne die
+         Summe in \equref{EquDet} getrennt f"ur die ungeraden und die
+         geraden Permutationen.
+
+         Die
+         $n$-Permutation $g$ vertausche $i$ mit $j$ und lasse alles andere
+         gleich. Aus den Grundlagen der Theorie der
+         Halbgruppen und Gruppen ergibt sich, da"s man die ungeraden
+         $n$-Permutationen erh"alt, indem man die geraden
+         $n$-Permutationen jeweils einzeln mit der Permutation $g$
+         zusammen ausf"uhrt.
+
+         Deshalb entsprechen sich die Summanden der beiden Teilsummen
+         paarweise und unterscheiden sich nur durch das Vorzeichen. Der
+         Gesamtausdruck besitzt also den Wert $0$.
+    \MyItem{D3}
+         Es werde das $r$-fache von Zeile $i$ zu Zeile $j$ addiert. Dadurch
+         enth"alt jeder Summand in \equref{EquDet} genau einen Faktor,
+         der seinerseits wieder die Summe zweier Matrizenelemente ist.
+         Deshalb kann man die gesamte Summe in zwei Summen aufteilen.
+         Die eine entspricht genau der Summe in \equref{EquDet}, die andere
+         enth"alt in jedem Summanden zwei gleiche
+         Faktoren, sowie den Faktor $r$. 
+         Diesen Faktor kann man ausklammern (mit Hilfe
+         von \mbox{D1}). Nach \mbox{D2} ist der Wert dieser Summe dann
+         gleich Null, und nur die andere bleibt "ubrig.
+    \MyItem{D4}
+         Au"ser f"ur die identische Abbildung enth"alt jeder Summand
+         der entsprechenden Permutation in \equref{EquDet} mindestens zwei
+         Nullen als Faktoren und ist deshalb gleich Null. Der Summand, der
+         der identischen Abbildung entspricht, hat den Wert $1$.
+    \end{MyDescription}
+    \nopagebreak
+\end{beweis}
+
+% **************************************************************************
+
+\MySection{Der Rang einer Matrix}
+\label{SecRang}
+\index{Rang}
+
+Zum Verst"andnis des weiteren Textes wird in diesem Kapitel der
+Begriff des {\em Rangs} einer Matrix eingef"uhrt. Da dieser Begriff
+f"ur die Untersuchung linearer Gleichungssysteme wichtig ist, werden
+teilweise auch nichtquadratische Matrizen betrachtet\footnote{ Literatur: 
+siehe \ref{SecMatUndDet} } . 
+
+Da in diesem Kapitel 
+wiederum Grundlagen aus der Linearen Algebra behandelt werden, ist
+die Darstellung auf die f"ur uns wichtigen Aspekte beschr"ankt.
+
+% $$$ Kenntnis der Begriffe 'linear unabh"angig' und 'Linearkombination'
+%     wird hier vorausgesetzt
+\MyBeginDef
+    Die maximale Anzahl linear unab"angiger Spaltenvektoren einer Matrix
+    wird mit {\em Spaltenrang} \index{Spaltenrang} bezeichet.
+    
+    Die maximale Anzahl linear unabh"angiger Zeilenvektoren einer Matrix
+    wird mit {\em Zeilenrang} \index{Zeilenrang} bezeichnet.
+\MyEndDef
+
+Die folgenden Betrachtungen gelten f"ur den Zeilenrang analog.
+
+Die $m \times n$-Matrix $A$ habe den Spaltenrang $r$. Es gilt also
+\[ 0 \leq r \leq n \MyPunkt \] Die Spaltenvektoren von $A$ werden mit
+\[ a_1, \, \ldots , \, a_n \] bezeichnet. Seien die Spaltenvektoren
+\[a_{i_1}, \, \ldots, \, a_{i_r}\] linear unabh"angig. Das bedeutet, aus
+\begin{eqnarray}
+  & & d_1 a_{i_1} + \cdots + d_r a_{i_r} \nonumber \\
+  & = & \left[
+            \begin{array}{c}
+                d_1 a_{1,{i_1}} \\ \vdots \\ d_1 a_{n,{i_1}}
+            \end{array}
+        \right]
+        + \cdots +
+        \left[
+            \begin{array}{c}
+                d_r a_{1,{i_r}} \\ \vdots \\ d_r a_{n,{i_r}}
+            \end{array}
+        \right]
+        \nonumber \\
+  & = & \left[
+             \begin{array}{c}
+                 d_1 a_{1,{i_1}} + \cdots + d_r a_{1,{i_r}} \\
+                 \vdots \\
+                 d_1 a_{n,{i_1}} + \cdots + d_r a_{n,{i_r}}
+             \end{array}
+        \right] \label{EquRangZeilentausch} \\
+  & = & 0_n \nonumber
+\end{eqnarray}
+folgt
+\[ d_1 = \ldots = d_r = 0 \MyPunkt \]
+Vertauscht man zwei Elemente des Vektors \equref{EquRangZeilentausch},
+bleibt die G"ultigkeit dieser Bedingung davon unber"uhrt.
+Daraus folgt, da"s die Vertauschung zweier Matrixzeilen den Spaltenrang
+der Matrix unber"uhrt l"a"st. 
+
+Ebenso verh"alt es sich mit der Multiplikation einer Zeile der Matrix
+mit einem Faktor $c \neq 0$.
+Analog zur Argumentation bei der Vertauschung zweier Zeilen erh"alt man
+\[
+        \left[
+             \begin{array}{c}
+                 c (d_1 a_{1,{i_1}} + \cdots + d_r a_{1,{i_r}}) \\
+                 \vdots \\
+                 (d_1 a_{n,{i_1}} + \cdots + d_r a_{n,{i_r}})
+             \end{array}
+        \right]
+\]
+\MyPunktA{35em}
+Die Bedingung $d_1 = \ldots = d_r = 0$ bleibt durch den Faktor unber"uhrt.
+
+Das gleiche Ergebnis erh"alt man f"ur die Addition des Vielfachen einer
+Zeile zu einer anderen.
+
+Die elementaren Zeilenoperationen\footnote{siehe \ref{DefZeilenOp}}
+lassen den Spaltenrang also unver"andert.
+Analog verh"alt es sich mit den elementare Spaltenoperationen und
+dem Zeilenrang.
+
+Durch die Zeilen- und Spaltenoperationen l"a"st sich jede Matrix in
+Diagonalform "uberf"uhren\footnote{nicht zu verwechseln mit
+Diagonalisierbarkeit!}, ohne da"s dadurch der Rang ver"andert wird.
+
+F"ur eine Matrix, bei der nur die Elemente der Hauptdiagonalen von Null
+verschieden sein k"onnen, stimmen Zeilen- und Spaltenrang offensichtlich
+"uberein. Da die Zeilen und Spaltenoperationen den Rang unver"andert
+lassen, erh"alt man:
+\begin{korollar}
+\label{SatzRang}
+    F"ur jede Matrix stimmen Zeilen- und Spaltenrang "uberein.
+\end{korollar}
+Aus diesem Grund ist die folgende Definition sinnvoll:
+
+\MyBeginDef
+\label{DefRang} \index{Rang}
+    Die Anzahl linear unabh"angiger Spalten einer Matrix $A$ wird als
+    {\em Rang von $A$} bezeichnet, kurz
+    \[ \rg(A) \MyPunkt \]
+\MyEndDef
+
+Es gilt offensichtlich:
+\[ rg(A) \leq \min(m,n) \MyPunkt \]
+
+An dieser Stelle k"onnen wir drei wichtige Begriffe zueinander in
+Beziehung setzen:
+
+\begin{satz}
+\label{SatzRgDetInv}
+    F"ur eine $n \times n$-Matrix $A$ sind folgende Aussagen "aquivalent:
+    \begin{itemize}
+    \item
+         Matrix $A$ ist invertierbar.
+    \item
+         F"ur die Determinante gilt:
+         \[ \det(A) \neq 0 \]
+    \item
+         F"ur den Rang gilt:
+         \[ \rg(A) = n \]
+    \end{itemize}
+\end{satz}
+\begin{beweis}
+    Es ist zu beachten, da"s jede Matrix durch elementare Zeilen-
+    und Spaltenoperationen in eine Diagonalmatrix "uberf"uhrt werden kann,
+    ohne da"s sich die Invertierbarkeitseigenschaft, der Betrag der 
+    Determinante oder der Rang dadurch ver"anderen. Man kann also 
+    o. B. d. A. davon ausgehen, da"s $A$ Diagonalform besitzt.
+    
+    Durch diese "Uberlegung wird die G"ultigkeit der Aussage offensichtlich.
+\end{beweis}
+
+% **************************************************************************
+
+\MySection{L"osbarkeit linearer Gleichungssysteme}
+\label{SecLinEqu}
+\index{Gleichungssystem}
+
+Da lineare Gleichungssysteme eine wichtige Rolle beim Verst"andnis
+noch folgender Ausf"uhrungen spielen, werden sie in diesem Kapitel
+n"aher betrachtet. Die nun folgenden Grundlagen aus der Linearen 
+Algebra sind in der in \ref{SecMatUndDet} aufgelisteten Literatur
+ausf"uhrlich behandelt. Wir beschr"anken uns hier auf die f"ur
+den nachfolgenden Text wichtigen Sachverhalte.
+
+F"ur die weiteren Beschreibungen drei grundlegende Begriffe aus der 
+Linearen Algebra von Bedeutung, deren Definitionen deshalb hier
+angegeben sind:
+
+Sei $K$ ein K"orper. Eine Menge $V$ zusammen mit zwei Verkn"upfungen
+\begin{eqnarray}
+    + & : & V \times V \rightarrow V \\
+    * & : & K \times V \rightarrow V \MyKomma
+\end{eqnarray}
+die die folgenden Bedingungen erf"ullt:
+\begin{itemize}
+\item Die Menge $V$ in Verbindung mit $+$ ist eine Gruppe.
+\item F"ur alle $v,w \in V$ und alle $r,s \in K$ gelten die 
+      Gleichungen
+      \begin{eqnarray*}
+          (r+s)v = rv +sv \\
+          r(v+w) = rv + rw \\
+          (rs)v = r(sv) \\
+          1v = v \MyPunkt 
+      \end{eqnarray*}
+\end{itemize}
+wird als $K$-Vektorraum bezeichnet.
+
+\MyBeginDef
+\label{DefUnterraum}
+    Eine nichtleere Teilmenge $U$ eines $K$-Vektorraumes $V$ wird als 
+    {\em Unterraum} \index{Unterraum} von $V$ bezeichnet, falls gilt
+    \[
+        \forall u,v \in U, \, r \in K : \: 
+        \left\{
+            \begin{array}{rcl}
+                u + v & \in & U \\
+                r u & \in & U \MyPunkt 
+            \end{array}
+        \right.
+    \]
+\MyEndDef
+
+\MyBeginDef
+\label{DefKern}
+\index{Kern!einer linearen Abbildung}
+    Die Menge aller Vektoren $x$,
+    f"ur die bei einer gegebenen $m \times n$-Matrix $A$ gilt
+    \Beq{EquKern}
+        A x = 0_n
+    \Eeq
+    wird als {\em Kern der Matrix A} , kurz $\MyKer(A)$,
+    bezeichnet\footnote{ In der Literatur wird h"aufig an dieser
+    Stelle der Kern einer linearen Abbildung betrachtet. Da die 
+    theoretischen Hintergr"unde hier nicht von Interesse sind, ist in
+    unser Betrachtung von Matrizen die Rede.} .
+\MyEndDef
+
+F"ur unsere Zwecke ben"otigen wir noch zwei weitere Feststellungen:
+
+\begin{bemerkung}
+\label{SatzKernUnterraum}
+    Betrachtet man \ref{DefUnterraum}, erkennt man,
+    da"s alle $x$, die Gleichung \equref{EquKern} er\-f"ul\-len,
+    einen Unterraum bilden.
+\end{bemerkung}
+
+Der Rang einer Matrix und die Dimension von $\MyKer(A)$ h"angen auf
+eine f"ur uns wichtige Weise zusammen:
+
+\begin{lemma}
+\label{SatzDimKer}
+    Sei $V$ ein $K$-Vektorraum der Dimension $n$ und
+    $W$ ein $K$-Vektorraum der Dimension $m$. Sei
+    \[ f: V \rightarrow W \] eine lineare Abbildung mit der
+    entsprechenden $m \times n$-Matrix $A$. Dann gilt:
+    \[ \rg(A) + \MyDim(\MyKer(A)) = \MyDim(V) \MyPunkt \]
+\end{lemma}
+\begin{beweis}
+    Zum Beweis der obigen Gleichung wird die Dimension von 
+    $\MyKer(A)$ in Abh"angigkeit vom Rang von $A$ betrachtet.
+
+    Die Matrix $A$ habe den Rang $r$. Die maximale Anzahl linear
+    unabh"angiger Spaltenvektoren betr"agt also $r$. O. B. d. A. seien
+    die ersten $r$ Spaltenvektoren linear unabh"angig.
+    
+    Es wird in zwei Schritten gezeigt, da"s in $\MyKer(A)$ die maximale 
+    Anzahl der linear unabh"angigen Vektoren, also die Dimension von $A$,
+    $n-r$ betr"agt.
+    
+    \begin{itemize}
+    \item Bezeichne $a_i$ den $i$-ten Spaltenvektor von $A$. Der Kern 
+          von $A$ ist die Menge
+          \begin{eqnarray*}
+              & & \{ x \in V \MySetProperty A x = 0_m \} \\
+              & = & \{ x \in V \MySetProperty
+               a_1 x_1 + a_2 x_2 + \cdots + a_n x_n = 0_m \} \MyPunkt
+          \end{eqnarray*}
+          Die Dimension dieser Menge ist die maximale Anzahl linear
+          unabh"angiger Vektoren $x$, die in ihr enthalten sind. Die
+          Elemente eines Vektors $x$ kann man, wie an der obigen
+          Darstellung ersichtlich ist, als Faktoren in einer
+          Linearkombination von Spaltenvektoren von $A$ betrachten.
+          Anhand der Voraussetzungen, die f"ur die Spaltenvektoren
+          gelten, lassen sich Aussagen f"ur die Vektoren $x$ machen.
+          
+          Da $r+1$
+          Spaltenvektoren von $A$ immer linear abh"angig sind, ist es
+          m"oglich, durch Linearkombination von jeweils $r+1$ 
+          Spaltenvektoren den Nullvektor zu erhalten. Sind die "ubrigen 
+          $n-(r+1)$ Spaltenvektoren nicht an einer Linearkombination 
+          beteiligt, entspricht das einer Null als entsprechendes Element 
+          von $x$.
+          
+          Es gibt $n-r$ M"oglichkeiten,
+          zu den ersten $r$ linear unabh"angigen Spaltenvektoren von $A$
+          genau einen weiteren
+          auszusuchen. Aufgrund der Verteilung der Nullen in den 
+          entsprechenden Vektoren $x$ mu"s es mindestens $n-r$ linear 
+          unabh"angige Vektoren im Kern von $A$ geben.
+    \item 
+          Angenommen, die Anzahl der linear unabh"angigen Vektoren 
+          in $\MyKer(A)$ ist gr"o"ser als $n-r$. O. B. d. A. seien die 
+          ersten $n-r$ dieser Vektoren
+          so gew"ahlt, da"s bei jedem dieser Vektoren unter den
+          Vektorelementen $x_{r+1}$ bis $x_n$ genau eines ungleich Null ist.
+          Aus den vorangegangenen Ausf"uhrungen folgt, da"s solche
+          Vektoren existieren m"ussen. Die Vektoren werden mit 
+          $v_{r+1}, \, \ldots, \, v_n$ bezeichnet. F"ur den Vektor $v_i$
+          sei das $i$-te Vektorelement ungleich Null.
+          
+          Da die ersten $r$ Spaltenvektoren von $A$ linear unabh"angig sind,
+          gibt es f"ur die ersten $r$ Elemente jedes Vektors $v_i$
+          keine Wahlm"oglichkeit, sobald das $i$-te Element im
+          Rahmen der Randbedingungen dem Wert nach festliegt.
+
+          Sei $w$ ein weiterer Vektor aus $\MyKer(A)$, der zu den Vektoren
+          $v$ linear unabh"angig ist. Wird das $j$-te Element eines Vektors
+          $v_i$ mit $v_{i,j}$ bezeichnet, und das $k$-te Element von $w$
+          mit $w_k$, dann gibt es Faktoren $d_{r+1}, \, \ldots , \, d_n$,
+          so da"s
+          \[ \forall r+1 \leq k \leq n : \: w_k = d_k * v_{k,k} \MyPunkt \]
+          
+          Ebenso wie f"ur die Vektoren $v$ liegen damit auch die
+          ersten $r$ Elemente des Vektors $w$ fest. Sie k"onnen anhand
+          der obigen Beziehung aus den Elementen $r+1$ bis $n$ der
+          Vektoren $v$ und $w$ berechnet werden, sofern $w$ "uberhaupt die
+          Rahmenbedinungen erf"ullt und in $\MyKer(A)$ ist.
+
+          Damit $w$ dennoch zu den Vektoren $v$ linear unabh"angig ist,
+          mu"s es einen $r+1$-ten Spaltenvektor von $A$ geben, der zu den
+          ersten $r$ Spaltenvektoren linear unabh"angig ist und der
+          bei der Zusammenstellung der Vektoren $v$ mit Hilfe der
+          Betrachtung von Linearkombinationen (s. o.) noch nicht benutzt
+          wurde. Dies ist jedoch im Widerspruch zu den Voraussetzungen.
+    \end{itemize}
+    Somit folgt:
+    \[ \rg(A) + \dim(\MyKer(A)) = r + (n-r) = n = \dim(V) \MyPunkt \]
+\end{beweis}
+Mit Hilfe von \ref{SatzKernUnterraum} und \ref{SatzDimKer} k"onnen wir
+die f"ur uns wichtigen Eigenschaften linearer Gleichungssysteme
+betrachten.
+
+Ein lineares Gleichungssystem besteht aus $n$ Gleichungen mit $m$
+Unbekannten:
+\begin{eqnarray*}
+    a_{1,1} x_1 + a_{1,2} x_2 + \cdots + a_{1,n} x_n & = & b_1 \\
+    \vdots & \vdots & \vdots \\
+    a_{n,1} x_1 + a_{n,2} x_2 + \cdots + a_{m,n} x_n & = & b_m
+\end{eqnarray*}
+Die $x_i$ sind die zu bestimmenden Unbekannten. Betrachtet man die
+gegebenen Konstanten $a_{i,j}$ und $b_i$ als Elemente einer Matrix
+bzw. eines Vektors, kann man das Gleichungssystem auch kompakter
+darstellen:
+\[ A x = b \MyPunkt \]
+Dabei ist $A$ ein $n \times m$-Matrix und $b$ ein Vektor der L"ange $m$.
+Ist $b= 0_m$, so bezeichnet man das Gleichungssystem als
+homogen \index{Gleichungssystem!homogenes}.
+Ist $b \neq 0_m$, so bezeichnet man das Gleichungssystem als
+inhomogen \index{Gleichungssystem!inhomogenes}.
+
+Uns interessieren die L"osungsmengen eines solchen Gleichungssystems.
+
+\begin{satz}
+\label{SatzLoesungsraum}
+    Sei $V$ der zugrundeliegende $K$-Vektorraum der Dimension $n$.
+    Die L"osungsmenge $L(A,0_m)$ des homogenen Gleichungssystems
+    \[ A x = 0_m \] ist ein Unterraum von $V$ der Dimension
+    \[ n - \rg(A) \MyPunkt \]
+\end{satz}
+\begin{beweis}
+    Die L"osungsmenge $L(A,0_m)$ ist der Kern von $A$. Damit folgt
+    die Behauptung aus \ref{SatzKernUnterraum} und
+    \ref{SatzDimKer}.
+\end{beweis}
+
+Ist $\rg(A)=n$, gilt also $L(A,0_m) = \{ 0_n \}$.
+
+Uns interessieren auch die L"osungen inhomogener Gleichungssysteme.
+Dazu betrachtet man die erweiterte Matrix $[A,b]$, die aus der Matrix
+$A$ und dem Vektor $b$ als $n+1$-te Spalte besteht:
+
+\begin{satz}
+\label{SatzRangGleich}
+    Die Gleichung
+    \Beq{EquInhomogen}
+        A x = b \MyPunkt
+    \Eeq
+    ist genau dann l"osbar, wenn gilt
+    \Beq{EquRangGleich}
+        \rg(A) = \rg([A,b]) \MyPunkt
+    \Eeq
+\end{satz}
+\begin{beweis}
+    Man kann die linke Seite von \equref{EquInhomogen} als 
+    Linearkombination von Spaltenvektoren von $A$ betrachten. Die Faktoren 
+    der Linearkombination bilden die Elemente des L"osungsvektors $x$.
+
+    Der Vektor $b$ ist genau dann als Linearkombination der
+    Spaltenvektoren von $A$ darstellbar, wenn die maximale Anzahl linear
+    unabh"angiger Vektoren in $A$ und $[A,b]$ gleich ist. Dies ist
+    gleichbedeutend mit der G"ultigkeit von \equref{EquRangGleich}.
+\end{beweis}
+
+Dieser Satz f"uhrt zu einer f"ur uns bedeutsamen Charakterisierung
+der L"osbarkeit:
+
+\begin{korollar}
+\label{SatzGenauEine}
+    Ist \equref{EquInhomogen} l"osbar und $\rg(A) = n$,
+    also $n \leq m$, dann sind die Spaltenvektoren von $A$
+    linear unabh"angig
+    und werden alle f"ur die Linearkombination zur Darstellung von $b$
+    ben"otigt. Es gibt in diesem Fall genau einen Vektor $x$, der
+    \equref{EquInhomogen} l"ost.
+\end{korollar}
+
+Ist $\rg(A) = m$, also $m \leq n$, dann ist \equref{EquInhomogen} f"ur
+jedes $b$ l"osbar, denn es gilt allgemein
+\[ \rg(A) \leq \rg([A,b]) \leq m \MyPunkt \] F"ur $\rg(A) = m$ folgt
+daraus mit Hilfe der vorangegangenen Bemerkungen die L"osbarkeit.
+
+% $$$ hier evtl. noch Wegener Satz 7.4 und Hilfssatz 7.7
+
+% **************************************************************************
+
+\MySection{Das charakteristische Polynom}
+\label{ChapCharPoly}
+
+Betrachtet \label{PageEigenMotiv}
+man $A$ als lineare Abbildung im $n$-dimensionalen Vektorraum,
+so lautet eine interessante Fragestellung:
+\begin{quote}
+    Gibt es einen Vektor $x$ ungleich dem Nullvektor sowie einen Skalar 
+    $\lambda$, so da"s gilt
+    \Beq{EquEigenMotiv}
+        Ax=\lambda x \mbox{\hspace{1em}?}
+    \Eeq
+\end{quote}
+Man kann \equref{EquEigenMotiv} umformen in
+\[ (A - \lambda E_n)x = 0 \MyPunkt \] Dies ist eine homogenes lineares
+Gleichungssystem mit $n$ Gleichungen in $n$ Unbekannten. 
+Aus \ref{SatzLoesungsraum} und \ref{SatzRgDetInv} folgt, da"s es genau
+dann eine nichttriviale L"osung besitzt, wenn gilt
+\[ \det(A - \lambda E_n) = 0 \MyPunkt \]
+Dies motiviert die folgende Definition:
+
+\MyBeginDef
+\label{DefCharPoly}
+\index{Polynom!charakteristisches}
+\index{Gleichung!charakteristische}
+    \[ \det(A-\lambda E_n) \] hei"st\footnote{Die Form
+    $\det(\lambda E_n - A)$ ist in der Literatur auch gebr"auchlich. Welche
+    Form gew"ahlt wird, h"angt von den Vorlieben im Umgang mit den
+    Vorzeichen ab. Bis auf die Vorzeichen bleibt die G"ultigkeit von
+    Aussagen unber"uhrt. F"ur uns ist die in der Definition angegebene
+    Form bequemer.} {\em charakteristisches Polynom der Matrix $A$}. Die
+    obige Darstellung als Determinante einer Matrix 
+    hei"st \index{Matrizendarstellung!des charakteristischen Polynoms} 
+    {\em Matrizendarstellung} des charakteristischen Polynoms.
+    \[ \det(A-\lambda E_n) = 0 \] hei"st {\em charakteristische Gleichung
+    der Matrix $A$}.
+    Die Matrix \[ A - \lambda E_n \] wird als 
+    {\em charakteristische Matrix} \index{Matrix!charakteristische}
+    bezeichnet.
+\MyEndDef
+
+Das charakteristische Polynom einer Matrix l"a"st sich auch in der
+\index{Koeffizientendarstellung} {\em Koeffizientendarstellung} 
+\Beq{EquKoeffDarst}
+    c_n \lambda^n + c_{n-1} \lambda^{n-1} + \cdots + c_1 \lambda + c_0
+\Eeq
+angeben.
+
+In der Literatur sind als
+Vorzeichen von $c_i$ nicht nur $+$, sondern auch $-$ oder $(-1)^i$
+gebr"auchlich. Mancherorts herrscht auch die Gewohnheit,
+die Indizierung der Koeffizienten in der Form
+$c_0 \lambda^n + c_1 \lambda^{n-1} + \cdots + c_{n-1} \lambda + c_n$
+durchzuf"uhren. Da diese Vielfalt der Gebr"auche in der Literatur nicht 
+nur auf die Koeffizientendarstellung beschr"ankt ist, kann es u. U. sein, 
+da"s $c_n$ sowohl das Vorzeichen $+$ als auch immer den Wert $1$ besitzt.
+In diesen F"allen wird $c_n$ auch h"aufig weggelassen.
+F"ur uns ist die gew"ahlte Form \equref{EquKoeffDarst} der Darstellung
+am sinnvollsten.
+% $$$ in Verbindung mit meinem anderen Krempel: c_n = (-1)^n
+
+\MyBeginDef 
+\label{DefEigenwert}
+\index{Eigenwert} \index{Eigenvektor}
+    Die Nullstellen des charakteristischen Polynoms einer Matrix hei"sen
+    {\em Eigenwerte} der Matrix. Ein Vektor $x$ der
+    Gleichung \equref{EquEigenMotiv} zusammen mit einem Eigenwert
+    $\lambda$ erf"ullt, hei"st {\em Eigenvektor}. Der Nullvektor ist
+    als Eigenvektor nicht zugelassen.
+\MyEndDef
+
+\MyBeginDef
+    Sei $\lambda_i$ ein Eigenwert der $n \times n$-Matrix $A$. Dann wird
+    \[ \rg(A) - \rg(A - \lambda_i E_n) \] als
+    {\em Rangabfall} \index{Rangabfall} des Eigenwertes $\lambda_i$ 
+    bezeichnet.
+\MyEndDef
+
+Die Determinante und die Spur findet man unter den Koeffizienten des
+charakteristischen Polynoms wieder. Besonders f"ur die Berechnung der
+Determinante ist dies eine wichtige Beobachtung:
+\begin{bemerkung}
+\label{SatzDdurchP}
+    \begin{eqnarray}
+       \det(A) & = & c_0               \nonumber
+    \\ \tr(A) & = & (-1)^{n-1} c_{n-1} \label{EquTrCoefficient}
+    \end{eqnarray}
+\end{bemerkung}
+Wenn $p(\lambda)$ das charakteristische Polynom der Matrix $A$ ist, gilt
+also: \[ \det(A)= p(0) \MyPunkt \]
+
+Rechnet man die Matrizendarstellung des charakteristischen Polynoms um in
+die Koeffizientendarstellung, wird dabei die G"ultigkeit von
+\equref{EquTrCoefficient} deutlich. Der Wert von $c_{n-1}$ wird nur durch
+die Matrixelemente in der Hauptdiagonalen beeinflu"st. Das Produkt dieser
+Elemente besteht aus $n$ Linearfaktoren der Form
+\[ a_{i,i} - \lambda \MyPunkt \] Berechnet man den Wert dieses Produktes,
+so wird $c_n$ durch alle Summanden der Form
+\[ (-1)^{n-1} a_{i,i}\lambda^{n-1} \] beeinflu"st. Insgesamt gilt also
+\[ c_{n-1} = (-1)^{n-1} \sum_{i=1}^n a_{i,i} \MyKomma \] so da"s man mit
+\equref{EquTrCoefficient} die Spur erh"alt.
+
+Ein Algorithmus zur Berechnung der Koeffizienten des charakteristischen
+Polynoms einer Matrix berechnet somit u. a. auch deren Determinante und
+deren Spur.
+
+

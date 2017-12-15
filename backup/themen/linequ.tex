@@ -1,0 +1,217 @@
+% **************************************************************************
+
+\MySection{L"osbarkeit linearer Gleichungssysteme}
+\label{SecLinEqu}
+\index{Gleichungssysteme}
+
+Da lineare Gleichungssysteme eine wichtige Rolle bei Verst"andnis
+noch folgender Ausf"uhrungen spielen, werden sie in diesem Unterkapitel
+n"aher betrachtet. Die nun folgenden Grundlagen aus der linearen 
+Algebra sind in der in \ref{SecMatUndDet} aufgelisteten Literatur
+ausf"uhrlich behandelt. Wir beschr"anken uns hier auf die f"ur
+den nachfolgenden Text wichtigen Sachverhalte.
+
+F"ur die weiteren Beschreibungen ist folgender Begriff von 
+Bedeutung:
+
+\MyBeginDef
+\label{DefKern}
+\index{Kern!einer linearen Abbildung}
+    Die Menge aller Vektoren x,
+    f"ur die bei einer gegebenen $m \times n$-Matrix $A$ gilt
+    \Beq{EquKern}
+        A x = 0_n
+    \Eeq
+    wird als {\em Kern der Matrix A} , kurz $\MyKer(A)$,
+    bezeichnet \footnote{ In der Literatur wird h"aufig an dieser
+    Stelle der Kern einer linearen Abbildung betrachtet. Da theoretischen
+    Hintergr"unde hier nicht von Interesse sind, wird die Betrachtung auf
+    Matrizen beschr"ankt.} .
+\MyEndDef
+
+F"ur unsere Zwecke ben"otigen wir noch zwei weitere Feststellungen:
+
+\begin{bemerkung}
+\label{SatzKernUnterraum}
+    Betrachtet man \ref{DefUnterraum}, erkennt man,
+    da"s alle $x$, die Gleichung \equref{EquKern} erf"ullen,
+    einen Unterraum bilden.
+\end{bemerkung}
+
+Der Rang einer Matrix und die Dimension von $\MyKer(A)$ h"angen auf
+eine f"ur uns wichtige Weise zusammen:
+
+\begin{lemma}
+\label{SatzDimKer}
+    Sei $V$ ein $K$-Vektorraum der Dimension $n$ und
+    $W$ ein $K$-Vektorraum der Dimension $m$. Sei
+    \[ f: V \rightarrow W \] eine lineare Abbildung mit der
+    entsprechenden $m \times n$-Matrix $A$. Dann gilt:
+    \[ \rg(A) + \dim(\MyKer(A)) = \dim(V) \MyPunkt \]
+\end{lemma}
+\begin{beweis}
+    Zum Beweis der obigen Gleichung wird die Dimension von 
+    $\MyKer(A)$ in Abh"angigkeit vom Rang von $A$ betrachtet.
+
+    Die Matrix $A$ habe den Rang $r$. Die maximale Anzahl linear
+    unabh"angiger Spaltenvektoren betr"agt also $r$. O. B. d. A. seien
+    die ersten $r$ Spaltenvektoren linear unabh"angig.
+    
+    Es wird in zwei Schritten gezeigt, da"s in $\MyKer(A)$ die maximale 
+    Anzahl der linear unabh"angigen Vektoren, also die Dimension von $A$,
+    $n-r$ betr"agt.
+    
+    \begin{itemize}
+    \item Bezeichne $a_i$ den $i$-ten Spaltenvektor von $A$. Der Kern 
+          von $A$ ist die Menge
+          \begin{eqnarray*}
+              & & \{ x \in V \MySetProperty A x = 0_m \} \\
+              & = & \{ x \in V \MySetProperty
+               a_1 x_1 + a_2 x_2 + \cdots + a_n x_n = 0_m \} \MyPunkt
+          \end{eqnarray*}
+          Die Dimension dieser Menge ist die maximale Anzahl linear
+          unabh"angiger Vektoren $x$, die in ihr enthalten sind. Die
+          Elemente eines Vektors $x$ kann man, wie an der obigen
+          Darstellung ersichtlich ist, als Faktoren in einer
+          Linearkombination von Spaltenvektoren von $A$ betrachten.
+          Anhand der Voraussetzungen, die f"ur die Spaltenvektoren
+          gelten, lassen sich Aussagen f"ur die Vektoren $x$ machen.
+          
+          Da $r+1$
+          Spaltenvektoren von $A$ immer linear abh"angig sind, ist es
+          m"oglich, durch Linearkombination von jeweils $r+1$ 
+          Spaltenvektoren den Nullvektor zu erhalten. Sind die "ubrigen 
+          $n-(r+1)$ Spaltenvektoren nicht an einer Linearkombination 
+          beteiligt entspricht das einer Null als entsprechendes Element 
+          von $x$.
+          
+          Es gibt $n-r$ M"oglichkeiten,
+          zu den ersten $r$ linear unabh"angigen Spaltenvektoren von $A$
+          genau einen weiteren
+          auszusuchen. Aufgrund der Verteilung der Nullen in den 
+          entsprechenden Vektoren $x$ mu"s es mindestens $n-r$ linear 
+          unabh"angige Vektoren im Kern von $A$ geben.
+    \item 
+          Angenommen, die Anzahl der linear unabh"angigen Vektoren 
+          in $\MyKer(A)$ ist gr"o"ser als $n-r$. O. B. d. A. seien die 
+          ersten $n-r$ dieser Vektoren
+          so gew"ahlt, da"s bei jedem dieser Vektoren unter den
+          Vektorelementen $x_{r+1}$ bis $x_n$ genau eines ungleich Null ist.
+          Aus den vorangegangenen Ausf"uhrungen folgt, das solche
+          Vektoren existieren m"ussen. Die Vektoren werden mit 
+          $v_{r+1}, \, \ldots, \, v_n$ bezeichnet. F"ur den Vektor $v_i$
+          sei das $i$-te Vektorelement ungleich Null.
+          
+          Da die ersten $r$ Spaltenvektoren von $A$ linear unabh"angig sind,
+          gibt es f"ur die ersten $r$ Elemente jedes Vektors $v_i$
+          keine Wahlm"oglichkeit, sobald das $i$-te Element im
+          Rahmen der Randbedingungen dem Wert nach festliegt.
+
+          Sei $w$ ein weiterer Vektor aus $\MyKer(A)$, der zu den Vektoren
+          $v$ linear unabh"angig ist. Wird das $j$-te Element eines Vektors
+          $v_i$ mit $v_{i,j}$ bezeichnet, und das $k$-te Element von $w$
+          mit $w_k$, dann gibt es Faktoren $d_{r+1}, \, \ldots , \, d_n$,
+          so da"s
+          \[ \forall r+1 \leq k \leq n : \: w_k = d_k * v_{k,k} \MyPunkt \]
+          
+          Ebenso wie f"ur die Vektoren $v$ liegen damit auch die
+          ersten $r$ Elemente des Vektors $w$ fest. Sie k"onnen aus anhand
+          der obigen Beziehung aus den Elementen $r+1$ bis $n$ der
+          Vektoren $v$ und $w$ berechnet werden, sofern $w$ "uberhaupt die
+          Rahmenbedinungen erf"ullt und in $\MyKer(A)$ ist.
+
+          Damit $w$ dennoch zu den Vektoren $v$ linear unabh"angig ist,
+          mu"s es einen $r+1$-ten Spaltenvektor von $A$ geben, der zu den
+          ersten $r$ Spaltenvektoren linear unabh"angig ist, und der
+          bei der Zusammenstellung der Vektoren $v$ mit Hilfe der
+          Betrachtung von Linearkombinationen (s. o.) noch nicht benutzt
+          wurde. Dies ist jedoch im Widerspruch zu den Voraussetzungen.
+    \end{itemize}
+    Somit folgt:
+    \[ \rg(A) + \dim(\MyKer(A)) = r + (n-r) = n = \dim(V) \MyPunkt \]
+\end{beweis}
+Mit Hilfe von \ref{SatzKernUnterraum} und \ref{SatzDimKer} k"onnen wir
+die f"ur uns wichtigen Eigenschaften linearer Gleichungssysteme
+betrachten.
+
+Ein lineares Gleichungssystem besteht aus $n$ Gleichungen mit $m$
+Unbekannten:
+\begin{eqnarray*}
+    a_{1,1} x_1 + a_{1,2} x_2 + \cdots + a_{1,n} x_n & = & b_1 \\
+    \vdots & \vdots & \vdots \\
+    a_{n,1} x_1 + a_{n,2} x_2 + \cdots + a_{m,n} x_n & = & b_m
+\end{eqnarray*}
+Die $x_i$ sind die zu bestimmenden Unbekannten. Betrachtet man die
+gegebenen Konstanten $a_{i,j}$ und $b_i$ als Elemente einer Matrix
+bzw. eines Vektors kann man das Gleichungssystem auch kompakter
+darstellen:
+\[ A x = b \MyPunkt \]
+Dabei ist $A$ ein $n \times m$-Matrix und $b$ ein Vektor der L"ange $m$.
+Ist $b= 0_m$, so bezeichnet man das Gleichungssystem als
+homogen \index{Gleichungsystem!homogenes}.
+Ist $b \neq 0_m$, so bezeichnet man das Gleichungssystem als
+inhomogen \index{Gleichungssystem!inhomogenes}.
+
+Uns interessieren die L"osungsmengen eines solchen Gleichungssystems.
+
+\begin{satz}
+\label{SatzLoesungsraum}
+    Sei $V$ der zugrundeliegende $K$-Vektorraum der Dimension $n$.
+    Die L"osungsmenge $L(A,0_m)$ des homogenen Gleichungssystems
+    \[ A x = 0_m \] ist ein Unterraum von $V$ der Dimension
+    \[ n - \rg(A) \MyPunkt \]
+\end{satz}
+\begin{beweis}
+    Die L"osungsmenge $L(A,0_m)$ ist der Kern von $A$. Damit folgt
+    die Behauptung aus \ref{SatzKernUnterraum} und
+    \ref{SatzDimKer}.
+\end{beweis}
+
+Ist $\rg(A)=n$, gilt also $L(A,0_m) = \{ x_n \}$.
+
+Uns interessieren auch die L"osungen von inhomogener Gleichungssysteme.
+Dazu betrachtet man die erweiterte Matrix $[A,b]$, die aus der Matrix
+$A$ und dem Vektor $b$ als $n+1$-te Spalte besteht:
+
+\begin{satz}
+\label{SatzRangGleich}
+    Die Gleichung
+    \Beq{EquInhomogen}
+        A x = b \MyPunkt
+    \Eeq
+    ist genau dann l"osbar, wenn gilt
+    \Beq{EquRangGleich}
+        \rg(A) = \rg([A,b]) \MyPunkt
+    \Eeq
+\end{satz}
+\begin{beweis}
+    Man kann die linke Seite von \equref{EquInhomogen} als 
+    Linearkombination von Spaltenvektoren von $A$ betrachten. Die Faktoren der
+    Linearkombination bilden die Elemente des L"osungsvektors $x$.
+
+    Der Vektor $b$ ist genau dann als Linearkombination der
+    Spaltenvektoren von $A$ darstellbar, wenn die maximale Anzahl linear
+    unabh"angiger Vektoren in $A$ und $[A,b]$ gleich ist. Dies ist
+    gleichbedeutend mit der G"ultigkeit von \equref{EquRangGleich}.
+\end{beweis}
+
+Dieser Satz f"uhrt zu einer f"ur uns bedeutsamen Charakterisierung
+der L"osbarkeit:
+
+\begin{korollar}
+\label{SatzGenauEine}
+    Ist \equref{EquInhomogen} l"osbar und $\rg(A) = n$,
+    also $n \leq m$, dann sind die Spaltenvektoren von $A$
+    linear unabh"angig
+    und werden alle f"ur die Linearkombination zur Darstellung von $b$
+    ben"otigt. Es gibt in diesem Fall genau einen Vektor $x$, der
+    \equref{EquInhomogen} l"ost.
+\end{korollar}
+
+Ist $\rg(A) = m$, also $m \leq n$, dann ist \equref{EquInhomogen} f"ur
+jedes $b$ l"osbar, denn es gilt allgemein
+\[ \rg(A) \leq \rg([A,b]) \leq m \MyPunkt \] F"ur $\rg(A) = m$ folgt
+daraus mit Hilfe der vorangegangenen Bemerkungen die L"osbarkeit.
+
+% $$$ hier evtl. noch Wegener Satz 7.4 und Hilfssatz 7.7
+

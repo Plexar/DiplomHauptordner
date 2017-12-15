@@ -1,0 +1,282 @@
+%
+%
+% Datei: main.tex
+%
+% Haupt-Tex-Datei der Diplomarbeit
+%
+%%
+% noch zu bearbeitende Stellen sind mit $$$$ markiert;
+% Anmerkungen sind mit $$$ markiert;
+% die aktuell in Berarbeitung befindliche Stelle ist mit $$$$$ markiert;
+%%
+% - Invertierung von Dreiecksmatrizen aus Csan74
+% 
+% - Warum laufen die Algorithmen von Csanky nur in K"orper
+%       der Charakteristik 0 ?
+%   Antwort: Weil Divisionen benutzt werden !!!!!!!!!!!!!!
+% - Csan76 : K"orper mit Charakteristik 0
+%   BGH82  : beliebige K"orper
+%   Berk84 : beliebige K"orper
+%   Pan85  : Iterationsverfahren f"ur det(A)
+% - Schaltkreise???
+%%
+% ********************************
+% Lesen von zusaetzlichen Dateien:
+% ********************************
+%%\input amssym.def
+%%\input amssym
+%%
+%==============================================================
+\documentstyle[german,ifthen,din_a4,makeidx,bezier,epic]{book}
+%==============================================================
+%%
+% *************************
+% Stiloptionen im Vorspann:
+% *************************
+\pagestyle{myheadings} % vgl. \newcommand{\MySection}{ ... } (s. u.)
+\makeindex
+\frenchspacing % europ"aische Behandlung der Satzenden
+% Nummerierung der Textuntergliederung bis einschlie"slich 'section':
+\setcounter{secnumdepth}{1}
+\setcounter{tocdepth}{1}
+%%
+% ******************************
+% Ausnahmen von Trennungsregeln:
+% ******************************
+\hyphenation
+    { CRCW Pa-ral-lel-rech-ner Mo-dell De-ter-mi-nan-ten-be-rech-nung
+      Ar-beits-spei-cher Fourier-trans-for-ma-tion PRAM
+    }
+%%
+% ***********************
+% Auswahl von Textteilen:
+% ***********************
+\typeout{}
+\typein[\eingabe]{Textteile auswaehlen (j/n)?}
+\ifthenelse{\equal{\eingabe}{j}
+}{
+    \typeout{}
+    \typeout{Textteile:}
+    \typeout{ inhalt, vorbem, csanky, bgh, berk}
+    \typeout{ pan, implemen, endbem, index, anhang}
+    \typeout{}
+    % Auswahl der Textteile eingeben:
+    \typein[\auswahl]{Welche Textteile?}
+
+    \includeonly{\auswahl}
+% ****Datei-Ein/Ausgabe funktioniert nicht****
+%    \newwrite\AuswahlAusgabeDatei
+%    \immediate\openout\AuswahlAusgabeDatei=\jobname.aus
+%    \ifthenelse{\equal{\auswahl}{a}
+%    }{ 
+%        \typeout{ ...in then}
+%        \write\AuswahlAusgabeDatei{
+%            \typeout{Alle Textteile sind ausgewaehlt.}
+%        }
+%    }{
+%        \typeout{ ...in else}
+%        \write\AuswahlAusgabeDatei{
+%            \typeout{Ausgewaehlte Textteile:}
+%            \typeout{\auswahl}
+%            \includeonly{\auswahl}
+%        }
+%    }
+%    \closeout\AuswahlAusgabeDatei
+}{}
+
+%\newread\AuswahlEingabeDatei
+%\openin\AuswahlEingabeDatei=\jobname.aus
+%\read\AuswahlEingabeDatei to \ZeileI
+%\ZeileI
+%\closein\AuswahlEingabeDatei
+
+%%
+%===============
+\begin{document}
+%===============
+%%
+% *************************
+% Stiloptionen im Textteil:
+% *************************
+\bibliographystyle{mygalpha}
+\parindent0pt  % Absatzanf"ange nicht einr"ucken
+\parskip2ex plus0.4ex minus0.4ex % Abst"ande zwischen Abs"atzen 2ex +-0.4ex
+%%
+% *******************************
+% eigene Dokumentuntergliederung:
+% *******************************
+% bei "Anderung der Gliederung sind evtl. die Aufrufe von 
+% \addcontentsline in 'tail.tex' anzupassen
+\newcommand{\MyMark}[1]{ \thesection \hspace{0.5em} \sc #1 }
+\newcommand{\MyChapter}[1]{\chapter{#1}}
+\newcommand{\MySection}[1]{ 
+                            \section{#1}
+                            \markboth{ \MyMark{#1} }{ \MyMark{#1} }
+                          }
+\newcommand{\MySectionA}[2]{
+                            \section[#1]{#2}
+                            \markboth{ \MyMark{#1} }{ \MyMark{#1} }
+                           }
+\newcommand{\MySubSection}[1]{\subsection{#1}}
+\newcommand{\MySubSectionA}[2]{\subsection[#1]{#2}}
+\newcommand{\MySubSubSection}[1]{\subsubsection{#1}}
+\newcommand{\MyParagraph}[1]{\paragraph{#1}}
+%%
+% ************************
+% diverse neue Umgebungen:
+% ************************
+% Auswahl von 'subsection' in folgender Zeile ggf. anzupassen:
+\newtheorem{satz}{Satz}[section]
+\newtheorem{lemma}[satz]{Lemma}
+\newtheorem{korollar}[satz]{Folgerung}
+\newtheorem{definition}[satz]{Definition}
+\newcommand{\MyBeginDef}{\begin{definition} \rm}
+\newcommand{\MyEndDef}{\end{definition} \vspace{2ex}}
+\newtheorem{algorithmus}[satz]{Algorithmus}
+\newtheorem{bemerkung}[satz]{Bemerkung}
+\newenvironment{beweis}{\medbreak {\bf Beweis} \quad
+                       }{ \hfill $ \Box $ \bigbreak }
+% f"ur den Anhang (Listings):
+\newenvironment{MyListing}{ \small % '\normalsize' ist zu gross
+                          }{ }
+\newenvironment{DefModul}[1]{ \MySection{Definitionsmodul '#1`}
+                              \begin{MyListing}
+                            }{ \end{MyListing} }
+\newenvironment{ImpModul}[1]{ \MySection{Implementierungsmodul '#1`}
+                              \begin{MyListing}
+                            }{ \end{MyListing} }
+\newenvironment{ProgModul}[1]{ \MySection{Programmodul '#1`}
+                               \begin{MyListing}
+                             }{ \end{MyListing} }
+% ***********************
+% eigene Listen-Umgebung:
+% ***********************
+\newenvironment{MyDescription}{ \begin{list}{ $\bullet$
+                                      }{ \leftmargin3.51em \labelsep0.5em
+                                         \labelwidth3em \listparindent0em
+                                         \rightmargin0em \itemsep3ex
+                                         \parsep2ex
+                                      }
+                              }{ \end{list} }
+\newcommand{\MyItem}[1]{\item[#1] \hspace{1em} \\} % Item f"ur MyDescription
+% ***********************
+% eigene Gleichungsliste:
+% ***********************
+\newcommand{\DS}{\displaystyle}
+%               Abk"urzung f"ur die Verwendung in 'array'-Umgebung f"ur
+%               mehrzeilige Formeln
+% Umgebung:
+\newenvironment{MyEqnArray}{   \[ \begin{array}{lrcl} \DS \MatStrut
+                           }{  \end{array} \]
+                           }
+% Tabulator f"ur Umgebung:
+\newcommand{\MT}{ & \DS } %MyTab
+% Zeilenende f"ur Umgebung:
+\newcommand{\MNl}{ \\ \DS \MatStrut} %MyNewline
+%%
+% ************************
+% Schreibweisen (Symbole):
+% ************************
+% Zahlenmengenzeichen aus 'lsii_la.tex':
+\font\sanss=cmss10
+\newcommand{\Integers}{ \! \hbox{\sanss { Z\kern-.4em Z}} } %\IZ
+\newcommand{\Nat}{ \hbox{\sanss {I\kern-.14em N}} }   %\IN
+\newcommand{\Rationals}{ \hbox{\vrule width 0.6pt height 6pt depth 0pt
+                         \hskip -3.0pt{\sanss Q}}
+                       } % \IR
+\newcommand{\Complex}{ \hbox{\vrule width 0.6pt height 6pt depth 0pt 
+                       \hskip -3.0pt{\sanss C}}
+                     } % \IC
+% Zahlenmengenzeichen aus den Euler-Fonts:
+%%\newcommand{\Integers}{  \Bbb{Z} }
+%%\newcommand{\Nat}{       \Bbb{N} }
+%%\newcommand{\Rationals}{ \Bbb{R} }
+%%\newcommand{\Complex}{   \Bbb{C} }
+% eigenes:
+\newcommand{\proc}{\cal P \mit \,}  % Anzahl zu besch"aftigender Prozessoren
+\newcommand{\permut}{\cal S \mit \! } % Menge aller Permutationen
+\newcommand{\base}{\cal B \mit \,}   % Basis der logarithmischen
+%                                       Zahlendarstellung
+\newcommand{\accuracy}{\cal A \mit \,}
+%                                   Schreibweise f"ur Anzahl der Stellen,
+%                                       mit denen gerechnet wird
+%                                       (accuracy <-> Genauigkeit)
+\newcommand{\ExpBound}{\cal E \mit \,}
+%                                   Schranke f"ur Exponenten in der
+%                                       logarithmischen Darstellung
+\newcommand{\LogRep}{\cal L \mit \,}
+%                                   logarithmische Darstellung
+%                                       (logarithmic representation)
+\newcommand{\round}{\cal R \mit \,}  % Symbol f"ur Rundungsfunktion
+\newcommand{\RepErr}{\cal F \mit \,} % Symbol f"ur Darstellungs Fehler
+\newcommand{\necess}{\cal N \mit \,} % Symbol f"ur Anzahl n"otiger Stellen
+\newcommand{\PRing}{R \, [[]]}
+%           Potenzreihenring R (Liste der Unbestimmten in [[]] weggelassen)
+\newcommand{\MathE}{\mbox{\rm e}} % Konstante 2.718...
+%%
+% ***************
+% Funktionsnamen:
+% ***************
+\newcommand{\adj}{ \mbox{\rm adj} \,}   % Funktionsname 'adj'
+\newcommand{\tr}{ \mbox{\rm tr} \,}     % Funktionsname 'tr'
+\newcommand{\sgn}{ \mbox{\rm sgn} \,}   % Funktionsname 'sgn'
+\newcommand{\sig}{ \mbox{\rm sig} }     % Signatur einer Permutation
+\newcommand{\rg}{ \mbox{\rm rg} \,}     % Rang einer Matrix
+\newcommand{\MyKer}{ \mbox{\rm ker} \,} % Kern einer Matrix
+\newcommand{\MyDim}{ \mbox{\rm dim} \,} % Dimension eines Vektorraumes
+\newcommand{\cond}{ \mbox{\rm cond} \,} % -> 'Pan' ...
+%%
+%****************
+% eigene Befehle:
+%****************
+\newcommand{\MatStrut}{\mbox{\rule[-2ex]{0ex}{5ex}}}
+\newcommand{\LMatStrut}{\mbox{\rule[-4ex]{0ex}{7ex}}}
+%               St"utzen f"ur Matrizen
+\newcommand{\equref}[1]{\mbox{(\ref{#1})}}
+%               Verweis auf Gleichungen: Nummer in Klammern
+%
+\newcommand{\Mya}{"a} % ... zur Benutzung von Umlauten in Index-Begriffen
+\newcommand{\Myo}{"o}
+\newcommand{\Myu}{"u}
+\newcommand{\Mys}{"s}
+\newcommand{\MyPunkt}{ \mbox{\hspace{0.5em}.} }
+\newcommand{\MyPunktA}[1]{ \nopagebreak \mbox{\hspace{#1}.} \\ }
+\newcommand{\MyKomma}{ \mbox{\hspace{0.5em},} }
+\newcommand{\MyKommaA}[1]{ \nopagebreak \mbox{\hspace{#1},} \\ }
+%               falls ein Punkt oder ein Komma als Satzzeichen 
+%               direkt hinter einer abgesetzten Gleichung stehen soll
+\newcommand{\MyChoose}[2]{ \left( { #1 \atop #2 } \right) }
+%               statt TeX-Befehl \choose (sieht besser aus)
+\newcommand{\MySetProperty}{ \: | \: }
+%               f"ur Mengen: Trennsymbol zwischen Mengenelement und
+%                            Eigenschaftschaftsangabe f"ur Element
+\newcommand{\lc}{\left\lceil}
+\newcommand{\rc}{\right\rceil}
+\newcommand{\lf}{\left\lfloor}
+\newcommand{\rf}{\right\rfloor}
+\newcommand{\lb}{\left(}
+\newcommand{\rb}{\right)}
+\newcommand{\Beq}[1]{\begin{equation} \label{#1}}
+\newcommand{\Eeq}{\end{equation}}
+%               Abk"urzungen
+\newcommand{\und}{\wedge}
+\newcommand{\oder}{\vee}
+%               Verbesserung der Lesbarkeit
+\newcommand{\MyStack}[2]{ \stackrel{ \mbox{\scriptsize\rm #1} }{ #2 } }
+%               fuer Hinweise ueber Relationszeichen in Gleichungen
+% **********************
+% Text der Diplomarbeit:
+% *********************
+\include{inhalt}
+\include{vorbem}
+\include{csanky}
+\include{bgh}
+\include{berk}
+\include{pan}
+\include{implemen}
+\include{endbem}
+\include{index}
+\include{anhang}
+%%
+\end{document}
+

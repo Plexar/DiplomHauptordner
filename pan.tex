@@ -1,0 +1,1500 @@
+%
+% Datei: pan.tex
+%
+\MyChapter{Der Algorithmus von Pan}
+\label{ChapPan}
+%\label{SecIteration}
+In diesem Kapitel wird der Algorithmus von V. Pan \cite{Pan85} zur 
+Determinantenberechnung vorgestellt. Er kommt ebenfalls ohne
+Divisionen\footnote{vgl. Bemerkungen in \ref{SecAlgFrame}}
+aus und berechnet die Determinante iterativ. Auf diesen Algorithmus wird
+mit {\em P-Alg.} Bezug genommen\footnote{vgl. Unterkapitel \ref{SecBez}}.
+
+Man erh"alt insbesondere durch Variation der in den Unterkapitel
+\ref{SecGuessInverse} und \ref{SecNewton} dargestellten Inhalte
+einige weitere Versionen des Algorithmus.
+F"ur eine vollst"andige Darstellung m"ussen alle diese Varianten beschrieben
+und auf ihre Effizienz hin untersucht werden\footnote{N"aheres dazu ist 
+insbesondere in \cite{PR85a} zu finden}. Da dies jedoch den Rahmen 
+dieses Textes sprengt, beschr"anken sich die folgenden Darstellungen auf
+die effizienteste Version des Algorithmus.
+
+P-Alg. bietet erheblich mehr Variationsm"oglichkeiten als C-Alg., BGH-Alg.
+und B-Alg., die, wie erw"ahnt, nicht alle hier behandelt werden k"onnen.
+Vergleicht man P-Alg. von seiner Methodik her mit den drei
+anderen, so erkennt man "Ahnlichkeiten zu BGH-Alg. . In beiden Algorithmen
+werden mehrere auch separat bedeutsame teilweise schon l"anger bekannte
+Verfahren zusammen verwendet. Von diesen Verfahren hebt sich lediglich
+die in Unterkapitel \ref{SecGuessInverse} dargestellte Methode zur
+Berechnung einer N"aherungsinversen ab. Sie wurde in \cite{Pan85} erstmalig
+ver"offentlicht.
+
+% **************************************************************************
+
+\MySection{Diagonalisierbarkeit}
+
+In diesem Unterkapitel wird die Diagonalisierbarkeit von Matrizen behandelt.
+Es ist f"ur das Verst"andnis des in diesem Kapitel dargestellten Algorithmus
+zur Determiantenberechnung nicht unbedingt erforderlich und kann daher beim 
+Lesen auch "ubersprungen werden. Im folgenden werden jedoch einige 
+Hintergr"unde der im Unterkapitel \ref{SecKrylov} dargestellten Methode von 
+Krylov n"aher beleuchtet, die ein paar Zusammenh"ange klarer werden lassen.
+
+Literatur zu diesem 
+Thema ist neben den in Kapitel \ref{ChapBase} genannten Stellen
+auch \cite{Zurm64} S. 169 ff .
+
+Zum Problem der Diagonalisierbarkeit\footnote{Definition s. u.} gelangt
+man "uber den Begriff der Basis eines Vektorraumes. Da es sich dabei
+um Grundlagen der Linearen Algebra handelt, erfolgt die Darstellung 
+vergleichsweise oberfl"achlich.
+
+Sei $K$ ein K"orper und $V$ ein $K$-Vektorraum.
+Seien $k_1,\, k_2, \, \ldots, \, k_n \in K \backslash \{ 0 \} $ 
+und $v_1, \, v_2, \, \ldots, \, v_n \in V$.
+Dann wird
+\Beq{EquLinKomb}
+   k_1 v_1 + k_2 v_2 + \ldots + k_n v_n 
+\Eeq
+als \index{Linearkombination} {\em Linearkombination} der Vektoren 
+$v_1$ bis $v_n$ bezeichnet.
+Sei $0_m$ der Nullvektor in $V$.
+Falls f"ur die Vektoren die Bedingung
+\[ k_1 v_1 + k_2 v_2 + \ldots + k_n v_n = 0_m \Rightarrow
+   k_1 = k_2 = \ldots = k_n = 0
+\]
+erf"ullt ist, werden sie als 
+{\em linear unabh"angig} \index{linear unabh{\Mya}ngig} bezeichnet, 
+ansonsten als {\em linear abh"angig} \index{linear abh{\Mya}ngig}.
+Falls jedes Element von $V$ als Linearkombination der Vektoren 
+$v_1,\ldots,v_n$
+darstellbar ist, werden diese Vektoren als 
+\index{Basis} {\em Basis} bezeichnet.
+
+F"ur alle Basen gilt die Aussage: \nopagebreak
+\begin{quote}
+    Je zwei Basen eines $K$-Vektorraumes bestehen aus dergleichen 
+    Anzahl von Vektoren.
+\end{quote}
+Sei $B$ die Basis des $K$-Vektorraumes $V$. Dann wird die Anzahl 
+der Vektoren, die $B$ bilden, 
+als {\em Dimension von $V$} \index{Dimension} , 
+kurz $\dim(V)$, bezeichnet.
+
+Zur Darstellung von Elementen eines Vektorraumes $V$ w"ahlt man sich eine
+Basis und beschreibt jedes Element des Vektorraumes als Linearkombination
+der Elemente der Basis. Sei $n$ die Dimension des Vektorraumes. Dann
+kann man auf diese Weise jedes Element von $V$ als $n$-Tupel von Elementen
+des zugrunde liegenden K"orpers $K$ betrachten. Man erh"alt die
+Vektorschreibweise:
+\Beq{EquVektorSchreibweise}
+   \left[ \begin{array}{c} k_1 \\k_2\\ \vdots\\ k_n \end{array} \right]
+\Eeq
+Die Basis der Form
+\begin{quote} % $$$$ Formatierung gepr"uft ?
+   $\left[ \begin{array}{c} 1\\ 0\\ 0\\ \vdots\\ 0\end{array} \right]$,
+   \hspace{0.7em}
+   $\left[ \begin{array}{c} 0\\ 1\\ 0\\ \vdots\\ 0\end{array} \right]$,
+   $\ldots , $ \hspace{0.7em}
+   $\left[ \begin{array}{c} 0\\ 0\\ 0\\ \vdots\\ 1 \end{array} \right]$
+\end{quote}
+wird als
+{\em kanonische Basis} \index{kanonische Basis} bezeichnet.
+
+Zur Betrachtung der Beziehungen verschiedener Basen zueinander werden diese
+Basen ihrerseits bzgl. der kanonischen Basis dargestellt. 
+
+Wird ein Vektor $v$ bzgl. einer Basis $B$ dargestellt, so wird dies
+folgenderma"sen ausgedr"uckt:
+\[ \left[
+       \begin{array}{c}
+           v_1 \\ \vdots \\ v_n
+       \end{array}
+   \right]_B
+\]
+Werden Vektoren zu Matrizen zusammengefa"st, so wird die gleiche 
+Schreibweise auch f"ur diese Matrizen verwendet.
+
+Sei $V$ ein $K$-Vektorraum der Dimension $n$ und $W$ ein $K$-Vektorraum
+der Dimension $m$. Ein Ergebnis der Linearen Algebra lautet, da"s dann
+die Menge aller $K$-Vektorraumhomomorphismen\footnote{also die Menge
+aller {\em strukurvertr"aglichen} linearen Abbildungen} $f$
+\[ f : \: V \rightarrow W \]
+isomorph ist zur Menge aller $m \times n$-Matrizen $A$, wenn man die 
+Abbildung definiert als\footnote{Dies entspricht der 
+Matrizenmultiplikation (vgl. \ref{SatzAlgMatMult}), wenn man den 
+abzubildenden Vektor $v$ als $n \times 1$-Matrix 
+betrachtet (vgl. \ref{SatzAlgMatMult}).}
+\[ f \lb
+         \left[
+             \begin{array}{c} v_1\\ v_2\\ \vdots\\ v_n \end{array}
+         \right]
+     \rb
+   :=
+      \left[
+          \begin{array}{c}
+              \sum_{j=1}^n a_{1,j} v_j \LMatStrut \\
+              \vdots \LMatStrut                   \\
+              \sum_{j=1}^n a_{m,j} v_j \LMatStrut
+          \end{array}
+      \right]
+\]
+
+Die Untersuchung der $K$-Vektorraumhomomorphismen kann man
+also anhand der entsprechenden Matrien vornehmen. Im folgenden 
+sind nur quadratische Matrizen von Interesse. Deshalb werden in den 
+weiteren Ausf"uhrungen nur diese Matrizen beachtet.
+
+Stellt man die Vektoren einer Basis $B_V$ bzgl. einer anderen Basis $B_W$
+(normalerweise der kanonischen Basis) dar und betrachtet sie als
+Spaltenvektoren einer Matrix \[ [B_V]_{B_W} \MyKomma \]
+so erkennt man beim Vergleich von
+\equref{EquLinKomb} und \equref{EquVektorSchreibweise} miteinander,
+da"s man einen bzgl. $B_V$ dargestellten Vektor $x$ in seine Darstellung
+bzgl. $B_W$ umrechnen kann durch
+\Beq{EquBasiswechsel}
+    [x]_{B_W}= B_V[x] \MyPunkt
+\Eeq
+Man erkennt also, da"s man eine Basis auch als Vektorraumhomomorphismus
+betrachten kann. Die umgekehrte Betrachtungsweise ist nat"urlich nicht
+m"oglich.
+
+Um zum Begriff der {\em Diagonalisierbarkeit} zu gelangen, betrachten wir
+nun, was passiert, wenn man Basen austauscht und die Darstellungen bzgl. der
+neuen Basen vornehmen will.
+
+Seien $V$ und $W$ jeweils $K$-Vektorr"aume sowie $B_V$ und $B_W$ jeweils
+Basen dieser Vektorr"aume. Sei \[ f: \: V \rightarrow W \] ein
+Vektorraumhomomorphismus und $A$ die entsprechende Matrix. Es gelte
+\Beq{EquVonVNachW}
+    \left[
+        \begin{array}{c} y_1\\ y_2\\ \vdots\\ y_n \end{array}
+    \right]_{B_W}
+    = 
+    A
+    \left[
+        \begin{array}{c} x_1\\ x_2\\ \vdots\\ x_n \end{array}
+    \right]_{B_V}
+\Eeq
+Wechselt man nun zu den Basen $\tilde{B_V}$ und $\tilde{B_W}$ und stellt 
+die neuen Basen bzgl. der alten durch die Matrizen $C$ und $D$ dar, so gilt
+entsprechend \equref{EquBasiswechsel}:
+\begin{eqnarray*}
+    \left[
+        \begin{array}{c} x_1\\ x_2\\ \vdots\\ x_n \end{array}
+    \right]_{B_V} 
+    & = & 
+    C
+    \left[
+        \begin{array}{c} 
+            \tilde{x_1}\\ 
+            \tilde{x_2}\\ \vdots \\
+            \tilde{x_n}
+        \end{array}
+    \right]_{\tilde{B_V}}
+\\
+    \left[
+        \begin{array}{c} y_1\\ y_2\\ \vdots\\ y_n \end{array}
+    \right]_{B_W}
+    & = & 
+    D
+    \left[
+        \begin{array}{c} 
+            \tilde{y_1}\\ 
+            \tilde{y_2}\\ \vdots \\
+            \tilde{y_n}
+        \end{array}
+    \right]_{\tilde{B_W}}
+\end{eqnarray*}
+Gleichung \equref{EquVonVNachW} bekommt also folgendes Aussehen:
+\[
+    D
+    \left[
+        \begin{array}{c} 
+            \tilde{y_1}\\ 
+            \tilde{y_2}\\ \vdots \\
+            \tilde{y_n}
+        \end{array}
+    \right]_{\tilde{B_W}}
+    =
+    A \: C
+    \left[
+        \begin{array}{c} 
+            \tilde{x_1}\\ 
+            \tilde{x_2}\\ \vdots \\
+            \tilde{x_n}
+        \end{array}
+    \right]_{\tilde{B_V}}
+\]
+Multipliziert man beide Seiten mit $D^{-1}$, erh"alt man:
+\[
+    \left[
+        \begin{array}{c} 
+            \tilde{y_1}\\ 
+            \tilde{y_2}\\ \vdots \\
+            \tilde{y_n}
+        \end{array}
+    \right]_{\tilde{B_W}}
+    =
+    D^{-1} \: A \: C
+    \left[
+        \begin{array}{c} 
+            \tilde{x_1}\\ 
+            \tilde{x_2}\\ \vdots \\
+            \tilde{x_n}
+        \end{array}
+    \right]_{\tilde{B_V}}
+\]
+Die Abbildung $f$ wird bzgl. der neuen Basen $\tilde{B_V}$ und $\tilde{B_W}$
+also durch die Matrix $A':=D^{-1}AC$ dargestellt. W"ahlt man die neuen 
+Basen geeignet, so ist es immer m"oglich zu erreichen, da"s 
+$A'$ die Form
+\[ \left[
+   \begin{array}{cccc}
+       a_{1,1}' & 0        & \cdots & 0        \MatStrut \\
+       0        & a_{2,2}' & \ddots & \vdots   \MatStrut \\
+       \vdots   & \ddots   & \ddots & 0        \MatStrut \\
+       0        & \cdots   & 0      & a_{n,n}' \MatStrut
+   \end{array} \right]
+\] bekommt. Eine Matrix dieser Form wird als 
+{\em Diagonalmatrix} \index{Diagonalmatrix} bezeichnet.
+
+Betrachtet man nun statt einer Abbildung zwischen den
+Vektorr"aumen eine Abbildung in $V$ und wechselt die Basis von $V$, so
+besitzt die Abbildung bzgl. der neuen Basis die Form $C^{-1}AC$.
+Es stellt sich wiederum die Frage, ob es m"oglich ist, die neue Basis
+so zu w"ahlen, da"s $C^{-1}AC$ eine Diagonalmatrix ist. Eine Matrix $A$,
+f"ur die das m"oglich ist, wird als
+{\em diagonalisierbar} \index{diagonalisierbar} bezeichnet.
+
+Um eine Beziehung zur Methode von Krylov (siehe Unterkapitel 
+\ref{SecKrylov}) herstellen zu k"onnen, folgt 
+eine Charakterisierung der Diagonalisierbarkeit. Dazu greifen wir auf 
+den bereits in
+\ref{DefUnterraum} definierten Begriff des {\em Unterraumes} zur"uck.
+Anhand dieser Definitionen erkennt man, da"s alle zu einem Eigenwert
+geh"orenden Eigenvektoren zusammen mit dem Nullvektor einen Unterraum
+des zugrunde liegenden Vektorraumes bilden. Er wird als
+{\em Eigenraum} \index{Eigenraum} bezeichnet.
+
+An dieser Stelle werden die Eigenwerte mit der Diagonalisierbarkeit
+in Verbindung gebracht:
+\begin{satz}
+\label{SatzEigenDiagonalBasis}
+    Eine $n \times n$-Matrix $A$ ist genau dann diagonalisierbar, wenn der 
+    zugrunde liegende $K$-Vektorraum $V$ eine Basis aus Eigenvektoren von 
+    $A$ besitzt.
+\end{satz}
+\begin{beweis}
+    Wir verzichten hier auf einen ausf"uhrlichen Beweis. Die Ideen f"ur
+    die beiden Beweisrichtungen sind:
+    \begin{itemize}
+    \item 
+          Ist eine Matrix $A$ diagonalisierbar und wechselt man die Basis
+          so, da"s $A$ Diagonalgestalt bekommt, werden dadurch die
+          Vektoren der kanonischen Basis zu Eigenvektoren der Matrix.
+    \item
+          Bilden die Eigenvektoren einer Matrix $A$ eine Basis von $V$ und
+          benutzt man diese Basis zur Darstellung bekommt $A$ die
+          Form einer Diagonalmatrix.
+    \end{itemize}
+\end{beweis}
+
+\begin{satz}
+\label{SatzEigenUnabhaengig}
+    Seien $\lambda_1,\, \ldots,\, \lambda_k$ paarweise verschiedene
+    Eigenwerte der $n \times n$-Matrix $A$. Sei $v_i$ ein Eigenvektor zu
+    $\lambda_i$. Dann sind die Eigenvektoren $v_1,\, \ldots,\, v_k$
+    linear unabh"angig.
+\end{satz}
+\begin{beweis}
+    Der Beweis erfolgt durch Induktion nach der Anzahl der verschiedenen
+    Eigenwerte $k$:
+    \begin{MyDescription}
+    \MyItem{$k=1$}
+        F"ur diesen Fall ist die Behauptung offensichtlich richtig.
+    \MyItem{$k>1$}
+        Die Behauptung gelte f"ur $k-1$ und sei f"ur $k$ zu zeigen.
+        Induktionsvoraussetzung ist also, da"s
+        $v_1, \, \ldots, \, v_{k-1}$ linear unabh"angig sind.
+        Angenommen $v_1, \, \ldots,\, v_{k}$ sind linear abh"angig.
+        Dann existieren eindeutig bestimmte $r_1, \ldots, r_{k-1} \in K$ 
+        mit
+        \Beq{EquEigenUnabhaengig}
+           v_k = r_1 v_1 + \cdots + r_{k-1} v_{k-1} \MyPunkt
+        \Eeq
+        Da $v_k$ nicht der Nullvektor sein kann, mu"s mindestens einer 
+        der Faktoren $r_1, \dots, r_k$ ungleich Null sein, z. B. $r_i$. 
+        
+        Betrachtet man $A$ als 
+        Abbildung und wendet diese Abbildung auf 
+        \equref{EquEigenUnabhaengig} an, so kann man, da es sich um
+        Eigenvektoren handelt, auch mit den Eigenwerten multiplizieren
+        und erh"alt
+        \[
+           \lambda_k v_k = \lambda_1 r_1 v_1 + \cdots 
+                                             + \lambda_k r_k v_k \MyPunkt
+        \]
+        Ist nun $\lambda_k = 0$, dann mu"s wegen der Verschiedenheit
+        der Eigenwerte $\lambda_i \neq 0$ sein und man erh"alt einen 
+        Widerspruch zur linearen Unabh"angigkeit von 
+        $v_1,\, \ldots, \, v_k$.
+        
+        Ist $\lambda_k \neq 0$ erh"alt man einen Widerspruch zur 
+        Eindeutigkeit der Darstellung von $v_k$.
+    \end{MyDescription}
+\end{beweis}
+
+Aus \ref{SatzEigenDiagonalBasis} und \ref{SatzEigenUnabhaengig} ergibt sich:
+
+\begin{korollar}
+\label{SatzMaxEigen}
+    Die maximale Anzahl verschiedener Eigenwerte einer Matrix ist gleich
+    der Dimension des zugrunde liegenden Vektorraumes. 
+    
+    Besitzt eine Matrix maximal viele verschiedene Eigenwerte, so ist
+    sie diagonalisierbar.
+\end{korollar}
+
+F"ur die zweite Folgerung ben"otigen wird einen weiteren Betriff. Seien
+dazu $T$ und $U$ Unterr"aume des $K$-Vektorraumes $V$. Dann wird die Menge
+\[
+   \{ w \MySetProperty 
+      \exists k,l \in K, \, t \in T, \, u \in U: \: w=kt+lu \}
+\]
+aller Linearkombinationen zweier Vektoren aus $T$ und $U$ als
+{\em direkte Summe von $T$ und $U$} \index{direkte Summe} bezeichnet.
+Anhand von \ref{DefUnterraum} erkennt man, da"s die direkte Summe
+zweier Unterr"aume von $V$ wiederum ein Unterraum von $V$ ist.
+
+Somit erh"alt man aus
+\ref{SatzEigenDiagonalBasis} und \ref{SatzEigenUnabhaengig}:
+
+\begin{korollar}
+\label{SatzEigenraum}
+    Eine Matrix ist genau dann diagonalisierbar, wenn die direkte Summe
+    aller Eigenr"aume der Matrix den zugrundliegenden Vektorraum ergibt.
+\end{korollar}
+
+Die Bedeutung der in diesem Unterkapitel dargestellten Sachverhalte
+wird deutlich, wenn man sie mit den in Unterkapitel
+\ref{SecKrylov} erw"ahnten Einschr"ankungen f"ur die
+Verwendbarkeit der Methode von Krylov zur Berechnung der Koeffizienten 
+des charakteristischen Polynoms vergleicht.
+
+% ... mehrfache Eigenwerte --> Dimension des Eigenraums
+
+% Welche Beziehungen bestehen zwischen Invertierbarkeit und
+%     Dialgonalisierbarkeit?
+
+% **************************************************************************
+
+\MySection{Das Minimalpolynom}
+\label{SecMinimalpolynom}
+
+Die Methode von Krylov (siehe \ref{SecKrylov}) dient zur Bestimmung der
+Koeffizienten des Minimalpolynoms einer Matrix. Deshalb wird hier dieses
+Minimalpolynom zun"achst n"aher betrachtet. Eine tiefergreifende 
+Behandlung befindet sich z. B. in \cite{Zurm64} S. 233 ff .
+
+In Satz \ref{SatzCayleyHamilton} wird bewiesen, da"s eine
+$n \times n$-Matrix $A$ ihre eigene charakteristische Gleichung erf"ullt.
+Diese Beobachtung f"uhrt zu: \nopagebreak[3]
+\MyBeginDef
+\label{DefMinimalpolynom} 
+\index{Minimalpolynom} \index{Minimumgleichung}
+    Das Polynom $m(\lambda)$ mit dem kleinsten Grad, f"ur das die 
+    Gleichung \[ m(A) = 0_n \] erf"ullt ist, wird 
+    {\em Minimalpolynom} genannt. Die Gleichung wird als 
+    {\em Minimumgleichung} \index{Minimumgleichung} bezeichnet.
+\MyEndDef
+
+Um die Methode von Krylov verstehen zu k"onnen, m"ussen wir verschiedene
+Eigenschaften des Minimalpolynoms beleuchten:
+
+\begin{satz}
+\label{SatzMinimalpolynomVielfaches}
+    Sei $A$ eine $n \times n$-Matrix und $f(\lambda)$ ein Polynom. Es
+    gelte \[ f(A) = 0_n \MyPunkt \] Dann ist $f(\lambda)$ ein Vielfaches
+    des Minimalpolynoms $m(\lambda)$ von $A$.
+\end{satz}
+\begin{beweis}
+    Angenommen die Behauptung ist falsch. Dann entsteht bei der Division
+    von $f(\lambda)$ durch $m(\lambda)$ ein Rest $r(\lambda)$ und f"ur
+    ein geeignetes Polynom $q(\lambda)$ gilt:
+    \[ f(\lambda) = q(\lambda)m(\lambda) + r(\lambda) \MyPunkt \]
+    Der Grad von $r(\lambda)$ ist kleiner als der Grad von $m(\lambda)$.
+    Wird nun in diese Gleichung $A$ eingesetzt, erh"alt man
+    \[ 0_n = 0_n + r(A) \MyPunkt \] Also mu"s auch gelten
+    \[ r(A) = 0_n \MyPunkt \] Da jedoch das Minimalpolynom das Polynom mit
+    dem kleinsten Grad ist, das diese Bedingung erf"ullt, f"uhrt dies
+    zu einem Widerspruch.
+\end{beweis}
+
+Aus \ref{SatzCayleyHamilton} und \ref{SatzMinimalpolynomVielfaches} 
+ergibt sich:
+\begin{korollar}
+\label{SatzVielfaches}
+    Das charakteristische Polynom ist ein Vielfaches des Minimalpolynoms.    
+\end{korollar}
+
+Da wir die Methode von Krylov zur Berechnung des charakteristischen 
+Polynoms verwenden wollen, m"ussen wir wissen, unter welchen Umst"anden
+es mit dem Minimalpolynom zusammenf"allt. Diese 
+Frage beantwortet der folgende Satz:
+
+\begin{satz}
+\label{SatzCharMatGGT}
+    Sei $A$ eine $n \times n$-Matrix.
+    Es wird definiert:
+    \[ C := A - \lambda E_n \MyPunkt \] Sei
+    \[ p(\lambda) = \det(C) \] das charakteristische Polynom von $A$.
+    Es gelte
+    \Beq{Equ20MatGGT}
+        m(\lambda) = \frac{ p(\lambda) }{ q(\lambda) }
+    \Eeq
+    \MyPunktA{25em}
+    Das Polynom $m(\lambda)$ ist genau dann das Minimalpolynom von $A$,
+    wenn $q(\lambda)$ der gr"o"ste gemeinsame Teiler (ggT) der
+    Determinanten aller $(n-1) \times (n-1)$-Untermatrizen von $C$ ist.
+\end{satz}
+\begin{beweis}
+    Der Beweis erfolgt in zwei Schritten:
+    \begin{itemize}
+    \item Sei zun"achst $q(\lambda)$ der ggT Determinanten der 
+          Untermatrizen. Es ist
+          zu zeigen, da"s dann $m(\lambda)$ das Minimalpolynom ist.
+
+          Mit Hilfe von Satz \ref{SatzEntw} (Zeilen- und Spaltenentwicklung)
+          folgt, da"s $p(\lambda)$ durch $q(\lambda)$ teilbar ist. D. h. es
+          gibt ein Polynom $m'(\lambda)$, so da"s
+          \Beq{Equ2MatGGT}
+              p(\lambda) = m'(\lambda) q(\lambda) \MyPunkt
+          \Eeq
+          Weiterhin gibt es eine $n \times n$-Matrix
+          $M$ aus teilerfremden Polynomen "uber $\lambda$, so da"s gilt:
+          \Beq{Equ1MatGGT}
+              \adj(C) = M q(\lambda) \MyPunkt
+          \Eeq
+          Nach Satz \ref{SatzAdj} gilt:
+          \Beq{Equ5MatGGT}
+              C \, \adj(C) = E_n p(\lambda) \MyPunkt
+          \Eeq
+          Mit \equref{Equ2MatGGT} folgt aus \equref{Equ5MatGGT}:
+          \Beq{Equ4MatGGT}
+              C \, \adj(C) = E_n m'(\lambda) q(\lambda) \MyPunkt
+          \Eeq
+          Mit \equref{Equ1MatGGT} folgt aus \equref{Equ5MatGGT}:
+          \Beq{Equ3MatGGT}
+              C \, \adj(C) = C M q(\lambda) \MyPunkt
+          \Eeq
+          Aus \equref{Equ3MatGGT} und \equref{Equ4MatGGT} folgt:
+          \[ C M = E_n m'(\lambda) \MyPunkt \]
+          Benutzt man die Definition von $C$, erh"alt man
+          \[ (A - \lambda E_n) M = E_n m'(\lambda) \MyPunkt \]
+          Setzt man nun in dieser Gleichung $A$ f"ur $\lambda$ ein,
+          ergibt sich
+          \[ m'(A) = 0_n \MyPunkt \]
+          Nach Satz \ref{SatzMinimalpolynomVielfaches} ist $m'(\lambda)$
+          also ein Vielfaches des Minimalpolynoms $m(\lambda)$.
+          
+          Angenommen es gibt ein Polynom $m''(\lambda)$ mit
+          \[ m''(A) = 0_n \MyKomma \] dessen Grad kleiner ist als der
+          Grad von $m'(\lambda)$. Da der Grad des charakteristischen
+          Polynoms immer $n$ ist, mu"s dann der Grad von $q(\lambda)$ in
+          \equref{Equ2MatGGT} und somit auch in \equref{Equ1MatGGT}
+          entsprechend gr"o"ser sein, im Widerspruch dazu, da"s
+          $q(\lambda)$ der ggT ist. Also ist $m'(\lambda)$ das
+          Minimalpolynom.
+    \item Sei nun $m(\lambda)$ das Minimalpolynom. Dann ist zu zeigen, da"s
+          $q(\lambda)$ der ggT der Unterdeterminanten ist.
+          
+          Nach \ref{SatzVielfaches} gibt es ein Polynom $q'(\lambda)$, so
+          da"s
+          \Beq{Equ6MatGGT}
+              p(\lambda) = q'(\lambda) m(\lambda) \MyPunkt
+          \Eeq
+          Benutzt man f"ur das Minimalpolynom die Koeffizientendarstellung,
+          erh"alt man mit geeigneten Koeffizienten $b_i$:
+          \begin{eqnarray*}
+              \lefteqn{- E_n m(\lambda)} \\
+              & = & m(A) - E_n m(\lambda) \\
+              & = & b_m(A^m - \lambda^m E_n)
+                    + b_{m-1}(A^{m-1} - \lambda^{m-1} E_n) + \cdots +
+                    b_1(A - \lambda E_n) \MyPunkt \\
+          \end{eqnarray*}
+          Also ist $m(\lambda)$ durch $(A-\lambda E_n)$ teilbar und es
+          gibt eine Matrix $N$ aus Polynomen "uber $\lambda$, so da"s gilt:
+          \Beq{Equ7MatGGT}
+              m(\lambda) E_n = (A - \lambda E_n) N \MyPunkt
+          \Eeq
+          Mutipliziert man beide Seiten mit $q'(\lambda)$, erh"alt man
+          \[ p(\lambda) E_n = q'(\lambda) (A - \lambda E_n) N \MyPunkt \]
+          Subtrahiert man nun auf beiden Seiten
+          \begin{eqnarray*}
+               & & p(\lambda) E_n \\
+               & \MyStack{nach \ref{SatzAdj}}{=} & C \,\adj(C) \\
+               & = & (A - \lambda E_n) \adj(C) \MyKomma
+          \end{eqnarray*}
+          erh"alt man
+          \[
+             0_{n,n} =
+             \underbrace{ (A - \lambda E_n)
+                        }_{ \mbox{$(*1)$} }
+             \:
+             \underbrace{ (q'(\lambda) N - \adj(C))
+                        }_{ \mbox{$(*2)$} }
+          \]
+          In dieser Gleichung ist Term $(*1)$ f"ur ein beliebig gew"ahltes 
+          $\lambda$ ungleich 
+          der Nullmatix\footnote{abgesehen von einigen Sonderf"allen, deren
+          Existenz den Beweis jedoch nicht beeintr"achtigt}. Also mu"s 
+          Term $(*2)$ gleich der Nullmatrix sein, so 
+          da"s gilt:
+          \[ q'(\lambda) N = \adj(C) \]
+          Also ist $q'(\lambda)$ Teiler der Elemente von $\adj(C)$.
+          
+          Angenommen es gibt ein Polynom $q''(\lambda)$, dessen Grad
+          gr"o"ser ist als der Grad von $q'(\lambda)$ und das ebenfalls
+          Teiler der Elemente von $\adj(C)$ ist. Da der Grad von
+          $p(\lambda)$ immer $n$ ist, mu"s dann der Grad von $m(\lambda)$ 
+          in \equref{Equ6MatGGT} kleiner sein, im Widerspruch zu der
+          Voraussetzung, da"s $m(\lambda)$ das Minimalpolynom ist.
+    \end{itemize}
+\end{beweis}
+
+Berechnet man in \equref{Equ7MatGGT} auf beiden Seiten die Determinante,
+erh"alt man
+\Beq{Equ21MatGGT}
+   m^n(\lambda) = p(\lambda) \det(N) \MyPunkt
+\Eeq
+Aus \equref{Equ20MatGGT} und \equref{Equ21MatGGT} ergibt sich:
+
+\begin{korollar}
+\label{SatzMinimalNullGenauDann}
+    Es ist $\lambda_i$ genau dann Nullstelle von $m(\lambda)$, wenn es auch
+    Nullstelle von $p(\lambda)$ ist.
+\end{korollar}
+
+Anders ausgedr"uckt: $m(\lambda)$ und $p(\lambda)$ besitzen die gleichen
+Nullstellen mit evtl. verschiedenen Vielfachheiten. Das f"uhrt
+zu einer weiteren Schlu"sfolgerung:
+
+\begin{korollar}
+\label{SatzPaarweiseVerschieden}
+    Besitzt eine $n \times n$-Matrix $n$ paarweise verschiedene Eigenwerte,
+    so stimmen ihr Minimalpolynom und ihr charakteristisches Polynom
+    "uberein.
+\end{korollar}
+
+Falls die Eigenwerte nicht paarweise verschieden sind, k"onnen 
+Minimalpolynom und charakteristisches Polynom also verschieden sein, was
+eine Einschr"ankung f"ur die Methode von Krylov 
+(siehe Unterkapitel \ref{SecKrylov}) bedeutet, wenn man sie zur Berechnung
+der Koeffizienten des charakteristischen Polynoms verwendet.
+Wann die beiden Polynome verschieden sind, zeigt der folgende Satz:
+
+\begin{satz}
+\label{SatzMinimalDimEins}
+    Das Minimalpolynom $m(\lambda)$ einer Matrix $A$ stimmt genau dann 
+    mit dem charakteristischen Polynom $p(\lambda)$ der Matrix "uberein, 
+    wenn die Dimension jedes Eigenraumes $1$ 
+    betr"agt\footnote{Es ist zu beachten, da"s diese Aussage nicht dazu 
+    "aquivalent ist, da"s die direkte Summe der Eigenr"aume den gesamten 
+    Vektorraum ergibt.}.
+\end{satz}
+\begin{beweis}
+    Aus \ref{SatzCharMatGGT} folgt, da"s $m(\lambda)$ und $p(\lambda)$
+    genau dann "ubereinstimmen, wenn der 
+    ggT der Determinanten aller $(n-1) \times (n-1)$-Untermatrizen
+    der charakteristischen Matrix von $A$ gleich $1$ ist.
+    
+    Betrachtet man die beiden Polynome in ihrer Linearfaktorendarstellung,
+    mu"s der genannte ggT, falls er ungleich $1$ ist, mit einem Linearfaktor
+    von $p(\lambda)$ "ubereinstimmen. F"ur die entsprechende Nullstelle
+    von $p(\lambda)$ verschwinden auch alle 
+    $(n-1) \times (n-1)$-Unterdeterminanten. Es gibt also f"ur diese
+    Nullstelle keine $n-1$ linear unabh"angigen Spaltenvektoren der 
+    charakteristischen Matrix. Der Rangabfall der Nullstelle ist also
+    gr"o"ser als $1$ und es gibt mehr als einen linear unabh"angigen 
+    Eigenvektor zu diesem Eigenwert.
+\end{beweis}
+
+Aus \ref{SatzPaarweiseVerschieden} und \ref{SatzMinimalDimEins} erh"alt
+man:
+\begin{korollar}
+\label{SatzMinimalKomplex}
+    Falls die Eigenwerte nicht paarweise verschieden sind und das
+    Minimalpolynom mit dem charakteristischen Polynom "ubereinstimmt,
+    zerf"allt es im K"orper der reellen Zahlen nicht in Linearfaktoren.
+\end{korollar}
+
+Wie bereits mehrfach erw"ahnt, erfolgt nun die Anwendung der Ergebnisse 
+dieses Unterkapitels auf die Methode von Krylov.
+
+% $$$ Verbesserung der Benutzung der Methode von Krylov:
+% (\det(A) gesucht); bestimme Matrix B, so da"s $\det(B)$ bekannt oder
+% leicht zu berechnen und f"ur $A*B$ gilt:
+%     die Dimension jedes Eigenraumes ist gleich 1; 
+%     (es gen"ugt: die Eigenwerte sind paarweise verschieden)
+%     w"unschenswert $\det(B)$ ist 'Einheit' im zugrundeliegenden Ring;
+% berechne \det(AB); dann eine zus"atzliche Division:
+%  \det(A) = \det(AB) / \det(B)
+
+% **************************************************************************
+
+\MySection{Die Methode von Krylov}
+\label{SecKrylov}
+\index{Krylov!Methode von}
+
+In diesem Unterkapitel wird die Methode von Krylov zur Bestimmung der
+Koeffizienten des Minimalpolynoms einer Matrix beschrieben
+(siehe z. B. \cite{Zurm64} ab S. 171 oder \cite{Hous64} ab S. 149;
+Originalver"offentlichung \cite{Kryl31} ). Wie in Unterkapitel 
+\ref{SecMinimalpolynom} beschrieben wird, ist das Minimalpolynom
+unter bestimmten Bedingungen mit dem charakteristischen Polynom identisch.
+Da sich unter den Koeffizienten des charakteristischen Polynoms auch die
+Determinante der zugrunde liegenden Matrix befindet 
+(vgl. \ref{SatzDdurchP}), ist es m"oglich, Krylovs Methode zur 
+Determinantenberechnung zu verwenden, was im Algorithmus von Pan 
+ausgenutzt wird.
+
+Sei $A$ die $n \times n$-Matrix, deren Minimalpolynom zu
+berechnen ist. 
+Sei $z_0$ ein geeigneter Vektor der L"ange $n$. Wie $z_0$ beschaffen ist, 
+wird noch behandelt. Sei $i \in \Nat$ gegeben. Die 
+Vektoren \[ z_1,\, \ldots,\, z_i \] erh"alt man durch
+\begin{eqnarray}
+    z_1 & := & A z_0 \nonumber \\
+    z_2 & := & A z_1 = A^2 z_0 \nonumber \\
+    \vdots \nonumber \\
+    z_i & := & A z_{i-1} = A^i z_0 \label{EquDefZI} \MyPunkt
+\end{eqnarray}
+Die Vektoren \[ z_0,\, \ldots ,\, z_i \] werden als {\em iterierte Vektoren}
+bezeichnet.
+Betrachtet man die iterierten Vektoren als Spaltenvektoren einer Matrix,
+erh"alt man eine sogenannte {\em Krylov}-Matrix:
+\[ K(A,z_0,i):= [ z_0, z_1, z_2, \ldots, z_{i-1} ] \MyPunkt \]
+Zwischen den iterierten Vektoren besteht eine lineare Abh"angigkeit
+besonderer Form, die von Krylov \cite{Kryl31} f"ur das hier zu
+beschreibende Verfahren entdeckt wurde.
+
+Das Minimalpolynom von $A$ wird mit $m(\lambda)$ bezeichnet.
+Es gilt also
+\Beq{EquKrylovPolynom}
+    m(A) = 0_{n,n} \MyPunkt
+\Eeq Das Polynom habe den Grad $j$.
+Seien $c_0,\, \ldots\, c_{j-1}$ die Koeffizienten des Polynoms. 
+Definiert man
+\[
+   c := \left[
+        \begin{array}{c} c_0 \\ c_1 \\ \vdots \\ c_{j-1} \end{array}
+        \right]
+\]
+dann ergibt sich
+\begin{eqnarray} % $$$$ Formatierung gepr"uft ?
+    m(A) & = & 0_{n,n} \nonumber
+\\ \Leftrightarrow \hspace{1.2mm} \nonumber
+    A^j + c_{j-1} A^{j-1} + \ldots + c_1 A + c_0 E_n & = & 0_{n,n}
+\\ \Leftrightarrow \hspace{9.1mm} \nonumber
+    c_{j-1} A^{j-1} + \ldots + c_1 A + c_0 E_n & = & - A^j
+\\ \Leftrightarrow \nonumber
+    c_0 E_n z_0 + c_1 A z_0 + \ldots + c_{j-1} A^{j-1} z_0 &
+                                                         = & - A^j z_0
+\\ \Leftrightarrow \hspace{3.6cm} \label{EquKrylovEqu}
+    K(A,z_0,j) c & = & - A^j z_0
+\end{eqnarray}
+Gleichung \equref{EquKrylovEqu} kann man als lineares Gleichungssystem
+in Matrizenschreibweise betrachten. Multipliziert man die rechte Seite
+dieser Gleichung aus, erh"alt man einen Vektor der L"ange $n$.
+Nach \ref{SatzRangGleich} ist das entsprechende Gleichungssystem
+genau dann l"osbar, wenn
+\[ \rg(K(A,z_0,j) = \rg([K(A,z_0,j),\, A^j z_0]) \MyPunkt \]
+Wir suchen eine eindeutige L"osung des Gleichungssystems und erhalten diese
+durch Verwendung von \ref{SatzGenauEine}, wonach der bis hierhin
+nicht n"aher beschriebene Vektor $z_0$ so gew"ahlt werden mu"s,
+da"s die Spaltenvektoren von $K(A,z_0,j)$ linear unabh"angig und
+die Spaltenvektoren von $[K(A,z_0,j),\, A^j z_0]$ linear abh"angig sind.
+
+An dieser Stelle wird deutlich, da"s $m(\lambda)$ das Polynom mit dem
+kleinsten Grad sein mu"s, das \equref{EquKrylovPolynom} erf"ullt, damit
+\equref{EquKrylovEqu} eine eindeutige L"osung besitzt. Falls ein
+Polynom $m_1(\lambda)$ existiert, da"s \equref{EquKrylovPolynom} erf"ullt
+und dessen Grad kleiner ist als der Grad von $m(\lambda)$, dann ist die
+lineare Abh"angigkeit unabh"angig von der Wahl von $z_0$ bereits f"ur
+weniger als $j$ iterierte Vektoren gegeben.
+
+Da nach \equref{EquKrylovEqu} die ersten $j+1$ iterierten Vektoren linear
+abh"angig sind, bleibt zu zeigen, da"s die ersten $j$ dieser Vektoren linear
+unabh"angig sind. Dazu betrachten wir das $s \in \Nat$ mit der Eigenschaft,
+da"s $s$ paarweise verschiedene Eigenvektoren von $A$ immer linear 
+unabh"angig und $s+1$ von ihnen immer linear abh"angig sind. Aus den 
+Grundlagen "uber Eigenvektoren und lineare Unabh"angigkeit geht hervor, 
+da"s ein solches $s$ gibt.
+
+Seien somit
+\[ x_1,\, \ldots ,\, x_s \] linear 
+unabh"angige Eigenvektoren von $A$.
+Sei der iterierte Vektor $z_0$ darstellbar als Linearkombination einer 
+maximalen Anzahl (also $s$) von Eigenvektoren von $A$. 
+Demnach gilt f"ur geeignete 
+\[ d_1,\, \ldots,\, d_s \MyKomma \] ungleich Null\footnote{Eine 
+ausf"uhrliche Diskussion der Eigenschaften der 
+iterierten Vektoren, insbesondere ihrer Beziehung zu den Eigenvektoren, 
+befindet sich in \cite{Bode59} (Teil 2, Kapitel 2).}:
+\Beq{EquDefZNull}
+    z_0 = d_1 x_1 + \cdots + d_s x_s \MyPunkt
+\Eeq 
+Eine lineare Abh"angigkeit zwischen den ersten $j$ iterierten Vektoren
+hat die Form
+\Beq{EquIteriertLinAbh}
+    h(z_0):= e_0 z_0 + e_1 z_1 + \cdots + e_{j-1} z_{j-1} = 0_n \MyKomma
+\Eeq
+wobei nicht alle $e_i$ gleich Null sind. Mit Hilfe der
+Gleichungen \equref{EquDefZI} und \equref{EquDefZNull} in Verbindung mit
+den Eigenwertgleichungen\footnote{vgl. Gleichung \equref{EquEigenMotiv}}
+\[ A x_i = \lambda_i x_i \]
+erh"alt man:
+\begin{eqnarray*} % $$$$ Formatierung gepr"uft ?
+    z_0 & = & \left. d_1 x_1 + \cdots + d_s x_s 
+                        \: \hspace{14.2mm} \right| * e_0 \\
+    z_1 & = & 
+        \left. \lambda_1 d_1 x_1 + \cdots + 
+                   \lambda_s d_s x_s \: \hspace{7.1mm} \right| * e_1 \\
+    z_2 & = & 
+         \left. \lambda_1^2 d_1 x_1 + \cdots + \lambda_s^2 d_s x_s 
+              \: \hspace{7mm} \right| * e_2 \\
+    & \vdots \\
+    z_{j-1} & = &
+         \left. \lambda_1^{j-1} d_1 x_1 
+                       + \cdots + \lambda_s^{j-1} d_s x_s \: \right| * 1
+\end{eqnarray*}
+Diese Gleichungen f"ur die $z_i$ werden mit den am rechten Rand angegebenen 
+Werten (vgl. \equref{EquIteriertLinAbh}) multipliziert und anschlie"send 
+addiert. Definiert man
+\[
+   g(\lambda):= e_0 + e_1 \lambda + \cdots + e_{j-1} \lambda^{j-1} \MyKomma
+\]
+so lautet das Ergebnis in Verbindung mit \equref{EquIteriertLinAbh} :
+\[
+    h(z_0)= g(\lambda_1) d_1 x_1 + \cdots + g(\lambda_s) d_s x_s
+          = 0_n \MyPunkt
+\]
+Da die $x_k$ nach Voraussetzung linear unabh"angig sind, mu"s also gelten
+\[ \forall 1 \leq k \leq s :\: g(\lambda_k)d_k = 0 \MyPunkt \]
+Da wiederum nach Voraussetzung $z_0$ eine Linearkombination aller $s$
+linear unabh"angigen Eigenvektoren $x_i$ (s. o.) ist, folgt
+\Beq{Equ2BewLinUnabh}
+    \forall 1 \leq i \leq s :\: g(\lambda_i)= 0 \MyPunkt
+\Eeq
+Da die Dimension jedes Eigenraumes mindestens $1$ betr"agt, folgt mit Hilfe
+von \ref{SatzMinimalNullGenauDann}, da"s
+die maximale Anzahl linear unabh"angiger Eigenvektoren $s$ mindestens
+so gro"s ist wie der Grad des Minimalpolynoms $j$.
+
+Da $g(\lambda)$ als Polynom vom Grad $j-1$
+nur maximal $j-1$ Nullstellen besitzen kann, folgt aus 
+\equref{Equ2BewLinUnabh}
+\[ e_0 = e_1 = \cdots = e_{j-1} = 0 \MyKomma \]
+Daraus wiederum folgt mit \equref{EquIteriertLinAbh},
+da"s die iterierten Vektoren linear unabh"angig sind.
+
+Der bis hierhin gef"uhrte Beweis der linearen Unabh"angigkeit
+iterierter Vektoren verwendet die maximale Anzahl $s$ linear unabh"angiger
+Eigenvektoren. Betrachten wir deshalb diesen Wert $s$ genauer.
+Es gibt zwei F"alle:
+\begin{itemize}
+\item
+      Minimalpolynom und charakteristisches Polynom sind identisch.
+      Satz \ref{SatzMinimalDimEins} f"uhrt zu zwei Unterf"allen:
+      \begin{itemize}
+      \item
+            Die Eigenwerte sind paarweise verschieden. In diesem Fall
+            ist $s$ gleich dem Grad $n$ des charakteristischen Polynoms
+            und somit gleich $j$.
+      \item
+            Die Eigenwerte sind nicht paarweise verschieden. Nach
+            \ref{SatzMinimalDimEins} ist $s$ gleich der Anzahl verschiedener
+            Eigenwerte und damit in $\Rationals$ kleiner als $n$ und 
+            mindestens $1$. In diesem Fall l"a"st sich die lineare
+            Unabh"angigkeit nur f"ur weniger als $j$ iterierte Vektoren
+            beweisen und die Methode von Krylov ist zur Bestimmung der
+            Koeffizienten des Minimalpolynoms nicht anwendbar.
+      \end{itemize}
+\item 
+      Minimalpolynom und charakteristisches Polynom sind nicht identisch.
+      Es gibt wiederum zwei Unterf"alle:
+      \begin{itemize}
+      \item 
+            Die direkte Summe der Eigenr"aume ergibt den gesamten 
+            Vektorraum. In diesem Fall ist $s = n >j$.
+      \item
+            Die direkte Summe der Eigenr"aume ergibt nicht den gesamten
+            Vektorraum. In diesem Fall ist $s \geq j$.
+      \end{itemize}
+\end{itemize}
+W"ahlt man also $z_0$ als Linearkombination einer maximalen Anzahl linear
+unabh"angiger Eigenvektoren, so sind die ersten $j$ iterierten Vektoren
+linear unabh"angig, es sei denn, Minimalpolynom und charakteristisches
+Polynom sind identisch und die Eigenwerte nicht paarweise verschieden.
+
+Das nun noch verbliebene Problem ist die Wahl von $z_0$ f"ur eine gegebene 
+Matrix $A$, da im Normalfall die Eigenvektoren nicht bekannt sind. Diese
+Schwierigkeit
+kann dadurch "uberwunden werden, da"s man die Methode von Krylov mit 
+verschiedenen Vektoren $z_0$ auf die Matrix $A$ anwendet und dabei die
+Vektoren $z_0$ so ausw"ahlt, da"s mindestens einer unter ihnen eine 
+Linearkombination aller Eigenvektoren $x_1$ bis $x_s$ ist.
+
+W"ahlt man eine Basis des zugrunde liegenden Vektorraumes, bestehend aus $n$
+Vektoren, sowie einen
+weiteren Vektor so aus, da"s je $n$ dieser $n+1$ Vektoren linear unabh"angig
+sind und der $n+1$-te jeweils eine Linearkombination aller $n$ anderen ist,
+so besitzt mindestens einer dieser Vektoren die geforderte Eigenschaft.
+Dies erkennt man durch folgende "Uberlegung:
+Stellt man die $n$ Vektoren als Linearkombinationen der Eigenvektoren dar,
+so wird jeder Eigenvektor mindestens einmal ben"otigt. Da der $n+1$-te
+Vektor eine Linearkombination der anderen $n$ ist, ist er also auch eine
+Linearkombination aller beteiligen Eigenvektoren. Ein Beispiel f"ur 
+$n+1$ Vektoren, die offensichtlich diese Eigenschaft besitzen, sind die
+Vektoren der kanonische Basis und deren Summe:
+\[ 
+   \left[
+       \begin{array}{c}
+           1 \\ 0 \\ 0 \\ \vdots \\ 0
+       \end{array}
+   \right]
+   \left[
+       \begin{array}{c}
+           0 \\ 1 \\ 0 \\ \vdots \\ 0
+       \end{array}
+   \right] \: \ldots  \:
+   \left[
+       \begin{array}{c}
+           0 \\ 0 \\ \vdots \\ 0 \\ 1
+       \end{array}
+   \right] \: 
+   \left[
+       \begin{array}{c}
+           1 \\ 1 \\ 1 \\ \vdots \\ 1
+       \end{array}
+   \right]  
+\]
+
+Uns interessiert die Berechnung der Determinante mit Hilfe der 
+Methode von Krylov. Zusammengefa"st sieht das Vorgehen dazu folgenderma"sen
+aus:
+\begin{itemize}
+\item 
+      Zun"achst werden auf die soeben beschriebene Weise $n+1$ f"ur den 
+      iterierten Vektor $z_0$ bestimmt. In der praktischen Anwendung 
+      beschr"ankt man
+      sich in der Regel auf einen Vektor, da die Anzahl der F"alle, in 
+      denen dieser Vektor nicht ausreicht, so gering ist, da"s diese F"alle
+      vernachl"assigt werden k"onnen.
+
+      Die folgenden Schritte werden mit jedem Vektor $z_0$ parallel 
+      durchgef"uhrt. 
+      
+      Falls mehrere der parallelen Zweige ein Ergebnis 
+      liefern, m"ussen diese Ergebisse gleich sein. Falls sie nicht 
+      gleich sind, wurde die Rechnung nicht korrekt durchgef"uhrt.
+
+      Falls keiner der Zweige ein Ergebnis liefert, sind entweder die 
+      Eigenwerte der zugrunde liegenden Matrix nicht paarweise verschieden,
+      oder die Matrix ist nicht invertierbar. Diese beiden Unterf"alle 
+      k"onnen mit dem hier dargestellten Algorithmus nicht unterschieden 
+      werden.
+\item 
+      Es werden die iterierten Vektoren von $z_1$ bis $z_n$ berechnet.
+\item
+      Das Gleichungssystem \equref{EquKrylovEqu} wird dadurch gel"ost, 
+      da"s die aus den iterierten Vektoren bestehende Krylov-Matrix
+      inveritert wird. Ist die Krylov-Matrix nicht invertierbar, so ist 
+      der Berechnungsversuch aus den bereits beschriebenen Gr"unden
+      ein Fehlschlag und wird abgebrochen.
+\item
+      Die Koeffizienten des charakteristischen Polynoms, und somit auch
+      die Determinante, werden dadurch berechnet, da"s die Inverse
+      der Krylov-Matrix mit dem iterierten Vektor $z_n$ multipliziert wird
+      (vgl. \equref{EquKrylovEqu}).
+\end{itemize}
+
+% mehr iterierte Vektoren, als der Grad des Minimalpolynoms angibt sind
+% immer linear abh"angig!!!! (--> L"osbarkeit linearer Gleichungssysteme);
+
+% **************************************************************************
+
+\MySection{Vektor- und Matrixnormen}
+\label{SecNorm}
+
+Die Darstellungen der Wahl einer N"aherungsinversen in Unterkapitel 
+\ref{SecGuessInverse} und der iterativen Matrizeninvertierung 
+in Unterkapitel \ref{SecNewton} benutzen Normen von Matrizen.
+Deshalb werden im vorliegenden Unterkapitel die Normen eingef"uhrt, die
+dort zur Beschreibung erforderlich sind. 
+Literatur dazu ist z. B. \cite{GL83} ab S. 12 
+oder \cite{Isaa73} ab S. 3.
+
+Umgangssprachlich formuliert, stellt der Begriff der {\em Norm} eine 
+Verallgemeinerung des Begriffs der {\em L"ange} dar. Um zu Matrixnormen 
+zu gelangen, kl"aren wir zun"achst, was eine Vektornorm ist:
+\MyBeginDef
+\index{Norm!eines Vektors}
+\label{DefVektorNorm}
+    Eine Funktion
+    \[ f: \Rationals^n \rightarrow \Rationals \MyKomma \]
+    die die Bedingungen
+    \begin{enumerate} % $$$$ Formatierung geprueft ?
+    \item
+         $ \forall x \in \Rationals: f(x) \geq 0, 
+            f(x) = 0 \Leftrightarrow x = 0_n 
+         $
+    \item
+         $ \forall x,y \in \Rationals: f(x + y) \leq f(x) + f(y) $
+    \item
+         $ \forall a \in \Rationals, x \in \Rationals^n: f(ax)= |a| f(x) $
+    \end{enumerate}
+    erf"ullt, hei"st {\em Norm "uber $\Rationals^n$}. 
+\MyEndDef
+
+\MyBeginDef
+\label{DefPNorm}
+\index{H{\Myo}ldernorm} \index{p-Norm}
+    Sei \[ p \in \Nat \] 
+    fest gew"ahlt und \[ x \in \Rationals^n \] beliebig.
+    \[ ||x||_p := (|x_1|^p + \ldots + |x_n|^p)^{1/p} \]  
+    Die so definierte Funktion hei"st { \em $p$-Norm }.
+
+    \[ ||x||_{\infty}:= \max_{1\leq i \leq n} |x_i| \]
+    Diese Funktion wird mit {\em $\infty$-Norm} bezeichnet.
+
+    Die $p$-Normen sowie die $\infty$-Norm 
+    werden als { \em H"oldernormen } bezeichnet.
+\MyEndDef
+
+Mit der vorangegangenen Definition werden zwar einige Begriffe angegeben,
+es ist jedoch nicht selbstverst"andlich, da"s es sich bei den Funktionen
+auch wirklich um Normen handelt:
+\begin{satz}
+\label{SatzPNorm}
+    Die in \ref{DefPNorm} definierten Funktionen 
+    sind Normen "uber $\Rationals^n$.
+\end{satz}
+\begin{beweis}
+    Die Funktionen erf"ullen die Bedingungen aus \ref{DefVektorNorm}.
+
+    Der Beweis dieser Behauptung ist f"ur
+    die $1$-Norm, $2$-Norm und $\infty$-Norm in
+    \cite{Isaa73} ab S. 4 und
+    f"ur die anderen Normen in \cite{Achi67} S. 4-7 angegeben.
+    % (Isaa73 -> [30]) Achi67; BM b260/Achi
+\end{beweis}
+
+Den Begriff der Norm kann man auch auf Matrizen ausdehnen. F"ur uns 
+gen"ugt die Betrachtung quadratischer Matrizen.
+\MyBeginDef
+\index{Norm!einer Matrix} \index{Matrixnorm}
+\label{DefMatrixNorm}
+    Eine Funktion 
+    \[ f: \Rationals^{n^2} \rightarrow \Rationals \MyKomma \]
+    die die Bedingungen
+    \begin{eqnarray*}
+        \forall A \in \Rationals^{n^2} & : & f(A) \geq 0,
+             f(A) = 0 \leftrightarrow A=0_n \\
+        \forall A,B \in \Rationals^{n^2} & : & f(A+B) \leq f(A) + f(B) \\
+        \forall c \in \Rationals, A \in \Rationals^{n^2} & : &
+             f(cA) = |c|f(A) \\
+        \forall A,B \in \Rationals^{n^2} & : & f(AB) \leq f(A) * f(B) \\
+    \end{eqnarray*}
+    erf"ullt, hei"st {\em Matrixnorm "uber $\Rationals^{n^2}$ }.
+\MyEndDef
+Die vierte der obigen Bedingungen wird in der Literatur nicht immer f"ur 
+Matrixnormen gefordert. In solchen F"allen wird unterschieden zwischen
+Matrixnormen, die diese Bedingungen erf"ullen, und solchen, die diese
+Bedingung nicht erf"ullen (vgl. \cite{Isaa73} S. 8 und \cite{GL83}
+S. 14). F"ur uns sind diese Unterschiede nicht von Bedeutung.
+
+Die von uns benutzten Matrixnormen sind folgenderma"sen definiert:
+\MyBeginDef
+\label{DefInduzierteNorm}
+\index{Operatornorm} \index{Matrixnorm!induzierte}
+\index{Matrixnorm!nat{\Myu}rliche} \index{Norm!nat{\Myu}rliche}
+    Sei \[ A \in \Rationals^{n^2} \] Sei \[ x \in \Rationals^n \] Es gelte
+    \[ ||x|| = 1 \] f"ur eine fest gew"ahlte Vektornorm.
+    Die Funktion \[ ||A||:= ||Ax|| \] hei"st dann
+    {\em durch die Vektornorm induzierte Matrixnorm }.
+\MyEndDef
+Sie ist in der Literatur auch noch unter den Namen {\em nat"urliche Norm}
+und {\em Operatornorm} bekannt und wird h"aufig noch anders definiert
+(vgl. \cite{Isaa73} S. 8). Das hat jedoch f"ur unsere Anwendungen keine
+Bedeutung.
+
+\begin{satz}
+\label{SatzInduzierteNorm}
+    Die in \ref{DefInduzierteNorm} definierte Funktion ist eine
+    Matrixnorm.
+\end{satz}
+\begin{beweis}
+    Die Funktion erf"ullt die Bedingungen in \ref{DefMatrixNorm}
+    (\cite{Isaa73} ab S. 8 ).
+\end{beweis}
+
+Es folgen Beispiele f"ur induzierte
+Matrixnormen, die im weiteren Text benutzt werden. Dazu ben"otigen wir
+vorher noch einen weiteren Begriff:
+
+Seien $\lambda_1, \, \ldots, \, \lambda_n$ die Eigenwerte von $A$. Dann
+wird der Spektralradius \index{Spektralradius} $\rho(A)$ definiert als
+\[ \rho(A) := \max\{ |\lambda_1|,\, \ldots,\, |\lambda_n| \} \MyPunkt \]
+
+Durch
+Indizes wird jeweils kenntlich gemacht, durch welche
+Vektornorm die jeweilige Matrixnorm induziert wird\footnote{Bei der
+Vielzahl der in diesem Unterkapitel auftauchenden Normen, sollte man
+nicht vergessen, da"s $|x|$ f"ur einen Skalar $x$ einfach nur den
+Absolutwert bezeichnet.}.
+\begin{eqnarray}
+    ||A||_1 & = & \max_j\sum_{k=1}^n |a_{k,j}| \label{EquMatNormEins} \\
+    ||A||_2 & = & \sqrt{\rho(A * A)} \label{EquMatNormZwei} \\
+    ||A||_\infty & = & \max_i\sum_{k=1}^n |a_{i,k}| 
+                                              \label{EquMatNormInfty} \\
+\end{eqnarray}
+Die Beweise der Gleichungen \equref{EquMatNormEins},
+\equref{EquMatNormZwei} und \equref{EquMatNormInfty} sind in
+\cite{Isaa73} ab S. 9 zu finden.
+
+Falls es nicht im Einzelfall anders festgelegt ist, gilt im weiteren 
+Text $||\:||=||\:||_2$.
+
+% $$$$ hier Satz "uber maximale Gr"o"se der Eigenwerte  ( <--> Normen )
+%       (\det = \prod \lambda !!!)
+%      
+% ... sehr interessant, jedoch nicht 100-prozentig erforderlich
+% ... zu finden in Isaa73 (S. 12)
+
+% **************************************************************************
+
+\MySection{Wahl einer N"aherungsinversen}
+\label{SecGuessInverse}
+\index{Inverse!einer Matrix} \index{Matrizeninvertierung}
+\index{N{\Mya}herungsinverse}
+
+In dem in Kapitel \ref{ChapPan} vorzustellenden Algorithmus wird die
+Krylov-Matrix dadurch invertiert, da"s eine N"aherungsinverse berechnet
+und diese dann iterativ verbessert wird. In diesem Unterkapitel
+wird die Wahl der N"aherungsinversen beschrieben.
+Literatur dazu sind \cite{PR85} und \cite{PR85a}.
+
+F"ur die weiteren Betrachtungen ben"otigen wir:
+\begin{eqnarray}
+    t & := & \frac{1}{ ||A^TA||_1 } \label{EquPanDefT} \\
+    B & := & t A^T \label{EquPanDefB} \\
+    R(B) & := & E_n - B A \label{EquDefResidual} 
+\end{eqnarray}
+
+Im folgenden wird in mehreren Schritten eine Ungleichung f"ur
+$||R(B)||$ bewiesen, aus der folgt, da"s das in Unterkapitel \ref{SecNewton}
+beschriebene Verfahren effizient auf $B$ angewendet werden kann, um eine
+Inverse von $A$ mit zufriedenstellender N"aherung zu erhalten.
+
+\MyBeginDef
+\label{DefSymmetrisch}
+\index{symmetrisch} \index{Matrix!symmetrische}
+    Gilt f"ur eine Matrix $A$ \[ A = A^T \MyKomma \] dann wird sie als
+    {\em symmetrisch} bezeichnet.
+\MyEndDef
+
+Da die beiden folgenden Lemmata aus den Grundlagen "uber Normen stammen,
+werden die Beweise auf einen Literaturverweis beschr"ankt. Sie sind
+in \cite{Atki78} ab S. 416 zu finden.
+
+\begin{lemma}
+\label{SatzSymmetrischSpektral}
+    F"ur jede symmetrische Matrix $A$ gilt:
+    \[ ||A||_2 = \rho(A) \MyPunkt \]
+\end{lemma}
+            
+\begin{lemma}
+\label{SatzAtkinson}
+\[
+    ||A^T A||_2 = \rho(A^T A) = ||A||^2 \leq 
+    ||A^T A||_1 \leq \max_i \sum_j |a_{i,j}| \max_j \sum_i |a_{i,j}| 
+    \leq n ||A^T A||
+\]
+\end{lemma}
+
+\begin{lemma}
+\label{SatzInverseEigenwert}
+    Sei $\lambda$ ein Eigenwert der invertierbaren $n \times n$-Matrix $A$. 
+    Dann ist $1/\lambda$ ein Eigenwert von $A^{-1}$.
+\end{lemma}
+\begin{beweis}
+    Da $A$ invertierbar ist, ist $\lambda \neq 0$. Sei $v$ ein Eigenvektor
+    zu $\lambda$. Dann gilt $v \neq 0_n$, sowie
+    \begin{eqnarray*}
+        Av & \neq & 0_n \\
+        Av & = & \lambda v \MyPunkt
+    \end{eqnarray*}
+    Damit ergibt sich:
+    \[ A^{-1}(Av) = v = (1/\lambda) \lambda v = (1/\lambda) A v \MyKomma\]
+    woraus die Behauptung folgt.
+\end{beweis}
+
+\begin{lemma}
+\label{SatzEigenUngleichung}
+    Sei $A$ invertierbar. Sei $\lambda$ ein Eigenwert von $A^T A$.
+    Dann gilt:
+    \Beq{EquEigenUngleichung}
+        \frac{ 1 }{  ||A^{-1}||^2 }
+             \leq \lambda \leq ||A||^2
+             \MyPunkt
+    \Eeq
+\end{lemma}
+\begin{beweis}
+    Die rechte Ungleichung von \equref{EquEigenUngleichung} folgt aus
+    \ref{SatzAtkinson}.
+    
+    Die linke Ungleichung von \equref{EquEigenUngleichung} folgt aus
+    \ref{SatzInverseEigenwert} in Verbindung mit \ref{SatzAtkinson}.
+\end{beweis}
+
+\begin{satz}
+\label{SatzResidualEigenwert}
+    Seien $t$, $B$ und $R(B)$ entsprechend der Gleichungen
+    \equref{EquPanDefB}, \equref{EquPanDefT} und \equref{EquDefResidual}
+    definiert. Sei $\mu$ ein Eigenwert von $R(B)$. Dann
+    gilt
+    \[
+        0 \leq \mu \leq
+        1- \frac{ 1
+                }{ ||A^T A||_1 ||A^{-1}||^2
+                } \MyPunkt
+    \]
+\end{satz}
+\begin{beweis}
+    Sei $v$ Eigenvektor von $\mu$ (d. h. $v$ ist nicht der Nullvektor).
+    Dann gilt:
+    \[ R(B)v = \mu v \MyPunkt \]
+    Mit Hilfe von \equref{EquDefResidual} und \equref{EquPanDefB}
+    erh"alt man:
+    \[ (E_n - t A^T A)v = v - tA^TA v = \mu v \MyPunkt \]
+    Daraus folgt
+    \[ A^T A v = \lambda v, \: \lambda = \frac{ 1-\mu }{ t } \]
+    Also ist $\lambda$ ein Eigenwert von $A^T A$ und mit
+    \ref{SatzEigenUngleichung} folgt
+    \begin{eqnarray*}
+        \frac{ 1 }{ ||A^{-1}||^2
+             } \leq \lambda =
+            \frac{ 1 - \mu }{ t } \leq ||A||^2 \\
+        \Leftrightarrow
+            1 - t||A||^2 \leq \mu \leq 1 - \frac{ t }{ ||A^{-1}||^2 }
+    \end{eqnarray*}
+    Mit Hilfe von Lemma \ref{SatzAtkinson} und \equref{EquPanDefT}
+    ergibt sich die Behauptung.
+\end{beweis}
+
+Da die Matrix \[ R(B) = E_n - tA^T A \] symmetrisch ist, folgt aus
+\ref{SatzSymmetrischSpektral} und \ref{SatzResidualEigenwert} eine
+Ungleichung, die es erlaubt, die in \equref{EquPanDefB} definierte Matrix 
+$B$ f"ur unsere Zwecke zu verwenden:
+\begin{korollar}
+\label{SatzNormNaheInvers}
+    \[
+        ||R(B)|| \leq
+            1-\frac{ 1
+                   }{ ||A^T A||_1 ||A^{-1}||^2
+                   }
+    \]
+\end{korollar}
+Die Benutzung dieser Folgerung wird in Unterkapitel \ref{SecNewton}
+beschrieben.
+
+% **************************************************************************
+
+\MySection{Iterative Matrizeninvertierung}
+\label{SecNewton}
+\index{Iterationsverfahren} \index{Matrizeninvertierung} 
+\index{Inverse!einer Matrix}
+\index{Newton!Iterationsverfahren von}
+
+In diesem Unterkapitel wird beschrieben, wie man eine gegebene 
+N"aherungsinverse $B$ einer invertierbaren Matrix $A$ iterativ schrittweise
+verbessern kann. Diese Methode ist in der Literatur als
+{\em Newton-Verfahren} bekannt und wird in
+\cite{PR85} und \cite{PR85a} sowie in \cite{Hous64} ab S. 64
+behandelt. 
+
+Um zu einem Iterationsverfahren zu gelangen, nehmen wir einige Umformungen
+an einer Gleichung vor, in der das mit \equref{EquDefResidual} $R(B)$ 
+vorkommt:
+\begin{MyEqnArray}
+                    \MT R(B)          \MT = \MT 0_{n,n} \MNl
+    \Leftrightarrow \MT R(B) + E_n    \MT = \MT E_n \MNl
+    \Leftrightarrow \MT (R(B) + E_n)B \MT = \MT B \MNl
+    \Leftrightarrow \MT (2E_n- BA)B   \MT = \MT B
+\end{MyEqnArray}
+Man definiert mit Hilfe der letzten dieser Gleichungen die Iteration
+\begin{eqnarray}
+    B_0 & := & B \nonumber \\
+    B_i & := & (2E_n - B_{i-1}A)B_{i-1} \label{EquPanDefNewton} \MyPunkt
+\end{eqnarray}
+Betrachtet man nun \equref{EquDefResidual} f"ur $B_i$ statt $B$, bekommt
+man eine Aussage "uber die St"arke der Konvergenz der Iteration:
+\begin{eqnarray*}
+    R(B_i) & = & E_n - B_iA \\
+           & = & E_n - (2E_n - B_{i-1}A)B_{i-1}A \\
+           & = & E_n - 2B_{i-1}A + (B_{i-1}A)^2 \\
+           & = & (R(B_{i-1}))^2
+\end{eqnarray*}
+Daraus folgt, da"s f"ur jede Matrixnorm gilt:
+\[ ||R(B_i)|| = ||(R(B_{i-1}))^2|| \MyPunkt \]
+
+Unter der Voraussetzung \Beq{EquResidualLessOne} ||R(B)|| < 1 \Eeq
+konvergiert $||R(B_i)||$ also quadratisch gegen Null und die
+$B_i$ entsprechend gegen $A^{-1}$.
+
+Um das Iterationsverfahren einsetzen zu k"onnen, m"ussen wir noch 
+feststellen, wieviele Iterationen erforderlich sind, um eine bestimmte
+Genauigkeit zu erreichen. Dazu definieren wir als Abk"urzung
+\[ q:= ||R(B)|| , \: q_i:= ||R(B_i)||, \: q_0 := q \MyPunkt \]
+Damit das Verfahren "uberhaupt in praktisch nutzbarer Weise konvergiert,
+darf $q$ nicht beliebig nahe bei $1$ liegen. Sei $c \in \Nat$ gegeben. 
+Dann nehmen wir an, da"s f"ur $q$ gilt:
+\Beq{EquSupposeQ} 
+    q = 1 - \frac{1}{n^c} \MyPunkt 
+\Eeq
+Da das Verfahren quadratisch konvergiert, gilt f"ur $k \in \Nat_0$:
+\[
+    q_k = q^{2^k} \MyPunkt
+\]
+Mit \equref{EquSupposeQ} erhalten wir:
+\[
+    q_k = \lb 1 - \frac{1}{n^c} \rb^{2^k} \MyPunkt
+\]
+F"ur unsere Anwendung sei
+\[ q_k < \frac{1}{d} , \: d \in \Nat \] ausreichend. Mit 
+\[ 
+    k := e \log(n), \: e \in \Rationals_{>0} 
+\]  erhalten wir:
+\[ 
+    \lb 1 - \frac{1}{n^c} \rb^{n^e} = \frac{1}{d} \MyPunkt
+\]
+Da uns die Anzahl der Iterationen interessiert, l"osen wir diese Gleichung
+nach $e$ auf und nehmen dazu $n \rightarrow \infty$ an:
+\begin{MyEqnArray}
+    \MT \lb 1 - \frac{1}{n^c} \rb^{n^e} \MT = \MT \frac{1}{d} \MNl
+    \Rightarrow \MT
+    \lb \lb 1 - \frac{1}{n^c} \rb^{n^c} \rb^{n^e / n^c} \MT = \MT 
+                                                       \frac{1}{d} \MNl
+    \Rightarrow \MT
+    \MathE^{- (n^e / n^c) } \MT \approx \MT \frac{1}{d} \MNl
+    \Rightarrow \MT
+    \ln(d) \MT \approx \MT n^{e-c} \MNl
+    \Rightarrow \MT
+    \frac{ \ln(\ln(d)) }{ \ln(n) } + c \MT \approx \MT e    
+\end{MyEqnArray}
+Wir k"onnen also f"ur wachsende $n$ annehmen, da"s gilt
+\[ c \approx e \MyPunkt \]
+Um die --- bei gegebenem $n$ --- von $e$ bestimmte Anzahl der Iterationen
+zu erhalten, m"ussen wir $c$ n"aher bestimmen. Vergleichen wir dazu
+\equref{EquSupposeQ} mit der Aussage von \ref{SatzNormNaheInvers}.
+Aus Grundlagen "uber Normen (z. B. \cite{Isaa73} ab S. 12) erhalten wir
+f"ur eine beliebige Matrix $W$:
+\[
+    ||W||_2 \leq \sqrt{||W^2||_1} \MyPunkt
+\]
+Wir k"onnen also die Berechnung von $c$ auf die Bestimmung der 1-Norm, also
+der maximalen Betragsspaltensumme, einer Matrix zur"uckf"uhren und erkennen,
+da"s $c$ von der Gr"o"se der Matrizenelemente abh"angt.
+
+Somit erkennen wir eine weitere Einschr"ankung f"ur die Anwendbarkeit des
+Algorithmus. Die Matrix mu"s die Bedingung
+\Beq{EquWellConditioned}
+    ||A^T A||_1 ||A^{-1}||^2 \leq n^c
+\Eeq f"ur ein $c \in \Nat$ erf"ullen. Die Wahl von $c$ h"angt davon ab, 
+auf welche Matrizen man
+das Verfahren anwendet. Um P-Alg. mit den anderen Algorithmen 
+vergleichen zu k"onnen, nehmen wir im weiteren Verlauf des Textes $c=1$ an.
+
+% **************************************************************************
+
+\MySection{Determinatenber. mit Hilfe der Methoden von Krylov und Newton}
+\label{SecAlgPan}
+
+In diesem Unterkapitel werden die in den vorangegangenen Abschnitten
+dargestellten Methoden zu einem Algorithmus zur Determinantenberechnung
+zusammengefa"st, auf den mit {\em P-Alg.} Bezug genommen wird\footnote{
+vgl. Unterkapitel \ref{SecBez}}. Weiterhin wird die Anzahl der Schritte und
+der Prozessoren analysiert. 
+
+Im folgenden ist mit $n^x$ jeweils $\lc n^x \rc$ gemeint.
+
+Im folgenden wird mit Hinweis auf die Bemerkungen auf S.
+\pageref{PageAlg2MatMult} f"ur die Multplikation zweier 
+$n \times n$-Matrizen ein Aufwand von \[ \gamma_S (\lc\log(n)\rc + 1) \]
+Schritten und \[ \gamma_P n^{2+\gamma} \] Prozessoren in Rechnung gestellt.
+
+Es sei die Determinante der $n \times n$-Matrix $A$ zu berechnen.
+Zuerst wird die Krylov-Matrix entsprechend der Darstellung in Abschnitt
+\ref{SecKrylov} berechnet. Es ist "ublich, f"ur den dort erw"ahnten
+Vektor $z$ zur Berechnung der iterierten Vektoren den Einheitsvektor
+zu verwenden, dessen s"amtliche Elemente gleich $1$ sind. Aufgrund der
+aus theoretischer Sicht ohnehin bereits eingeschr"ankten Verwendbarkeit
+der Methode von Krylov f"ur unsere Zwecke, bedeutet die Beschr"ankung auf
+diesen Vektor nur eine unbedeutende Verschlechterung des Algorithmus.
+
+Zuerst sind die iterierten Vektoren anhand des Vektors $z$ und der Matrix
+$A$ zu berechnen. Dies geschieht anhand der nachstehenden Gleichungen
+(\cite{Pan85}, \cite{BM75} S. 128, \cite{Kell82}). Auf den rechten Seiten 
+werden nur Ergebnisse vorangegangener Gleichungen oder $z$ bzw. $A$ 
+verwendet. Auf den linken Seiten stehen neu berechnete Ergebnisse. Die Terme 
+auf den rechten Seiten beschreiben Matrizenmultiplikationen und die linken 
+Seiten deren Ergebnisse.
+\begin{eqnarray*}
+    [ A^3v,\, A^2v ] & = & A^2[ Av,\,v ] \\ \relax
+    [ A^7v,\, A^6v,\, A^5v,\, A^4v ] & = & 
+                                      A^4[ A^3v,\, A^2v,\, Av,\, v ] 
+                                       \\ \relax
+    & \vdots & \\ \relax
+    [ A^{2*2^h}v,\, \ldots,\, A^{2^h}v ] & = & 
+                              A^{2^h}[ A^{2^h-1}v,\, \ldots,\,v ] 
+\end{eqnarray*}
+Um die jeweils n"achste Gleichung mit Hilfe der schon bekannten Ergebnisse
+aufzustellen, sind zwei Matrizenmultiplikationen erforderlich. Mit der
+ersten wird die n"achste ben"otigte Potenz von $A$ berechnet. Mit der 
+zweiten wird der jeweilige Term der rechten Seite der Gleichung ausgewertet.
+Die $n$ gesuchten iterierten Vektoren k"onnen auf diese Weise in
+\[ 
+    \gamma_S (\lc\log(n)\rc + 1) \lc\log(n)\rc
+\] 
+Schritten von
+\[ 
+    \gamma_P n^{2+\gamma}
+\] 
+Prozessoren berechnet werden.
+
+Anschlie"send ist f"ur die aus iterierten Vektoren bestehende Krylov-Matrix
+eine N"aherungsinverse entsprechend der Ausf"uhrungen in Unterkapitel
+\ref{SecGuessInverse} zu berechnen. Dazu werden die Gleichungen
+\equref{EquPanDefB} und \equref{EquPanDefT} verwendet. Betrachtet man 
+diese Gleichungen, erkennt man, da"s zur Berechnung der dortigen Matrix $B$
+aus der Matrix $A$ eine Matrizenmultiplikation, eine Berechnung der
+$1$-Norm einer Matrix, eine Division durch einen Skalar sowie eine 
+Matrix--Skalar--Multiplikation erforderlich ist. An dieser Stelle wird
+deutlich, da"s der Algorithmus nicht ohne Divisionen auskommt.
+
+Um die $1$-Norm zu erhalten, sind $n$ Summen von je $n$-Matrizenelementen
+zu berechnen und miteinander zu vergleichen. Dies kann mit Hilfe der 
+Bin"arbaummethode nach Satz \ref{SatzAlgBinaerbaum} in
+\[
+    2\lc\log(n)\rc
+\] Schritten von
+\[ 
+    n \lf \frac{n}{2} \rf
+\] Prozessoren durchgef"uhrt werden.
+
+Insgesamt kann die Berechnung der N"aherungsinversen also in
+\[
+    \gamma_S (\lc\log(n)\rc+1) + 2\lc\log(n)\rc + 2
+\] Schritten von
+\[
+    \gamma_P n^{2+\gamma}
+\] Prozessoren geleistet werden.
+
+Nachdem sie zur Verf"ugung steht, kann sie mit Hilfe des in Unterkapitel
+\ref{SecNewton} beschriebenen Verfahrens verbessert werden.
+
+Ein Iterationsschritt mit Hilfe von Gleichung \equref{EquPanDefNewton}
+erfordert zwei Multiplikationen und eine Addtition von Matrizen. Setzt man
+f"ur die Anzahl der durchzuf"uhrenden Iterationen zun"achst die Unbestimmte
+$I$ ein, kann das Iterationsverfahren in
+\[
+    I * 2 \gamma_S (\lc\log(n)\rc + 1) + 1
+\] Schritten von
+\[
+    \gamma_P n^{2+\gamma}
+\] Prozessoren auf die N"aherungsinverse angewendet werden um diese
+bis auf eine ausreichende Genauigkeit an die gesuchte Inverse anzun"ahern.
+
+Schlie"slich ist noch eine Matrix--Vektor--Multiplikation durchzuf"uhren,
+um die Methode von Krylov zur Berechnung der Koeffizienten des
+charakteristischen Polynoms zu vollenden. Betrachtet man den Vektor wiederum
+als Matrix, kann dies in
+\[
+    \gamma_S(\lc\log(n)\rc+1)
+\] Schritten von
+\[
+    \gamma_P n^{2+\gamma}
+\] Prozessoren erledigt werden. Nach \ref{SatzDdurchP} hat man 
+mit den Koeffizienten auch die Determinante berechnet.
+
+Hier wird eine Einschr"ankung f"ur den Algorithmus deutlich. Da ein 
+N"aherungsverfahren verwendet wird, ist es nicht m"oglich, die Determinante
+f"ur Matrizen mit Elementen aus $\Rationals$ genau zu berechnen. Diese
+m"ussen deshalb aus $\Integers$ stammen, denn in diesem Fall sind
+die Koeffizienten des charakteristischen Polynoms ebenfalls ganzzahlig und
+die Determinante kann bei gen"ugend genau durchgef"uhrtem Newton-Verfahren
+durch Rundung genau ermittelt werden.
+
+Betrachtet man die Einschr"ankungen f"ur die Verwendbarkeit der Methode
+von Krylov (vgl. Unterkaptel \ref{SecKrylov}) sowie die Bedingung
+\equref{EquWellConditioned} auf S. \pageref{EquWellConditioned}, erkennt
+man, da"s insgesamt nicht unerhebliche Anforderungen an die Matrix,
+deren Determianten zu berechnen ist, gestellt werden m"ussen, damit der
+in diesem Kapitel dargestellte Algorithmus anwendbar ist.
+
+Als Gesamtaufwand f"ur den Algorithmus erh"alt man f"ur die
+Anzahl der Schritte:
+\begin{eqnarray*}
+   & & \gamma_S (\lc\log(n)\rc + 1) \lc\log(n)\rc \\
+   & + & \gamma_S (\lc\log(n)\rc +1 ) + 2\lc\log(n)\rc + 2 \\
+   & + & I * 2 \gamma_S (\lc\log(n)\rc + 1) + 1 \\
+   & + & \gamma_S(\lc\log(n)\rc+1) \\
+   & = &
+      \gamma_S \lb \lc\log(n)\rc^2 + 5 \lc\log(n)\rc
+    + I \lb 2 \lc\log(n)\rc + 2 \rb + \frac{3}{\gamma_S} + 2 \rb
+\end{eqnarray*}
+Mit Verweis auf Unterkapitel \ref{SecNewton} nehmen wir $I= \log(n)$ an.
+Dadurch lautet der Term f"ur die Anzahl der Schritte:
+\[
+    \gamma_S \lb 3 \lc\log(n)\rc^2 + 7 \lc\log(n)\rc
+    + \frac{3}{\gamma_S} + 2 \rb \MyPunkt
+\]
+Vergleicht man die Annahme f"ur $I$ mit den Ausf"uhrungen in Unterkapitel
+\ref{SecNewton}, erkennt man, da"s dies der beste mit dem Algorithmus zu
+erreichende Wert ist. Bei schlechteren Randbedingungen erh"alt man f"ur
+die Schritte einen entsprechend schlechteren Wert.
+
+F"ur die Prozessoren ergibt sich:
+\[ 
+    \gamma_P n^{2+\gamma} \MyPunkt
+\]
+Da die Matrizenmultiplikation nach \cite{CW90} nur f"ur sehr gro"se $n$
+Vorteile bringt, wird \[ \gamma_P = \gamma_S = \gamma = 1 \] gesetzt,
+um eine f"ur die Anwendung des Algorithmus realistische 
+Vergleichsm"oglichkeit mit den anderen Algorithmen zu bekommen.
+
+Vergleicht man P-Alg. mit C-Alg., BGH-Alg. und B-Alg., so erkennt man, da"s
+die Anzahl der Prozessoren in P-Alg. gleich ist mit der Anzahl der
+Prozessoren f"ur die Matrizenmultiplikation ist und somit um eine Potenz
+geringer als beim besten der drei anderen Algorithmen.
+
+Ein gravierender Nachteil von P-Alg. sind die Einschr"ankungen
+f"ur die Benutzbarkeit. Die Bedingung, da"s die Matrizenelemente ganzzahlig
+sein m"ussen, l"a"st sich durch Ausnutzung der Eigenschaften einer 
+Determinaten (siehe Definition \ref{DefDet}) ausgleichen. Dazu werden
+die Matrizenelemente durch einen geeigneten Faktor multipliziert, so da"s
+die resultierende Matrix nur ganzzahlige Elemente enth"alt. Nachdem der
+Algorithmus auf diese Matrix angewendet worden ist, kann man dann aus
+dem Ergebnis auf die Determinate der urspr"unglichen Matrix schlie"sen.
+
+Durch die in Unterkapitel \ref{SecKrylov} beschriebenen Einschr"ankungen,
+kann f"ur P-Alg. nicht garantiert werden, da"s er f"ur jede invertierbare
+Matrix eine Determinante ungleich Null liefert. Die Wahrscheinlichkeit f"ur
+einen solchen Fall ist zwar gering, jedoch unterscheidet diese 
+Beschr"ankung P-Alg. von den anderen drei Algorithmen.
+
+Weiterhin mu"s man bei P-Alg. nat"urlich wiederum auf die Existenz von 
+Divisionen und das Fehlen von Fallunterscheidungen hinweisen.
+

@@ -1,0 +1,26 @@
+$$$$$ noch an neue Analyse von \ref{SatzAlgPraefix} anzupassen:
+\begin{satz}[Ganzzahlige Wurzel]
+\label{SatzAlgWurzel}
+\index{Algorithmus!parallele Wurzelberechnung}
+    Seien $b$ und $n$ nat"urliche Zahlen.
+    \[ \left\lceil \sqrt[b]{n} \right\rceil \] l"a"st sich in
+    \[ \lceil \log(b) \rceil + 1 \] Schritten von
+    \[ n \left\lfloor \frac{b}{2} \right\rfloor \] Prozessoren berechnen.
+\end{satz}
+\begin{beweis}
+    Berechne zun"achst
+    \[ w_i := \underbrace{ i * i * \ldots * i }_{\mbox{$b$ mal}}
+       \, , \: 1 \leq i \leq n
+    \]
+    Dies kann nach \ref{SatzAlgPraefix} in
+    \[ \lceil \log(b) \rceil \] Schritten von
+    \[ n \left\lfloor \frac{b}{2} \right\rfloor \] Prozessoren geleistet 
+    werden.
+
+    Pr"ufe dann f"ur \[ 1 \leq i \leq n \] die Bedingung
+    \[ w_i \geq n > w_{i-1} \] Dabei gelte \[ w_0 := 0 \]
+    Das $i$, das diese Bedingung erf"ullt, ist der gesuchte Wert.
+    Diese Pr"ufung kann in einem Schritt von $n$ Prozessoren
+    durchgef"uhrt werden.
+\end{beweis}
+

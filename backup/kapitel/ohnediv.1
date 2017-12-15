@@ -1,0 +1,580 @@
+%
+% Datei: ohnediv.tex
+% Datum: 10.06.91
+%
+% Datei zur Erzeugung des Textteils 'Berechung in kommutativen Ringen'
+%     (alter Titel: 'Vermeidung von Divisionen')
+%
+\section{Berechnung in kommutativen Ringen}
+% $$$$ Erkl"arungen "uberarbeiten
+Die in Kapitel \ref{SectionSchrank} vorgestellten Algorithmuen zur parallelen
+Determinantenberechnung benutzen u. a. auch Divisionen und k"onnen nur in 
+K"orpern angewendet werden.
+Dies ist problematisch,
+weil in realen Rechnern nur mit begrenzter Genauigkeit gearbeitet werden kann
+und somit immer auf die eine oder andere Weise modulo gerechnet wird. 
+Z. B. besitzt 6 in $ \Integers_8 $ kein multiplikatives Inverses. 
+Man kann also
+in $ \Integers_8 $ nicht $ 5/6 $ rechnen (anders geschrieben $ 5*6^{-1} $).
+Dies motiviert den Entwurf von Algorithmen, die ohne Divisionen
+auskommen, und somit auch in kommutativen Ringen G"ultigkeit besitzen. 
+In diesem Kapitel werden drei Ans"atze dazu untersucht. 
+% aus \cite{Csan74} in Unterkapitel \ref{SubsectionCsan74}
+% aus \cite{BGH82} in Unterkapitel \ref{SubsectionBGH82}
+% aus \cite{Berk84} in Unterkapitel \ref{SubsectionBerk84}
+
+\subsection{Divide and Conquer} 
+\label{SubsectionCsan74}
+Die in diesem Kapitel angegebene Algorithmus berechnet die Determinante
+rekursiv mit Hilfe der Methode {\em Divide and Conquer}, d. h. durch
+die Berechnung der Determinanten von Untermatrizen der gegebenen Matrix.
+% Diese Methode ben"otigt zwar keine Divisionen, aber es wird gezeigt, da"s
+% die Anzahl der ben"otigten Prozessoren exponentiell hoch ist. Deshalb
+% sei der Algorithmus hier in erster Linie der Vollst"andigkeit wegen 
+% behandelt. 
+Er wird in \cite{Csan74} ab Seite 21 behandelt.
+
+Zun"achst eine Verallgemeinerung des Laplace'schen Entwicklungssatzes
+(Entwicklungssatz: \cite{BS87} Seite 150; Verallgemeinerung: \cite{Csan74}
+ Seite 21):
+\begin{lemma}
+\label{OhnedivSatz1}
+% $$$$ vor diesem Lemma zun"achst verwendete Begriffe in Definitionen 
+%      beschreiben ?
+    Sei $A$ eine $n \times n$-Matrix. Sei $k$ eine nat"urliche Zahl mit
+    \[ 1 \leq k \leq n-1 \] Sei $D_n$ die Determinante dieser Matrix. 
+
+    F"ur die nat"urliche Zahl $i$ gelte \[ 1 \leq i \leq {n \choose k} \]
+    Sei $D_k^{(2i-1)}$ die Determinante einer Untermatrix $A_k^{(2i-1)}$ von 
+    $A$, die aus $k$ Spalten der ersten $k$ Zeilen gebildet werde.
+    Sei $D_{n-k}^{(2i)}$ die Determinante einer Untermatrix $A_{n-k}^{(2i)}$ 
+    von
+    $A$, die aus den f"ur $A_k^{(2i-1)}$ nicht gew"ahlten $n-k$ Zeilen und
+    Spalten gebildet werde. 
+        
+    F"ur jedes $i$ werde eine andere der \[ {n \choose k} \] m"oglichen
+    Auswahlen f"ur die $k$ Spalten f"ur $A^{(2i-1)}$ getroffen.
+
+    F"ur eine Untermatrix $A_k^{(2i-1)}$ bezeichne \[ v(A_k^{(2i-1)}) \] die
+    minimale 
+    Anzahl der Vertauschungen von Spalten von $A$, die n"otig sind, damit
+    $A_k^{(2i-1)}$ aus den ersten $k$ Spalten von $A$ und $A_{n-k}^{(2i)}$
+    aus den weiteren $n-k$ Spalten von $A$ besteht.
+    
+    Es gelte
+    \begin{displaymath}
+        s(A_k^{(2i-1)}):= 
+            \left\{
+                \begin{array}{lcrcl}
+                     1 & : & v(A_k^{(2i-1)}) & = & 2n\\
+                    -1 & : & v(A_k^{(2i-1)}) & = & 2n+1
+                \end{array}
+            \right.
+    \end{displaymath}
+    wobei
+    \begin{displaymath}
+        n \in \Nat_0
+    \end{displaymath}
+    Dann gilt:
+    \begin{equation}
+    \label{OhnedivEqu6}
+    D_n = s(A_k^1) D_k^1 D_{n-k}^2 + s(A_k^3) D_k^3 D_{n-k}^4 + \ldots
+          + s(A_k^{2{n \choose k}-1}) D_k^{2{n \choose k}-1} 
+            D_k^{2{n \choose k}}
+    \end{equation}
+\end{lemma}
+\begin{beweis}
+% $$$$ hier evtl. noch Beweis ausarbeiten
+    (siehe \cite{Csan74} Seite 21)
+\end{beweis}
+Mit \[ k = 1 \] erh"alt man aus Lemma \ref{OhnedivSatz1} den 
+Laplace'schen Entwicklungssatz.
+
+\begin{bemerkung}
+\label{OhnedivSatz2}
+    Seien $a$ und $b$ nat"urliche Zahlen. Insbesondere ist $b$ dann 
+    ungleich $0$. Es gelte \[ a > b \]
+    Dann gilt \[ \frac{a}{b} > \frac{a+1}{b+1} \] wie einfaches 
+    Nachrechnen beweist.
+\end{bemerkung}
+
+\begin{satz}
+\label{OhnedivSatz3}
+    Sei $A$ eine $n \times n$-Matrix. Dann gilt f"ur die parallele
+    Zeitkomplexit"at der Berechnung ihrer Determinante
+    \begin{displaymath}
+        D(n) < 2n - \frac{1}{4}\log(n)(\log(n) - 1)
+    \end{displaymath}
+    und die Anzahl der n"otigen Prozessoren ist von exponentieller 
+    Gr"o"senordnung.
+\end{satz}
+\begin{beweis}
+    O. B. d. A. sei $n$ eine Zweierpotenz. Falls dies nicht der Fall ist,
+    sei die urspr"ungliche Matrix erweitert um entsprechend viele Zeilen
+    und Spalten, so da"s die neuen Elemente der Hauptdiagonalen jeweils 
+    gleich $1$ und alle weiteren neuen Elemente jeweils gleich $0$ sind.
+    
+    Benutze Lemma \ref{OhnedivSatz1} zur rekursiven Berechnung der
+    Determinante. W"ahle
+    \begin{displaymath}
+        k := \frac{1}{2}n
+    \end{displaymath}
+    Somit gilt auch
+    \begin{displaymath}
+        n-k = \frac{1}{2}n
+    \end{displaymath}
+    
+    F"ur die Anzahl der Schritte gilt:
+    \begin{eqnarray*}
+        D(1) & = & 0 \\
+        D(n) & = & D\left( \frac{1}{2}n \right) + 1 +
+                   \left\lceil
+                       \log
+                           \left(
+                               { n \choose \frac{1}{2}n }
+                           \right)
+                   \right\rceil
+    \end{eqnarray*}
+    Die Aufl"osung der Rekursion (\cite{Csan74} Seite 23) ergibt die 
+    Behauptung.
+    
+    Gleichung \ref{OhnedivEqu6} enth"alt 
+    \begin{displaymath}
+        {n \choose \frac{1}{2}n} 
+    \end{displaymath}
+    Summanden, die jeweils aus $2$ miteinander zu multiplizierenden 
+    Faktoren bestehen. D. h. um, nach Berechnung aller Determinanten der 
+    $n/2 \times n/2$-Untermatrizen von $A$ in einem Schritt aus den 
+    Faktoren die Summanden zu berechnen ben"otigt man
+    \[
+        {n \choose \frac{1}{2}n} 
+    \]
+    Prozessoren. Dies ist gleich
+    \[ 
+        \frac{n!}{(\frac{1}{2}n)! (n - \frac{1}{2}n)!}
+    \]
+    Mit Bemerkung \ref{OhnedivSatz2} folgt
+    \[ 
+        {n \choose \frac{1}{2}n} > 
+            \frac{1}{2} 
+            \frac{ n^{\frac{1}{2}n} }{
+                \left( 
+                    \frac{1}{2}n
+                \right)^{\frac{1}{2}n} 
+                                     }
+    \]
+    Dies ist gleich
+    \[
+        \frac{ 2^{\frac{1}{2}n} }{2}
+    \]
+    und somit von der Gr"o"senordnung 
+    \[
+        O\left( (\sqrt{2})^n \right)
+    \]
+\end{beweis}
+Trotz der Absch"atzung nach unten mit Hilfe von Bemerkung 
+\ref{OhnedivSatz2} ist das Ergebnis f"ur die Anzahl der ben"otigten 
+Prozessoren also dennoch von exponentieller Gr"o"senordnung.
+Somit benutzt der Algorithmus zwar keine Divisionen, ben"otigt jedoch
+$O(n)$ Schritte und exponentiell viele Prozessoren und
+ist somit von einer befriedigenden L"osung 
+des Problems der parallelen Determinantenberechnung relativ weit 
+entfernt.
+
+% **************************************************************************
+
+\subsection{Algorithmus von {Borodin,} Von zur Gathen und Hopcroft}
+\label{SubsectionBGH82}
+Zun"achst wird erkl"art, wie elementare Zeilenoperationen (genaueres s. u.)
+zur Berechnung einer Determinante benutzt werden k"onnen (z. B. \cite{BS87} 
+ab Seite 148).
+Dann wird eine 
+M"oglichkeit angegeben, wie sich Divisionen bei der Benutzung der 
+Zeilenoperationen vermeiden lassen. Dies wurde V. Strassen 
+\cite{Stra73} entwickelt.
+Danach folgt die Beschreibung
+eines Verfahrens zur effizienten Parallelisierung der Berechnung von 
+Polynomen \cite{VSBR83}.
+Schlie"slich werden die drei Teile zu einem 
+Algorithmus zur parallelen Determinantenberechnung \cite{BGH82} 
+zusammengefa"st.
+
+\subsubsection{Elementare Zeilenoperationen}
+\label{BGH82SubSub1}
+Sei $n$ eine nat"urliche Zahl. Sei $A$ eine $n \times n$-Matrix. Dann ist 
+ihre Determinante $\det(A)$ folgenderma"sen definiert:
+\begin{equation}
+    \label{OhnedivEqu1}
+    \det(a):= \sum_{p \in \permut_n} \mbox{sgn}(p) \prod_{i=1}^n a_{ip(i)}
+\end{equation}
+% $$$ hier m"oglich: weitere Erkl"arungen zu Permutationen
+Dabei ist $\mbox{sgn}(p)$ abh"angig von der Anzahl der Inversionen 
+(engl. transpositions) der Permutation $p$. Bei einer geraden Anzahl 
+betr"agt der Wert $1$, bei einer ungeraden Anzahl $-1$.
+N"aheres dazu ist z. B. in
+\cite{MM64} ab Seite 11 zu finden. \noindent
+
+Wenn $A$ die Gestalt
+\begin{displaymath}
+    \left[
+        \begin{array}{cccc}
+            a_{11} & a_{12} & \cdots & a_{1n} \MatStrut \\
+               0   & a_{22} & \cdots & a_{2n} \MatStrut \\
+            \vdots & \ddots & \ddots & \vdots \MatStrut \\
+               0   & \cdots &    0   & a_{nn} \MatStrut \\
+        \end{array}
+    \right]
+\end{displaymath}
+h"atte, somit eine obere Dreiecksmatrix --- bei einer unteren 
+Dreiecksmatrix verl"auft die Argumentation analog --- w"are, w"urde 
+Gleichung \ref{OhnedivEqu1} die Form
+\begin{displaymath}
+    \det(A)= \prod_{i=1}^n a_{ii}
+\end{displaymath}
+bekommen. Denn bei jeder anderen Permutation als der identischen Abbildung
+w"urde mindestens ein $a_{ip(i)}$ gleich Null sein. \noindent
+
+Die Determinante einer Matrix hat u. a. zwei weitere Eigenschaften:
+\begin{itemize}
+    \item Sie "andert ihr Vorzeichen, wenn man zwei Zeilen der Matrix 
+          vertauscht.
+    \item Sie beh"alt ihren Wert, wenn man ein Vielfaches einer Zeile 
+          zu einer anderen Zeile addiert.
+\end{itemize} \noindent
+Diese Transformationen einer Matrix werden als
+{\em elementare Zeilenoperationen} bezeichnet. 
+Genauere Grundlagen hierzu sind in \cite{MM64} ab Seite 12 zu finden.
+Die elementaren Zeilenoperationen werden beim Gau"s'schen 
+Eliminationsverfahren dazu benutzt, lineare Gleichungssysteme zu l"osen.
+Hierbei stellt die Matrix $A$ die Koeffizientenmatrix da. N"aheres hierzu
+ist z. B. in \cite{BS87} ab Seite 735 zu finden.
+
+Diese Beobachtungen f"uhren zu der Idee, die Determinante einer Matrix 
+dadurch zu berechnen, da"s man sie mit Hilfe der Elementaren
+Zeilenoperationen in eine Dreiecksmatrix transformiert und
+dann die Elemente der Hauptdiagonalen miteinander multipliziert, unter 
+Ber"ucksichtigung des evtl. durch Zeilenvertauschungen ge"anderten 
+Vorzeichens der Determinante.
+
+Die untenstehenden Gleichungen \equref{OhnedivEqu8} und \equref{OhnedivEqu2}
+beschreiben diese Transformation. Bei Betrachtung dieser Gleichungen f"allt
+auf, da"s sie keine R"ucksicht auf m"ogliche Divisionen durch Null nehmen.
+Im Algorithmus von Borodin, von zur Gathen und Hopcroft, der hier in 
+mehreren Schritten entwickelt werden soll, 
+ist diese R"ucksichtnahme nicht mehr
+erforderlich und wird deshalb schon an dieser Stelle au"ser Acht gelassen.
+N"aheres hierzu ist in Unterkapitel \ref{BGH82SubSub2} zu finden.
+
+Sequentiell w"urde die Transformation in eine Dreiecksmatrix so ablaufen,
+da"s man zuerst ein Vielfaches von Zeile $1$ zu den folgenden $n-1$ Zeilen
+addiert und so die Matrixelemente der ersten Spalte ab der zweiten Zeile
+durch Nullen ersetzt. Danach wird ein Vielfaches von Zeile $2$ zu allen
+folgenden Zeilen addiert usw. bis schlie"slich ein Vielfaches der vorletzten
+Zeile zur letzten addiert wird und somit alle Matrixelemente unterhalb der
+Hauptdiagonalen nur noch aus Nullen bestehen.
+
+Seien $i$ und $j$ nat"urliche Zahlen kleiner oder gleich einer nat"urlichen
+Zahl $n$. Sei $A$ eine $n \times n$-Matrix. Dann wird die Transformation
+in eine Dreiecksmatrix durch folgende Gleichungen beschrieben:
+\begin{eqnarray}
+    a_{ij}^{(0)} & := & a_{ij} \label{OhnedivEqu8}
+\\
+    a_{ij}^{(k)} & := & \left\{
+                            \begin{array}{lcr}
+                                a_{ij}^{(k-1)} & : & i \leq k
+                            \\  a_{ij}^{(k-1)}-a_{kj}^{(k-1)}
+                                    \frac{ a_{ik}^{(k-1)} }{
+                                           a_{kk}^{(k-1)}  }
+                                               & : & i > k
+                            \end{array}
+                        \right.                  \label{OhnedivEqu2}
+\end{eqnarray}
+Neben der Parallelisierung dieser Berechnung --- siehe dazu Unterkapitel
+\ref{BGH82SubSub3} --- bleiben zwei weitere Probleme:
+\begin{itemize}
+    \item Die m"oglichen Divisionen durch Null werden durch die obigen 
+          Gleichungen nicht vermieden.
+    \item Wie in Gleichung \ref{OhnedivEqu2} zu erkennen ist, werden
+          Divisionen durchgef"uhrt, die es zu beseitigen gilt.
+          Durch diese Beseitigung w"are es auch nicht mehr n"otig, auf die
+          Vermeidung der Division durch Null zu achten.
+\end{itemize}
+Diese Probleme werden im Unterkapitel \ref{BGH82SubSub2} behandelt.
+
+
+\subsubsection{Vermeidung von Divisionen}
+\label{BGH82SubSub2}
+V. Strassen \cite{Stra73} hat allgemein untersucht, wie sich Divisionen 
+vermeiden lassen. In diesem Unterkapitel wird behandelt, auf welche Weise
+sich seine Ergebnisse f"ur die Determinantenberechnung nutzen lassen.
+
+% $$$$ evtl. Eigenschaften von $R$ erl"autern
+An dieser Stelle wird zun"achst, um das Verst"andnis zu erleichtern, 
+ein "Uberblick "uber die benutzten Ideen gegeben. Dazu sei $A$ eine
+$n \times n$-Matrix mit Elemente aus $R$, einer Teilmenge 
+von $\Rationals$.
+Die Idee zur Vermeidung von Divisionen bei der Determinantenberechnung
+kann man in Form von $3$ Schritten
+formulieren, die jedoch nichts mit konkreten Berechnungsschritten zu tun
+haben (eine genauere Ausarbeitung der nun folgenden Andeutungen 
+wird weiter unten vorgenommen):
+\begin{enumerate}
+    \item \label{OhnedivEnum1.1}
+          Ersetze die Matrixelemente \[ a_{11},\ldots,a_{nn} \] aus $R$ 
+          durch Matrixelemente \[ a'_{11},\ldots,a'_{nn} \] aus dem
+          offenen Intervall \[ (-1,1) \] von $R$. Berechne deshalb am
+          Ende des Algorithmuses aus der Determinante von $A'$ diejenige
+          f"ur die urspr"ungliche Matrix $A$. Diese Ma"snahme ist eine
+          Vorarbeit f"ur Schritt \ref{OhnedivEnum1.2}.
+    \item \label{OhnedivEnum1.2}
+          Ersetze die so erhaltenen Matrixelemente aus dem Intervall von $R$
+          so durch Elemente aus dem formalen Potenzreihenring
+          $R[[]]$ (genaueres s. u.) da"s alle Divisionen die Form
+          \[ \frac{f}{1-g} \] oder \[ \frac{f}{1+g} \] bekommen, wobei $f$ 
+          und $g$ jeweils Elemente von $R[[]]$ sind. Diese Ma"snahme ist 
+          ebenfalls eine Vorarbeit f"ur Schritt \ref{OhnedivEnum1.3}.
+    \item \label{OhnedivEnum1.3}
+          Ersetze die so erhaltenen Divisionen mit Hilfe der 
+          Taylorreihenentwicklung durch Multiplikationen. Dies wird dadurch
+          m"oglich, da"s alle Elemente der urspr"unglichen Matrix $A$
+          durch Werte ersetzt wurden, die aus \[ (-1,1) \] stammen 
+          (genaueres s. u.).
+          Dieser Schritt im Gedankengang enth"alt die 
+          Hauptidee zur Vermeidung von Divisionen.
+\end{enumerate}
+
+% $$$$$ Fortsetzung hier (Unterkapitel bis zum Ende "uberarbeiten)
+
+
+
+% $$$ bei der Entwicklung in eine Taylorreihe kann das Ergebnis eine
+%     Potenzreihe sein !?
+Im Folgenden werden nun die Details etwas genauer ausgearbeitet. Um die
+Hauptidee zu verstehen betrachte man zuerst die Funktion
+\begin{equation}
+\label{OhnedivEqu7}
+    f(x) = \frac{1}{1-x} 
+\end{equation}
+Sie l"a"st sich in ein Potenzreihe --- siehe dazu \cite{BS87} Seite 30 und
+ab Seite 269 (Satz von {\em Taylor}) ---
+mit folgendem Aussehen entwickeln:     % $$$ Potenzreihen mit mehreren
+\begin{displaymath}                    %     Variablen: BS87, Seite 371
+    g(x) = \sum_{i=0}^{\infty}x^i
+\end{displaymath}
+Leider betr"agt der Konvergenzradius (\cite{BS87} Seite 366) 1. D. h.,
+nur f"ur 
+    \[ |x|<1 \] \noindent
+gilt 
+    \[ f(x)=g(x) \] \noindent
+Im Folgenden wird diese Idee zur Vermeidung von Divisionen weiterentwickelt.
+
+Der im vorangegangenen Unterkapitel angegebene Algorithmus wird
+dahingehend ver"andert, da"s die Berechnungen nicht mehr im Ring einer 
+Teilmenge von $\Rationals$ durchgef"uhrt werden. Diese Teilmenge sei mit
+$R$ bezeichnet. Die Rechnungen werden in einem formalen Potenzreihenring
+    \[ R[[a_{11},\ldots,a_{nn}]] \]
+durchgef"uhrt (siehe z. B. \cite{Bour67} Kapitel 4). % $$$$ Seitennummer?
+Die obige Schreibweise ist folgenderma"sen zu deuten:
+\begin{itemize}
+    \item Die eckigen Doppelklammern deuten an, da"s es sich um 
+          Potenzreihen handeln soll.
+    \item Die in den eckigen Doppelklammern aufgelisteten Unbestimmten 
+          d"urfen als Unbestimmte in den Potenzreihen auftauchen.
+    \item Die Unbestimmten werden mit den Elementen 
+          einer $n \times n$-Matrix $A$ identifiziert. 
+    \item Konstante (d. h. Koeffizienten) m"ussen Elemente von $R$ sein.
+\end{itemize}
+
+Der Potenzreihenring sei abk"urzend mit $R[[]]$ bezeichnet. Ein gegebenes 
+$u$ aus $R[[]]$ hat folgende Form:
+\begin{displaymath}
+    \sum_{e \in T} k_{e_1 e_2 \cdots e_{n^2}} 
+        \prod_{i=1}^{n^2}a_i^{e_i}
+\end{displaymath}
+Dabei gilt:
+\begin{itemize}
+    \item Die $k_i$ sind Elemente aus $R$.
+    \item $T$ ist eine Teilmenge von $\Nat^{n^2}$. 
+          Die Anzahl der Elemente von $T$ kann unbeschr"ankt sein.
+    \item F"ur ein Element $e$ von $T$ bezeichnet $e_i$ das 
+          $i$-te Element von $e$.
+\end{itemize}
+Die Summe der Glieder von $u$, f"ur die gilt
+    \[ \sum_{i=1}^{n^2} e_i = p \]
+wird homogene Komponente vom Grad $p$ genannt. Die homogene Komponente
+vom Grad $0$ wird auch konstanter Term genannt.
+
+In $R[[]]$ lassen sich Divisionen der Form
+\begin{equation}
+\label{OhnedivEqu3}
+    \frac{f}{1-g}
+\end{equation}
+ersetzen durch
+\begin{equation}
+\label{OhnedivEqu4}
+    f * (1+g+g^2+\ldots)
+\end{equation}
+und Divisionen der Form
+\begin{equation}
+\label{OhnedivEqu5}
+    \frac{f}{1+g}
+\end{equation}
+durch
+\begin{displaymath}
+    f * (1-g-g^2-\ldots)
+\end{displaymath}
+Dabei sind $f$ und $g$ aus $R[[]]$. Nat"urlich ist nicht ohne weiteres
+gew"ahrleistet, da"s alle Divisionen in einem Algorithmus von der Form
+der Terme \equref{OhnedivEqu3} oder \equref{OhnedivEqu5} sind. Weiter 
+unten wird beschrieben, wie dies im speziellen Fall des hier darzustellenden
+Algorithmuses zur Determinantenberechnung dennoch erreicht werden kann.
+
+% $$$ S"atze f"ur Potenzreihen in mehreren Variablen:
+%         Hinweis in BS87 Seite 371
+
+Sei $A$ --- wie gehabt --- eine $n \times n$-Matrix f"ur eine 
+nat"urliche Zahl $n$ mit Elementen aus $R$ (s. o.). Um die Berechnungen 
+in $R[[]]$ durchf"uhren zu k"onnen, ben"otigen wir zwei Abbildungen.
+\begin{displaymath}
+    k: R^{n^2} \rightarrow (R[[]])^{n^2}
+\end{displaymath}
+und 
+\begin{displaymath}
+    l: R[[]] \rightarrow R
+\end{displaymath}
+so da"s gilt
+\begin{displaymath}
+    \det(A) = l(\det(k(A)))
+\end{displaymath}
+Sei
+\begin{displaymath}
+    k(A)=A'
+\end{displaymath}
+Dann wird $k$ so definiert, da"s gilt
+\begin{displaymath}
+    a_{ij}'= a_{ij} - \delta_{ij} 
+\end{displaymath}
+wobei $\delta_{ij}$ das Kroneckersymbol ist, mit der Bedeutung
+\begin{displaymath}
+    \delta_{ij}:= \left\{
+                      \begin{array}{lcr}
+                          1 & : & i = j \\
+                          0 & : & i \neq j
+                      \end{array}
+                  \right.
+\end{displaymath}
+Die $a_{ij}$ werden somit durch die Polynome 
+\begin{displaymath}
+    a_{ij}' + \delta_{ij}
+\end{displaymath}
+mit den $a_{ij}'$ als Unbestimmten ersetzt.
+Wie leicht einzusehen ist, enth"alt $R[[]]$ als Unterring den Ring der 
+Polynome mit Koeffizienten aus $R$ und den Unbestimmten
+    \[ a_{11}, \ldots, a_{nn} \]
+
+Sei \[ d \in \Nat \] fest gew"ahlt.
+Es gelte   % $$$ hier Division 1/m
+\begin{eqnarray*}
+    m   & := & d + \max(|a_{11}|,|a_{12}|,\ldots,|a_{nn}|) \\
+    m_1 & := & \frac{1}{m} \\
+    m_2 & := & m^n \\
+\end{eqnarray*}
+Sei $g$ aus $R[[]]$ die Determinante von $A$. Dann wird $l$ definiert durch
+\begin{displaymath}
+    l(g):= m_2 * g(m_1 * a_{11}, m_1 * a_{12}, \ldots, m_1 * \a_{nn})
+\end{displaymath}
+d. h. durch Anwendung von $g$. Bei dieser Definition von $l$ wird benutzt,
+da"s die Determinante einer Matrix, deren Elemente einer Zeile mit
+einem Faktor multipliziert wurden, gleich diesem Faktor multipliziert mit
+der Determinante der urspr"unglichen Matrix ist. Leider tritt hierbei eine
+Division auf. F"ur Implementierungen des Algorithmus kann man jedoch
+$m_1$ und $m_2$ als Konstanten vorgeben, so da"s keine Division auftritt.
+
+Ohne die Multiplikationen mit $m_1$ und 
+$m_2$ w"urde der Algorithmus nur f"ur Matrizen gelten, deren Elemente 
+im offenen Intervall von $-1$ bis $1$ liegen, denn,
+damit Term \ref{OhnedivEqu3} durch Term \ref{OhnedivEqu4} ersetzt werden 
+kann, mu"s die Potenzreihe in Term \ref{OhnedivEqu4} konvergieren.
+Daf"ur mu"s $g$ selbst konvergieren. Dies ist der Fall, wenn gilt:
+\begin{itemize}
+    \item Die Unbestimmten, die in der Potenzreihe $g$ auftauchen,
+          d"urfen nur Werte aus dem offenen Intervall von $-1$ bis $1$
+          annehmen.
+          
+          Auf Seite \pageref{OhnedivEqu7} wird diese Forderung f"ur die
+          Reihenentwicklung bei einer Unbestimmten angegeben. Bei
+          Betrachtung der Definition von $k$ (s. o.) f"allt auf, 
+          da"s der Fall mit einer Unbestimmten w"ahrend der 
+          Determinantenberechung bei der ersten Division 
+          durch ein Element der Hauptdiagonalen auftritt. Dieses Element
+          mu"s die Forderung also erf"ullen. Durch Zeilen- und 
+          Spaltenvertauschungen (\cite{MM64} ab Seite 12) l"a"st sich jedoch
+          jedes Matrizenelement an diese Position bringen, ohne da"s sich
+          der Betrag der Determinante "andert. Folglich m"ussen alle 
+          Matrizenelemente im geforderten Intervall liegen.
+
+          Die Definition von $l$ stellt sicher, da"s der Algorithmus 
+          auch auf
+          Matrizen angewendet werden kann, deren Elemente nicht im 
+          Intervall liegen.
+    \item Der konstante Term von $g$ mu"s gleich $0$ sein. 
+% $$$$ bessere Formulierung: ... Konvergenzbereich ... (->BS87 S. 371)
+    
+          Andernfalls 
+          w"are die Konvergenz nur durch zus"atzliche 
+          Bedingungen f"ur die Unbestimmten sichergestellt.
+          
+          Beim Vergleich der obigen Definition von $k$ mit dem Algorithmus 
+          zur Determinantenberechnung, wie er im vorangegangenen 
+          Unterkapitel besprochen wurde, erkennt man, da"s alle 
+          auftretenden Divisionen tats"achlich von den Formen sind, wie
+          sie die Terme \ref{OhnedivEqu3} und \ref{OhnedivEqu5} vorschreiben
+          und der konstante Term von $g$, wie gefordert, gleich $0$ ist.
+\end{itemize}
+Um die Besprechung der hier vorgeschlagenen Art der Vermeidung von 
+Divisionen abzuschlie"sen fehlt noch die Betrachtung der Genauigkeit 
+der Berechnungen.
+
+Die Divisionen werden mit Hilfe von Reihenentwicklungen vorgenommen. Diese
+Reihen haben jeweils unendlich viele Glieder, die man nat"urlich nicht alle
+ausrechnen kann. Somit ist es n"otig die Berechnung bestimmte Glieder zu 
+beschr"anken. 
+
+Eine sinnvolle Beschr"ankung ist es, nur alle homogenen Komponenten bis 
+zum Grad $n$ (Anzahl der Zeilen bzw. Spalten der zu Grunde liegenden 
+Matrix) auszurechnen, denn bei Betrachtung der Definitionsgleichung
+\ref{OhnedivEqu1} der Determinanten erkennt man, da"s lauter Produkte von
+$n$ Unbestimmten auftreten. 
+
+Wenn man annimmt, da"s die Unbestimmten in der Darstellung zu einer Basis
+$b$ mit \[ b \geq 2 \] jeweils maximal $s$ signifikante Stellen besitzen,
+hat das Produkt aus $n$ Unbestimmten maximal \[ n * s \] signifikante 
+Stellen. Da die Reihen nicht komplett ausgerechnet werden, erreicht man
+auf keinen Fall eine vollkommene Genauigkeit. Bei der Beschr"ankung auf die
+homogenen Komponenten bis zum Grad $n$ erreicht man jedoch, wie hiermit 
+motiviert ist, eine der normalen Berechnung befriedigend nahekommende 
+Genauigkeit.
+
+Leider wird somit das Ziel, durch Vermeidung von Divisionen die 
+Genauigkeit m"oglichst vollkommen exakt zu machen, wiederum nicht erreicht.
+
+% $$$$  hier Verweis 'Parallelisierung im n"achsten Unterkapitel' ?!
+
+\subsubsection{Parallele Polynomauswertung}
+\label{BGH82SubSub3}
+(in Arbeit)
+% $$$$ Fortsetzung hier
+
+\subsubsection{Algorithmus}
+(in Arbeit)
+% $$$$ Fortsetzung hier
+
+% $$$ nach BGH82
+% $$$ in \cite{FF63} im Anhang: Gaus-Jordan zur Determinantenberechnung
+
+\subsection{Algorithmus von Berkowitz}
+\label{SubsectionBerk84}
+% $$$ nach Berk84
+% $$$$ Fortsetzung hier
+(in Arbeit)
+

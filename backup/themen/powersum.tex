@@ -1,0 +1,50 @@
+\begin{lemma}
+\label{SatzSumK}
+    Sei $n \in \Nat_0$. Dann gilt:
+    \[ \sum_{k=1}^n k = \frac{ n(n+1) }{ 2 } \]
+\end{lemma}
+\begin{beweis}
+    Der Beweis erfolgt durch Induktion "uber $n$.
+    \begin{MyDescription}
+    \MyItem{$n=1$}
+        Der Satz besitzt offensichtlich G"ultigkeit.
+    \MyItem{$n>1$}
+        Der Satz gelte f"ur $n<i$. Es ist zu zeigen, da"s er dann auch
+        f"ur $n=i$ gilt:
+        \begin{eqnarray*}
+            \sum_{k=1}^i k & = & i + \sum_{k=1}^{i-1} k \\
+            & = & 
+                i + \frac{ (i-1)i }{ 2 } \\
+            & = & \frac{ 2i+i^2-i }{ 2 } \\
+            & = & \frac{ i(i+1) }{ 2 }
+        \end{eqnarray*}
+    \end{MyDescription}
+\end{beweis}
+
+\begin{lemma}
+\label{SatzSumK2}
+    Sei $n \in \Nat_0$. Dann gilt:
+    \[ \sum_{k=1}^n k^2 = \frac{ n(n+1)(2n+1) }{ 6 } \]
+\end{lemma}
+\begin{beweis}
+    Der Beweis erfolgt durch Induktion "uber $n$.
+    \begin{MyDescription}
+    \MyItem{$n=1$}
+        Der Satz ist offensichlich richtig.
+    \MyItem{$n>1$}
+        Der Satz gelte f"ur $n<i$. Es ist zu zeigen, da"s er dann auch
+        f"ur $n=i$ gilt:
+        \begin{eqnarray*}
+            \sum_{k=1}^i k^2 & = & i^2 + \sum_{k=1}^{i-1} \\
+            & = & 
+                i^2 + \frac{ (i-1)i(2(i-1)+1) }{ 6 } \\
+            & = & 
+                \frac{ 6i^2+(i^2-i)(2i-1) }{ 6 } \\
+            & = & 
+                \frac{ 2i^3 + 3i^2 + i }{ 6 } \\
+            & = & 
+                \frac{ i(i+1)(2i+1) }{ 6 }
+        \end{eqnarray*}
+    \end{MyDescription}
+\end{beweis}
+

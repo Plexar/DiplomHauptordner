@@ -1,0 +1,662 @@
+%
+% Datei: implemen.tex
+% Datum: 15.2.91
+% 
+% Datei zur Erzeugung des Textteils 'Implementierung'
+%
+\section{Implementierung}
+\label{SectionImplemen}
+In diesem Kapitel wird zun"achst die  Implementierbarkeit der Algorithmen
+aus den vorangegangenen Kapiteln untersucht.
+Es werden dabei verschiedene M"oglichkeiten der Implementierung angedeutet.
+Danach wird die tats"achlich durchgef"uhrte Implementierung beschrieben.
+Schlie"slich werden die gewonnenen praktischen Ergebnisse mit den 
+theoretischen verglichen.
+
+\subsection{Problemanalyse}
+Die Implementierung soll auf einem Rechner mit nur einem Prozessor erfolgen.
+Dazu mu"s die ben"otigte Anzahl von Prozessoren irgendwie simuliert werden.
+Diese Problemstellung legt einen objektorientierten Ansatz nahe. 
+Eine M"oglichkeit w"are es, auf dem verwendeten Rechner vom Betriebssystem
+unterst"utzt quasi-parallele miteinander kommunizierende Prozesse zu verwenden,
+z. B. pro ben"otigtem Prozessor ein Prozess, sowie ein Prozess, der den
+Speicher simuliert. 
+Diese L"osung ist jedoch schwer zu handhaben und zu untersuchen. Z. B. w"are
+es problematisch, zuverl"assige vergleichbare Laufzeitmessungen vorzunehmen.
+Au"serdem w"urde die Anzahl der ben"otigten Prozesse u. U. f"ur das
+Betriebssystem nur schwer oder "uberhaupt nicht handhabbar. 
+% $$$$ n^3 Prozessoren f"ur 10 \times 10 Matrix ?!?!
+
+Da die in den vorangegangenen Kapiteln behandelten Algorithmen alle 
+imperativ formuliert sind, m"u"sten sie stark "uberarbeitet werden, um sie
+in einer funktionalen Sprache (z. B. ML oder Scheme) oder in einer 
+logischen Sprache (z. B. Prolog) zu implementieren. Daher ist es 
+naheliegend, f"ur die Implementierung eine imperative Programmiersprache
+zu w"ahlen. Als Vertreter seien f"ur die weitergehenden Betrachtungen 
+{ \em Modula-2 } \cite{DLR86} und { \em Simula } \cite{Simula85} 
+herausgegriffen.
+
+Somit ist es n"otig, eine Programmiersprache zu w"ahlen, und dann { \em ein}
+Programm zu schreiben, das die gesamte Simulation des Parallelrechners 
+"ubernimmt. Da dann der gesamte Ablauf unter der Kontrolle des Programms
+stattfindet, werden Messungen vereinfacht in Form von zus"atzlichen 
+Anweisungen an den geeigneten Stellen. 
+
+Es w"are w"unschenswert, zur Beschreibung der Parallelit"at eine Syntax 
+benutzen zu k"onnen, die durch folgendes Beispiel angedeutet werden soll:
+% $$$$ Erkl"arung der Semantik der Befehle des Beispiele s. u.
+\begin{verbatim}
+    (* Beispielprogramm 'Vertauschung der Inhalte 
+       zweier Vektoren' *)
+    const n=10;
+    var a(n),b(n),hilf1(n),hilf2(n);
+                  (* Deklaration von Vektoren
+                     der Laenge n *)
+    var i;
+
+    eingabe a,b;  (* Eingabe der Vektoren *)
+    parallel(i,n) (* n: Anzahl der Prozessoren;
+                     i: Variable zur Identifizierung der
+                        einzelnen Prozessoren *)
+        startparallel (* Anweisungen bis 'endeparallel' 
+                         werden parallel durch einen
+                         Prozessor pro Anweisung 
+                         abgearbeitet *)
+            zuw hilf1(i), a(i);
+                      (* Zuweisung: 
+                             a(i)    : Quelle
+                             hilf1(i): Senke *)
+            zuw hilf2(i), b(i);
+        endeparallel;
+        startparallel
+            zuw a(i), hilf2(i);
+            zuw b(i), hilf1(i);
+        endeparallel;
+    endeparallel;
+    ausgabe a,b; (* Ausgabe der Vektoren a und b *)
+    ende; (* Programmende *)
+    (* Da Ein- und Ausgabe nicht zur Berechnung der
+       benoetigten Schritte herangezogen werden,
+       wird dieses Programm in 2 Schritten von 2n 
+       Prozessoren abgearbeit *)
+\end{verbatim}
+%Das obige Beispielprogramm ist in einer Sprache geschrieben, die im
+%n"achsten Kapitel beschrieben wird.
+
+Man k"onnte nun auf die Idee kommen, f"ur eine bekannte Programmiersprache
+zus"atzliche Prozeduren, Module (z. B. in Modula-2) oder Klassen (z. B. in
+Simula) zur Verf"ugung zu stellen, unter deren Benutzung man das obige 
+Programm in dieser Sprache formulieren kann.
+Dazu mu"s die in Frage 
+kommende Programmiersprache ein Coroutinen-Konzept zur Verf"ugung stellen.
+F"ur die Sprache Modula-2 ist dies z. B. in \cite{DLR86} ab Kapitel 14 
+beschrieben. Mit Hilfe von Coroutinen k"onnte man die parallel 
+abzuarbeitenden Programmteile pseudoparallel bearbeiten lassen.
+Dies hat jedoch Nachteile:
+\begin{itemize}
+    \item Die bekannten Sprachen mit Coroutinenkonzept gestatten jedoch 
+          nur, ganze Prozeduren (in Modula-2) oder ganze Klassen 
+          (in Simula) als Coroutinen auszuf"uhren. 
+    \item In Modula-2 d"urfen solche Prozeduren keine Parameterliste
+          besitzen.
+\end{itemize}
+Das bedeutet, da"s die obigen Sprachelemente zur Beschreibung von 
+Parallelit"at auf diese Weise nicht implementiert werden k"onnen.
+Falls man den genannten Weg f"ur die Implementierung --- Umformulierung
+der Algorithmen in eine bekannte Programmiersprache --- dennoch 
+beschreiten m"ochte, m"ussen parallel auszuf"uhrende Teile von 
+Algorithmen grunds"atzlich als Prozedur formuliert werden. In Simula 
+w"urde die Implementierung des obigen Beispielprogramms dann
+folgenderma"sen aussehen:
+% $$$ hier Simula-Programm eingef"ugt (Datei: beisp1.sim)
+\begin{verbatim}
+
+! Datei: beisp1.sim 
+  Datum: 15.02.91 
+
+  Beispielprogramm zur Implementierung durch Uebersetzung in Simula.
+  ( Kapitel: Implementierung ) ;
+
+simulation begin
+
+    ! Algorithmus unabhaengige Deklarationen ;
+
+    process class prozessorgruppe;
+    begin
+        integer ProzessorAnzahl;
+        integer SchrittAnzahl;
+
+        procedure arbeiten;
+        begin
+            SchrittAnzahl:= 0;
+            Schleifenanfang:
+                hold(1);
+                SchrittAnzahl:= SchrittAnzahl+1;
+            if ProzessorAnzahl>0 then goto Schleifenanfang;
+        ProzessorAnzahl:= 0;
+        end arbeiten;
+
+        procedure PlusProzessor;
+        begin
+            ProzessorAnzahl:= ProzessorAnzahl+1;
+        end PlusProzessor;
+
+        procedure MinusProzessor;
+        begin
+            ProzessorAnzahl:= ProzessorAnzahl-1;
+            passivate;
+        end MinusProzessor;
+
+        ProzessorAnzahl:= 0;
+    end prozessorgruppe;        
+
+    process class parallel(gruppe,index);
+        ref(prozessorgruppe) gruppe;
+        integer index;
+    begin
+        procedure SchrittGrenze;
+        ! zwischen zwei zu zaehlenden Schritten aufzurufen,
+          jedoch nie am Prozeduranfang oder -ende;
+        begin
+           hold(1);
+        end SchrittGrenze;
+
+        gruppe.PlusProzessor;
+        INNER;
+        gruppe.MinusProzessor;
+    end parallel;
+
+    class vektor;
+    begin
+        integer array wert(1:10);
+        integer i;
+
+        procedure eingabe;
+        begin
+            for i:= 1 step 1 until 10 do
+                wert(i):= inint;
+        end eingabe;
+
+        procedure ausgabe;
+        begin
+            for i:= 1 step 1 until 10 do
+                outint(wert(i),0);
+        end ausgabe;
+    end vektor;
+
+    ! Algorithmus;
+
+    ref(vektor) a,b,hilf1,hilf2;
+    ref(prozessorgruppe) prozessoren;
+    integer i;    
+
+    parallel class zuweisung(senke,quelle);
+        ref(vektor) senke, quelle;
+    begin
+        senke.wert(index):= quelle.wert(index);
+    end zuweisung;
+    
+    parallel class VektorVertauschung(a,b,hilf1,hilf2);
+        ref(vektor) a,b,hilf1,hilf2;
+    begin
+        ref(prozessorgruppe) prozessoren;
+    
+        prozessoren:- new prozessorgruppe;
+
+        ! startparallel;
+            ! zuw hilf1(i),a(i);
+            activate new zuweisung(prozessoren,0,hilf1,a);
+
+            ! zuw hilf2(i),b(i);
+            activate new zuweisung(prozessoren,0,hilf2,b);
+            prozessoren.arbeiten;
+        ! parallelende;
+
+        ! startparallel;
+            ! zuw a(i),hilf2(i);
+            activate new zuweisung(prozessoren,0,a,hilf2);
+
+            ! zuw b(i),hilf1(i);
+            activate new zuweisung(prozessoren,0,b,hilf1);
+            prozessoren.arbeiten;
+        ! parallelende;
+    end VektorZuweisung;
+    
+    a:- new vektor;
+    b:- new vektor;
+
+    ! eingabe a,b;
+    a.eingabe;
+    b.eingabe;
+
+    ! parallel(i,n);
+    prozessoren:- new prozessorgruppe;
+    for i:= 1 step 1 until 10 do
+        activate 
+            new VektorVertauschung(prozessoren,i,
+                                   a,b,hilf1,hilf2);
+    prozessoren.arbeiten;
+    ! parallelende;
+     
+    ! ausgabe a,b;    
+    a.ausgabe;
+    b.ausgabe;
+end Hauptprogramm;
+\end{verbatim} \noindent
+
+Das folgende Programm k"onnte jedoch auf diese Weise nicht implementiert
+werden:
+\begin{verbatim}
+    (* Beispielprogramm 'Verschiebung der Komponenten
+       eines Vektors *)
+    const n=10;
+    var a(n);
+
+    var i;
+    var indizes(9);
+
+    eingabe a;
+    parallel(i,9)
+        zuw indizes(i),i;
+        add indizes(i),1;
+        zuw a(indizes(i)),a(i);
+    parallelende;
+    ausgabe a;
+\end{verbatim}
+Dieses Programm geht davon aus, da"s die Prozessoren --- wie vom zu Grunde
+gelegten Pa\-ral\-lel\-rech\-ner-Modell vorgesehen --- gleichzeitig 
+die Operanden
+lesen, sie danach gleichzeitig mit einander verkn"upfen und schlie"slich
+gleichzeitig die Ergebnisse im gemeinsamen Speicher ablegen. Bei der
+oben beschriebenen Art der Implementierung werden einzelne Befehle jedoch 
+nur quasiparallel abgearbeitet. Dieser Nachteil entf"allt bei der im 
+n"achsten Kapitel skizzierten Implementierungsweise.
+
+\subsection[Eine PRAM-Sprache]{Eine Sprache zur Formulierung von
+                               PRAM-Programmen}
+% $$$$ ist keine PRAM-Sprache !
+Eine andere M"oglichkeit der Implementierung ist es, eine Sprache 
+zu entwerfen, die o. g. Erfordernissen besser gerecht wird und diese dann
+zu implementieren. In diesem Unterkapitel wird eine Sprache beschrieben,
+die dem Konzept der PRAM (Parallel Random Access Machine) m"oglichst 
+stark nachempfunden ist.
+
+Zun"achst wird die Syntax der Sprache mit Hilfe einer kontextfreien 
+Grammatik beschrieben. 
+\begin{itemize}
+    \item Die Produktionen werden in EBNF (Erweiterte Backus-Naur-Form)
+          formuliert. 
+    \item Das Startsymbol ist 'programm'. 
+    \item Terminalsymbole werden mit Anf"uhrungsstrichen 
+          ( z. B. \dq Terminalsymbol \dq) eingeklammert.
+    \item Nichtterminalsymbole bestehen aus einer Folge von Buchstaben 
+          und Ziffern, die mit einem Buchstaben beginnt und von Leerstellen
+          begrenzt wird.
+\end{itemize}
+Die Regeln in EBNF sind folgenderma"sen aufgebaut:
+\begin{itemize}
+    \item Jede Regel beginnt mit einem Nichtterminalsymbol gefolgt von 
+          einem = und wird durch einen Punkt beendet.
+    \item Symbolfolgen in eckigen Klammern k"onnen 0- oder 1-mal auftreten.
+    \item Symbolfolgen in geschweiften Klammern k"onnen beliebig oft 
+          hintereinander auftreten oder auch ganz fehlen.
+    \item Runde Klammern dienen dazu, Regelteile logisch zusammenzufassen.
+    \item Alternativen werden durch senkrechte Striche voneinander 
+          abgegrenzt. In diesem Fall kann eine der so begrenzten 
+          Symbolfolgen exklusiv auftreten.
+    \item Die Regeln f"ur 'buchstabe' und 'ziffer' sind verk"urzt 
+          angegeben.
+\end{itemize}
+Es folgen die Regeln der Grammatik:
+\begin{verbatim}
+    programm = { deklaration } { befehl }.
+    deklaration
+             =   "prozedur" bezeichner 
+                 "(" [ bezeichner { "," bezeichner }] 
+                 ")" ";"
+                 { einfachedeklaration } { befehl } 
+                 "prozedurende" ";"
+               | einfachedeklaration.
+    einfachedeklaration
+             =   "var" bezeichner 
+                 [ "(" konstantenausdruck ")" ] ";"
+               | "konst" bezeichner = zahl .
+    bezeichner 
+             = buchstabe { buchstabe | ziffer | "_" }.
+    konstantenausdruck
+             = summand { ("+" | "-") summand }.
+    summand  = faktor { ("*" | "/") faktor }.
+    faktor   =   "(" konstantenausdruck ")"
+               | bezeichner
+               | zahl .
+    zahl     = ziffer { ziffer }.
+    buchstabe 
+             = "a" | ... | "z" | "A" | ... | "Z".
+    ziffer   = "0" | ... | "9".
+    befehl   = [ bezeichner ":" ]
+               ( "zuw" variable "," wert ";"
+               | "add" variable "," wert "," wert ";"
+               | "sub" variable "," wert "," wert ";"
+               | "mul" variable "," wert "," wert ";"
+               | "div" variable "," wert "," wert ";"
+               | "mod" variable "," wert "," wert ";"
+               | "ende" ";"
+               | "parallel" "(" bezeichner "," wert
+                            ")" parallelrumpf ";"
+               | "startparallel" parallelrumpf ";"
+               | "aufruf" bezeichner 
+                     "(" [ bezeichner 
+                           { "," bezeichner } 
+                         ]
+                     ")" ";"
+               | "eingabe" [ bezeichner
+                             { "," bezeichner }
+                           ] ";"
+               | "ausgabe" [ bezeichner
+                             { "," bezeichner }
+                           ] ";"
+               | [ "wenn" wert vergleichsoperator wert ]
+                 "gehezu" bezeichner ";"
+               ).
+    vergleichsoperator
+             = "<" | ">" | "<=" | ">=" | "<>" .
+    variable = bezeichner 
+               [ "(" bezeichner 
+                    [ "(" bezeichner ")" ]
+               ].
+    wert     =   zahl | variable.
+    parallelrumpf
+             = { befehl } "endeparallel".
+\end{verbatim}
+Kommentare im Programmtext werden mit (* *) eingeklammert.
+Die Semantik der Programmiersprache wird im folgenden an Hand einzelner
+EBNF-Regeln erkl"art.
+\begin{description}
+    \item[programm]
+        Ein Programm besteht aus einem Deklarationsteil und einem 
+        Anweisungsteil. Im Deklarationsteil werden Variablen, Konstanten und
+        Prozeduren beschrieben, die im Anweisungsteil benutzt werden.
+        In Prozeduren d"urfen im Programmtext vorher deklarierte Variable
+        und Konstanten benutzt werden.
+    \item[deklaration]
+        Es k"onnen Prozeduren, Variablen oder Konstanten deklariert werden.
+        \begin{itemize}
+            \item Prozeduren k"onnen eine Liste formaler Parameter 
+                  besitzen, die nur im Prozedurrumpf bis zum n"achsten 
+                  Terminalsymbol {\em prozedurende} benutzt werden d"urfen. 
+                  Au\-"ser\-dem d"urfen in Prozeduren 
+                  lokale Variable deklariert
+                  werden, die denselben Sichtbarkeitsbereich besitzen. 
+                  Es d"urfen in Prozeduren keine weiteren Prozeduren 
+                  deklariert werden.
+            \item F"ur Variablen darf in Klammern eingeschlossen die Anzahl
+                  der Speicherzellen angegeben werden, auf die durch 
+                  Indizierung mit Hilfe dieser Variablen zugegriffen werden 
+                  soll.
+         \end{itemize}
+    \item[konstantenausdruck]
+        Die Gr"o"se des Speicherbereiches f"ur eine Variable kann in der
+        Deklaration mit Hilfe eines algebraischen Ausdrucks berechnet werden.
+        In diesem Ausdruck k"onnen auch bereits deklarierte benannte 
+% $$$$                                          --------------------?
+        Konstanten benutzt werden. Diese M"oglichkeit der Gr"o"senangabe 
+        verst"o"st nicht gegen das f"ur den Sprachentwurf zu Grunde gelegte
+% $$$$ Satzbau???
+        Rechnermodell, das diese Angabe nur der Verwaltungcharakter hat und
+        somit nicht zu einer Anweisung geh"ort.
+    \item[befehl]
+        Ein Befehl besteht aus einer optionalen Marke abgeschlossen von
+        einem Doppelpunkt sowie einer daran anschlie"senden Anweisung 
+        gefolgt von einem Semikolon. Die Befehle haben im einzelen 
+        folgende Bedeutung:
+        \begin{description}
+            \item[zuw]
+                Der an der ersten Position angegebenen Variablen wird der 
+                an der zweiten Position angegebene Wert zugewiesen.
+            \item[add, sub, mul, div]
+                Der an der ersten Position angegebenen Variablen wird ein
+                Wert zugewiesen, der aus den Werten an den Positionen zwei
+                und drei berechnet wird. Bei {\em add} ist dies die Summe,
+                bei {\em sub} die Differenz (Wert an Position zwei minus
+                Wert an Position drei), bei {\em mul} das Produkt und
+                bei {\em div} das Ergebnis der Division des Wertes an 
+                Position zwei durch den Wert an Position drei. Bei der allen
+                vier Arten der Verkn"upfung ist das Ergebnis ein Element 
+                von $ \Integers $.
+            \item[mod]
+                \begin{verbatim}
+                    mod e,w1,w2;
+                \end{verbatim}
+                ist gleichbedeutend mit
+                \begin{verbatim}
+                    div h,w1,w2;
+                    mul h,h,w2;
+                    sub e,w1,h;
+                \end{verbatim}
+            \item[ende]
+                Das Programm wird sofort beendet.
+            \item[parallel]
+                Vor der Erkl"arung der Semantik dieser Anweisung zun"achst
+                einige Anmerkungen zur Verwaltung mehrerer parallel 
+                arbeitender Prozessoren: \noindent
+
+                Jeder Prozessor besitzt exklusiv f"ur sich einen 
+                Identit"atsvektor. Dieser Vektor besitzt soviele Komponenten,
+                wie {\em parallel}-Anweisungen ineinander verschachtelt 
+                im Programm vorkommen k"onnen. F"ur die gr"o"ste m"ogliche
+                Tiefe dieser Verschachtelungen gibt es eine 
+                implementierungsabh"angige Grenze, die so hoch gew"ahlt sein
+                sollte, da"s sie in der Praxis nicht n"aher beachtet werden
+                mu"s. Ein Beispielwert w"are 20. Der Identit"atsvektor
+                ist, wie diverse andere Register (z. B. Statusregister,
+                Stapelzeiger und Befehlsz"ahler), Bestandteil des 
+                Prozessorzustandes. Falls ein Prozessor also auf andere
+                Prozessoren wartet, kann dieser Prozessorzustand an einer
+%                           ------
+% $$$$ wie kann das bei einer PRAM sein ?
+                unbenutzten Stelle des gemeinsamen Speichers abgelegt und,
+                sobald es m"oglich ist, von irgendeinem Prozessor 
+                weiterbearbeitet werden. So kann der wartende Prozessor 
+                in der Zwischenzeit andere Aufgaben erledigen.
+
+                Sei {\em parallel(i,n)} eine Anweisung. Dann wird sie 
+                folgenderma"sen abgearbeitet: \noindent
+
+                Es werden Aufgaben f"ur $n-1$ weitere Prozessoren
+                geschaffen. Der Prozessor, der die {\em parallel}-Anweisung
+                ausf"uhrt wartet nicht auf {\em n} von ihm angesto"sene 
+                Prozessoren sondern beteiligt sich selbst ebenfalls an der
+                Aufgabenl"osung. In den Identit"atsvektoren der beteiligten
+                Prozessoren wird eine neue Komponente belegt, auf die von
+                den Prozessoren mit der Variablen {\em i} zugegriffen werden
+                kann. F"ur jeden der {\em n} Prozessoren wird diese 
+                Komponente anders belegt. Es werden die Werte von 1 bis 
+                {\em n} f"ur die Belegung benutzt. Alle Komponenten, die f"ur
+                den Prozessor, der die {\em parallel}-Anweisung ausgef"uhrt 
+                hat bereits belegt waren --- und somit "uber jeweils andere
+                Variablen adressiert werden k"onnen --- werden in die 
+                entsprechenden Komponenten der Identit"atsvektoren der anderen
+                beteiligten Prozessoren kopiert. Diese Aufgabenverteilung 
+                an die Prozessoren bedeutet Aufwand konstanter Gr"o"se und
+                wird deshalb nicht in {\em Schritten} gez"ahlt. \noindent
+
+                Dies ist bei der komplexit"atstheoretischen Betrachtung der
+                Laufzeit von parallelen Algorithmen der normale Weg, den 
+                Zeitverbrauch f"ur die Aufgabenverteilung zu behandeln. 
+                Diese Sichtweise ist nicht ganz unproblematisch. Es k"onnte
+                sich z. B. auf theoretischem Wege herausstellen, da"s die
+                Aufgabenverteilung auf n Prozessoren unter bestimmten
+%               ------------------------------------
+% $$$$ bei PRAM ?
+                Rechnermodellen n {\em Schritte} erfordert. Dies w"urde
+                die Gr"o"senordnungen der Laufzeiten vieler Algorithmen 
+                verschlechtern. \noindent
+                
+                Nach der oben beschriebenen Aufgabenverteilung
+                setzen die {\em n} Prozessoren die Abarbeitung des Programmes
+                mit dem Befehl nach der {\em parallel}-Anweisung fort. Sobald
+                einer dieser {\em n} Prozessoren auf die zugeh"orige 
+                {\em parallelende}-Anweisung trifft, h"ort er mit der 
+                Befehlsabarbeitung auf und wird frei f"ur andere Aufgaben.
+                Der letzte der {\em n} Prozessoren, der auf die 
+                {\em parallelende}-Anweisung st"o"st, setzt die
+                Befehlsabarbeitung mit dem Befehl nach dieser Anweisung 
+                fort. \noindent
+
+                F"ur die Abarbeitung der Befehle von {\em parallel} bis 
+                einschlie"slich {\em parallelende} werden soviele
+                {\em Schritte} gez"ahlt, wie der Prozessor ben"otigt, der 
+                als letzter die {\em parallelende}-Anweisung erreicht.
+                Falls {\em parallel-parallelende}-Anweisungen verschachtelt
+                werden, kann es vorkommen, da"s an der Stelle der Variablen
+                {\em i} in verschiedenen {\em parallel}-Anweisungen gleiche
+                Variablen benutzt werden. Falls dies der Fall ist, innerhalb
+                des betroffenen {\em parallel-parallelende}-Blocks mit dem
+                verwendeten Bezeichner die Komponente des Identit"atsvektors
+                adressiert, die zuletzt belegt wurde, d. h. diejenige der
+                inneren {\em parallel}-Anweisung.
+            \item[startparallel]
+                Durch diese Anweisung werden Aufgaben f"ur soviele
+                Prozessoren geschaffen, wie es Befehle zwischen dieser 
+                {\em startparallel}-Anweisung und der zugeh"origen
+                {\em parallelende}-Anweisungen gibt. Dabei werden weitere
+                {\em parallel-parallelende}- oder 
+                {\em startparallel-parallelende}-Bl"ocke als ein Befehl
+                gerechnet. Wenn es also {\em n} Befehle gibt, werden weitere
+                $n-1$ Prozessoren aktiviert.
+                Der Identit"atsvektor des Prozessors, der auf die
+                {\em startparallel}-Anweisung st"o"st, wird in die 
+                Identit"atsvektoren der anderen $n-1$ Prozessoren kopiert.
+                Jeder der Prozessoren f"uhrt
+                genau einen der {\em n} Befehle aus --- jeder einen 
+                anderen --- und wird dann wieder f"ur andere Aufgaben frei.
+                Der Prozessor, der als letzter mit der Abarbeitung seines
+%               ---------------------....
+% $$$$ bei PRAM ?
+                Befehl fertig wird, setzt die Befehlsabarbeitung mit dem
+                Befehl fort, der auf {\em parallelende} folgt.
+                Da einer der genannten Befehle aus mehreren weiteren 
+                Befehlen bestehen kann, ist es m"oglich, da"s die Abarbeitung
+                des Befehls mehrere {\em Schritte} in Anspruch nimmt. 
+                F"ur den {\em startparallel-parallelende}-Block werden 
+                soviele {\em Schritte} gez"ahlt, wie der Befehl mit den
+                meisten {\em Schritten} ben"otigt.
+            \item[aufruf]
+                Die angegebene Prozedur wird mit den angegebenen Variablen
+                als aktuelle Parameter ausgef"uhrt. Falls ein aktueller
+                Parameter eine Konstante ist, darf in der Prozedur der
+                Wert des entsprechenden formalen Parameters nicht 
+                ver"andert werden. Ein solcher Prozeduraufruf wird als 
+                Schreibvereinfachung --- Aufruf statt des ganzen 
+                Prozedurrumpfes --- betrachtet. Deshalb z"ahlt diese
+                Anweisung nicht als {\em Schritt}. Aus diesem Grund ist auch
+                Rekursion verboten. Ein rekursiver Aufruf einer Prozedur 
+                kann nicht mehr als Schreibvereinfachung interpretiert 
+                werden und erfordert somit {\em Schritte} zur Verwaltung 
+                des Aufrufes.
+            \item[eingabe]
+                F"ur die angegebenen Variablen werden Werte eingelesen. Da 
+                im Rechnermodell von Ein- und Ausgabe abstrahiert wird,
+                z"ahlt diese Anweisung nicht als {\em Schritt}.
+            \item[ausgabe]
+                Die Werte der angegebenen Variablen werden ausgegeben. Da im
+                Rechnermodell von Ein- und Ausgabe abstrahiert wird, z"ahlt
+                diese Anweisung nicht als {\em Schritt}.
+            \item[wenn]
+                Die Werte werden entsprechend des angegebenen Operators 
+                verglichen. Falls die Bedingung erf"ullt ist, als n"achste
+                Anweisung diejenige abgearbeitet, die mit der angegebenen
+                Marke versehen ist. Falls der Vergleich nicht angegeben ist,
+                wird auf jeden Fall als n"achste die angegebene Anweisung
+                abgearbeitet. Mit dem {\em wenn}-Befehl kann nicht in 
+                andere Prozeduren oder in {\em parallel-parallelende} oder
+                {\em startparallel-parallelende}-Bl"ocke hinein verzweigt 
+                werden.
+            \item[variable]
+                Auf Variablen darf entweder direkt oder indiziert 
+                zugegriffen werden. Die Indizierung wird durch Angabe eines
+                weiteren Bezeichners in runden Klammern durchgef"uhrt. 
+                Dieser weitere Bezeichner darf nur dann seinerseits wieder
+                indiziert werden, falls der dritte Bezeichner eine 
+                Komponente eines Identit"atsvektors bezeichnet 
+                ({\em parallel}-Befehl s. o.). Die Motivation hierf"ur ist,
+                da"s bei der Ausf"uhrung eines Befehls in Anlehnung an 
+                praktische Hardware-Realisationen nur maximal zwei 
+                Parameter f"ur diesen Befehl aus dem Speicher gelesen werden
+                d"urfen. Ein weiterer Speicherzugriff w"urde zus"atzliche
+                Rechenzeit kosten. Die Identit"atsvektoren werden jedoch
+                als prozessorinterne Register betrachtet, auf die schnell
+                und problemlos ohne Konflikte mit den Speicherzugriffen
+                anderer Prozessoren zugegriffen werden kann.
+        \end{description}
+\end{description}
+Noch einige Anmerkungen zu dieser Sprache:
+\begin{itemize}
+    \item Die Werte der deklarierten Variablen sind vor der ersten 
+          Wertzuweisung nicht definiert. Ein lesender Zugriff auf eine 
+          solche Variable ist nicht erlaubt und ruft eine Fehlermeldung
+          hervor.
+    \item Der h"ochste erlaubte Betrag einer Zahl, der w"ahrend einer 
+          Berechnung auftreten darf, ist abh"angig von der Implementierung
+          der Sprache.
+    \item Die obige Syntax erlaubt nur Zahlen aus $ \Integers $. Durch eine
+          geringf"ugige Erweiterung der Regel f"ur das Nichtterminalsymbol
+          {\em zahl} \/ sowie einer entsprechenden 
+          "Anderung der Semantik der
+          betroffenen Befehle l"a"st sich die Menge der erlaubten Zahlen 
+          auf \/ $ \Rationals $ erweitern.
+    \item Die Semantik der Sprache fa"st einen Prozeduraufruf als 
+          Schreibweise auf. D. h. es wird angenommen, da"s an Stelle des
+          Aufrufes eigentlich der gesamte Rumpf der Prozedur stehen 
+          m"u"ste, in dem die formalen Parameter durch die aktuellen 
+          ersetzt worden sind. Wenn man auch rekursive Prozeduraufrufe
+          erlaubt, l"a"st sich diese Sichtweise nicht mehr konsistent 
+          aufrecht erhalten. \noindent
+          
+          Falls man rekursive Prozeduraufrufe zul"a"st, sollte man deshalb,
+          um einen genaueren Wert f"ur die Laufzeit eines Algorithmus
+          zu erhalten, f"ur solche Aufrufe eine von Null verschiedene 
+          Anzahl von {\em Schritten} z"ahlen. Diese Anzahl ist sinnvollerweise
+          in Abh"angigkeit von der L"ange der Parameterliste zu bestimmen.
+          Sei $n$ die Anzahl der bei einem rekursiven Prozeduraufruf 
+          "ubergebenen Parameter, dann ist z. B. ein sinnvoller Wert f"ur 
+          die Anzahl $s$ der zus"atzlich ben"otigten Schritte 
+          \begin{displaymath}
+              s(n)=n
+          \end{displaymath}
+    \item In der obigen Beschreibung der {\em parallel}- und 
+          {\em startparallel}-Anweisungen wird erw"ahnt, da"s f"ur die 
+          Aufgabenverteilung unter den ben"otigten Prozessoren keine
+          {\em Schritte} gez"ahlt werden. Um einen genaueren Wert f"ur 
+          die Laufzeit eines Algorithmuses zu erhalten, kann man eine
+          Konstante $\cal A$ einf"uhren, die die Anzahl der {\em Schritte}
+          angibt, die f"ur die Aufgabenverteilung bei einer
+          {\em parallel}- oder {\em startparallel}-Anweisung ben"otigt 
+          werden. Diese Konstante w"urde dann im Ausdruck f"ur die 
+          ben"otigte Gesamtanzahl von {\em Schritten} erscheinen und m"u"ste
+          dann mit einem sinnvollen Wert belegt werden. Er k"onnte jedoch
+          nur an Hand praktischer Erfahrung mit der Implementierung des
+          hier betrachteten Rechnermodells als Hardware bestimmt werden und
+          w"are somit nur schwierig sinnvoll festzusetzen.
+    \item Verglichen mit der im vorangegangenen Unterkapitel beschriebenen
+          M"oglichkeit der Implementierung der Algorithmen erfordert die
+          Realisation mit Hilfe der obigen Sprache einen sehr erheblichen
+          Aufwand.
+\end{itemize}
+
+\subsection[Realisation]{Beschreibung der tats"achlich realisierten 
+                         Implementierung}
+
+\subsection[Vergleich]{Vergleich von praktischen mit theoretischen
+                       Ergebnissen}
+% $$$$ Ideen f"ur Themen f"ur dieses Unterkapitel:
+% - bei Berechnung der Anzahl der Prozessoren, die maximal gleichzeitig
+%   besch"aftigt werden k"onnen zu beachten:
+%       jeder Prozessor, der eine 'parallel'-Anweisung ausf"uhrt, kann,
+%       w"ahrend er auf deren Beendigung (d. h. auf die anderen Prozessoren
+%       wartet) selbst etwas anderes tun; er sollte also bei der Abarbeitung
+%       dieser 'parallel'-Anweisung mithelfen
+% - Zugriff auf gemeinsam genutzte Speicherbereiche in der Praxis ein
+%   Problem (Realisierung, Laufzeitverhalten) (komplexit"atstheoretische
+%   Auswirkungen ?)
+

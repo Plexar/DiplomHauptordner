@@ -1,0 +1,1275 @@
+%
+% Datei: berk.tex (Textteile nach 'Berk84')
+%
+\MyChapter{Der Algorithmus von Berkowitz}
+\label{ChapBerk}
+
+Der in diesem Kapitel vorgestellte Algorithmus \cite{Berk84} berechnet
+die Determinante mit Hilfe einer rekursiven Beziehung zwischen den
+charakteristischen Polynomen einer Matrix und ihren Untermatrizen. Dabei
+wird \ref{SatzDdurchP} ausgenutzt. Auf den Algorithmus wird mit {\em B-Alg.} Bezug
+genommen\footnote{vgl. Unterkapitel \ref{SecBez}}. 
+
+Wie in BGH-Alg., werden keine Divisionen
+verwendet\footnote{vgl. Erl"auterungen in Unterkapitel \ref{SecAlgFrame}}.
+
+%******************************************************************
+
+\MySection{Toepliz-Matrizen}
+
+Im darzustellenden Algorithmus spielen Toepliz-Matrizen (Definition s. u.)
+eine wichtige Rolle und werden deshalb in diesem Unterkapitel behandelt.
+
+Eine Matrix $n \times p$-Matrix $A$ hei"st {\em Toepliz-Matrix}, falls
+gilt: \index{Toepliz-Matrizen}
+\[ a_{i,j} = a_{i-1,j-1} , \: 1 < i \leq n, \: 1 < j \leq p \MyPunkt \]
+Sie hat also folgendes Aussehen:
+\[
+   \left[ \begin{array}{ccccc}
+       a_{1,1} & a_{1,2} & a_{1,3} & a_{1,4} & \cdots \MatStrut \\
+       a_{2,1} & a_{1,1} & a_{1,2} & a_{1,3} & \ddots \MatStrut \\
+       a_{3,1} & a_{2,1} & a_{1,1} & a_{1,2} & \ddots \MatStrut \\
+       a_{4,1} & a_{3,1} & a_{2,1} & a_{1,1} & \ddots \MatStrut \\
+       \vdots  & \ddots  & \ddots  & \ddots  & \ddots \MatStrut
+   \end{array} \right]
+\]
+
+Die folgende Eigenschaft von Toepliz-Matrizen ist f"ur uns wichtig:
+
+\begin{satz}
+\label{SatzToeplizMult}
+\index{Toepliz-Matrizen!Multiplikation von}
+    Sei $A$ eine $n \times p$-Matrix und $B$ eine $p \times m$-Matrix.
+    Beide seien untere Dreiecks-Toeplitz-Matrizen.
+    Falls f"ur die Matrix $C$ gilt
+    \[ C = A * B \MyKomma \]
+    dann ist $C$ ebenfalls eine untere Dreiecks-Toeplitz-Matrix.
+    Sie kann in \[ \lceil \log(p) \rceil + 1 \] Schritten von
+    \begin{eqnarray*} 
+        & & \frac{ \min(p,\,m)* (\min(p,\,m) +1) }{2}
+            + p * \max(n-p,0) \\
+        & \leq & n * p
+    \end{eqnarray*} Prozessoren berechnet
+    werden. 
+\end{satz}
+\begin{beweis}
+    Es sind drei Eigenschaften von $C$ zu zeigen:
+    \begin{enumerate}
+        \item $C$ ist eine untere Dreiecksmatrix.
+        \item $C$ ist eine Toeplitz-Matrix.
+        \item $C$ kann mit dem oben angegebenen Aufwand an Schritten und
+              Prozessoren berechnet werden.
+    \end{enumerate}
+    Dies geschieht in drei entsprechenden Beweisschritten. Dazu ist zu
+    beachten, da"s die einzelnen Elemente von $C$ nach der Gleichung f"ur
+    die Matrizenmultiplikation berechnet werden:
+    \Beq{Berk84Equ4}
+        c_{i,j}= \sum_{k=1}^p a_{i,k} b_{k,j}
+    \Eeq
+    \begin{enumerate}
+        \item
+            Um zu beweisen, da"s $C$ ebenfalls eine untere Dreiecksmatrix
+            darstellt, ist zu zeigen
+            \[ i < j \Rightarrow c_{i,j} = 0 \]
+            Dies erfolgt durch Fallunterscheidung anhand des Index $k$ in
+            Gleichung \equref{Berk84Equ4}. Es gibt zwei F"alle:
+            \begin{MyDescription}
+                \MyItem{ $i < k$ }
+                    Da $A$ nach Voraussetzung eine untere Dreiecksmatrix
+                    ist und somit
+                    \[ i < j \Rightarrow a_{i,j} = 0 \]
+                    gilt, folgt 
+                    \[ a_{i,k} = 0 \MyKomma\]
+                    wodurch der entsprechende Summand in Gleichung
+                    \equref{Berk84Equ4} zu $0$ wird.
+                \MyItem{ $i \geq k$ }
+                    Nach Voraussetzung gilt \[ i < j \MyKomma \] 
+                    da f"ur die
+                    Elemente oberhalb der Hauptdiagonalen von $C$ zu zeigen
+                    ist, da"s sie gleich $0$ sind. Daraus folgt aber
+                    \[ k < j \MyPunkt \]
+                    Nach Voraussetzung ist $B$ ebenfalls eine untere
+                    Dreiecksmatrix und es gilt somit
+                    \[ i < j \Rightarrow b_{i,j} = 0 \]
+                    Daraus folgt \[ b_{k,j} = 0 \MyKomma \]
+                    wodurch wiederum der
+                    entsprechende Summand in Gleichung \equref{Berk84Equ4}
+                    zu $0$ wird.
+            \end{MyDescription}
+            In beiden F"allen sind die betrachteten Summanden von Gleichung
+            \equref{Berk84Equ4} gleich $0$. Also ist dann auch
+            \[ c_{i,j} = 0 \MyKomma \]
+            was zu zeigen war.
+        \item
+            Damit $C$ eine Toeplitz-Matrix ist, mu"s gelten
+            \[ c_{i,j} = c_{i+1,j+1} \MyPunkt \]
+            Mit Hilfe von Gleichung \equref{Berk84Equ4} ausgedr"uckt
+            bedeutet dies
+            \Beq{Berk84Equ5}
+                 \sum_{k=1}^p a_{i,k} b_{k,j}
+               = \sum_{l=1}^p a_{i+1,l} b_{l,j+1} \MyPunkt
+            \Eeq
+            Da $C$ eine untere Dreiecksmatrix ist, wie oben bewiesen wurde,
+            m"ussen nur \[ c_{i,j} \] betrachtet werden, f"ur die gilt
+            \[ i \geq j \MyPunkt \]
+            Man kann Fallunterscheidungen anhand der Indizes $k$ und $l$
+            durchf"uhren. Es gibt f"ur jeden Index drei F"alle, also
+            insgesamt sechs:
+            \begin{MyDescription}
+                \MyItem{ $k>i$ }
+                    Da $A$ nach Voraussetzung eine untere Dreiecksmatrix
+                    ist, gilt in diesem Fall \[ a_{i,k}= 0 \MyKomma \]
+                    und der
+                    entsprechende Summand wird zu $0$.
+                \MyItem{ $j>k$ }
+                    Da $B$ nach Voraussetzung ebenfalls eine untere
+                    Dreiecksmatrix ist, gilt in diesem Fall
+                    \[ b_{k,j} = 0 \MyKomma \]
+                    und der entsprechende Summand wird zu $0$.
+                \MyItem{ $i \geq k \geq j$ }
+                    Nur in diesem Fall ergibt sich auf der linken Seite
+                    von Gleichung \equref{Berk84Equ5} f"ur den jeweiligen
+                    Summand ein von $0$ verschiedener Wert. Deshalb kann man
+                    die linke Seite dieser Gleichung auch schreiben als
+                    \[ \sum_{k=j}^i a_{i,k} b_{k,j} \MyPunkt \]
+                \MyItem{ $l>i+1$ }
+                    In diesem Fall gilt, da $A$ eine obere Dreiecksmatrix
+                    ist, \[ a_{i+1,l} = 0 \MyPunkt \]
+                    Der entsprechende Summand der
+                    Summe in Gleichung \equref{Berk84Equ5} wird somit zu
+                    $0$ und mu"s nicht l"anger betrachtet werden.
+                \MyItem{ $j+1>l$ }
+                    In diesem Fall gilt \[ b_{l,j+1} = 0 \MyKomma \]
+                    da $B$ eine
+                    obere Dreiecksmatrix ist und der entsprechende Summand
+                    in Gleichung \equref{Berk84Equ5} mu"s nicht l"anger
+                    betrachtet werden.
+                \MyItem{ $i+1 \geq l \geq j+1$ }
+                    Nur in diesem Fall ergibt sich auf der rechten Seite
+                    von Gleichung \equref{Berk84Equ5} ein von $0$
+                    verschiedener Wert f"ur den entsprechenden Summanden.
+                    Man kann also die rechte Seite dieser Gleichung auch
+                    schreiben als
+                    \[ \sum_{l=j+1}^{i+1} a_{i+1,l} b_{l,j+1} \]
+            \end{MyDescription}
+            Nach der Betrachtung dieser sechs F"alle reduziert sich
+            Gleichung \equref{Berk84Equ5} also, falls man nur die von
+            $0$ verschiedenen Summanden betrachtet, auf die Form
+            \[ \sum_{k=j}^i a_{i,k} b_{k,j} =
+               \sum_{l=j+1}^{i+1} a_{i+1,l} b_{l,j+1}
+            \]
+            Anders geschrieben hat diese Gleichung die Form
+            \begin{eqnarray*}
+            &   a_{i,j} b_{j,j} + a_{i,j+1} b_{j+1,j} + a_{i,j+2} b_{j+2,j}
+                + \ldots + a_{i,i} b_{i,j} =
+            & \\
+            &   a_{i+1,j+1} b_{j+1,j+1} + a_{i+1,j+2} b_{j+2,j+1} +
+                a_{i+1,j+3} b_{j+3,j+1} + \ldots + a_{i+1,i+1} b_{i+1,j+1}
+            &
+            \end{eqnarray*}
+            Da $A$ und $B$ Toeplitz-Matrizen sind, haben die beiden
+            Seiten dieser Gleichung den gleichen Wert, was zu beweisen war.
+        \item
+            Da $C$ wiederum eine Toeplitz-Matrix ist,
+            m"ussen nur die $c_{i,j}$ mit $j=1$ neu berechnet
+            werden. Alle anderen Elemente sind entweder gleich Null oder
+            gleich einem $c_{i,1}$. L"a"st man zus"atzlich alle
+            Multiplikationen mit Null weg, kommt man
+            zur Berechnung von $C$ insgesamt mit
+            \[ \lc \log(p) \rc + 1 \] Schritten und
+            \begin{eqnarray*}
+                & & \sum_{k=1}^{\min(p,\,m)} k + p * \max(n-p,\,0) \\
+                & = & \frac{ \min(p,\,m)* (\min(p,\,m) +1) }{2}
+                      + p * \max(n-p,0)
+            \end{eqnarray*} Prozessoren aus. Einschlie"slich der 
+            Multiplikationen mit Null erh"alt man
+            \[ \lc \log(p) \rc + 1 \] Schritte und
+            \[ n * p \] Prozessoren.
+    \end{enumerate}
+\end{beweis}
+
+% **************************************************************************
+
+\MySection{Der Satz von Samuelson}
+\label{SecSamuelson}
+
+In diesem Unterkapitel wird der theoretische Hintergrund des
+darzustellenden Algorithmus behandelt.
+
+Zur Beschreibung des Satzes von Samuelson \cite{Samu42} wird folgende
+Schreibweise eingef"uhrt ($A$ ist eine $n \times n$-Matrix):
+\label{SeiteRMSSchreibweise}
+\begin{itemize}
+\item
+     Den Vektor $S_i$ erh"alt man aus dem $i$-ten Spaltenvektor von $A$
+     durch Entfernen der ersten $i$ Elemente. Er hat also folgendes
+     Aussehen:
+     \[ \left[
+        \begin{array}{c}
+            a_{i+1,i} \MatStrut \\
+            a_{i+2,i} \MatStrut \\
+            \vdots    \MatStrut \\
+            a_{n,i}
+        \end{array}
+        \right]
+     \]
+\item
+     Den Vektor $R_i$ erh"alt man aus dem $i$-ten Zeilenvektor von $A$
+     durch Entfernen der ersten $i$ Elemente. Er hat also folgendes
+     Aussehen:
+     \[ [a_{i,i+1}, a_{i,i+2}, \ldots , a_{i,n} ] \]
+\item
+     Die Matrix $M_i$ erh"alt man aus der Matrix $A$ durch Entfernen
+     der ersten $i$ Zeilen und Spalten. Sie hat also folgendes Aussehen:
+     \[ \left[
+        \begin{array}{cccc}
+            a_{i+1,i+1} & a_{i+1,i+2} & \cdots & a_{i+1,n} \MatStrut \\
+            a_{i+2,i+1} & a_{i+2,i+2} & \cdots & a_{i+2,n} \MatStrut \\
+            \vdots      & \vdots      & \ddots & \vdots    \MatStrut \\
+            a_{n,i+1}   & a_{n,i+2}   & \cdots & a_{n,n}   \MatStrut
+        \end{array}
+        \right]
+     \]
+\item
+     Statt $S_1$, $R_1$ und $M_1$ wird auch $S$, $R$ und $M$ geschrieben.
+\end{itemize}
+
+Die Matrix $A$ l"a"st sich also auch in den Formen
+\[
+   \left[
+   \begin{array}{cc}
+       a_{11} & R \MatStrut \\
+       S      & M \MatStrut
+   \end{array}
+   \right]
+\]
+oder
+\[
+   \left[
+   \begin{array}{ccccc}
+       a_{11}     & R_1        & \rightarrow &             & \MatStrut \\
+       S_1        & a_{22}     & R_2         & \rightarrow & \MatStrut \\
+       \downarrow & S_2        & a_{33}      & R_3         & \rightarrow
+                                                             \MatStrut \\
+                  & \downarrow & S_3         & \ddots      & \ddots
+                                                             \MatStrut \\
+                  &            & \downarrow  & \ddots      & \MatStrut
+   \end{array}
+   \right]
+\]
+darstellen.
+
+Im folgenden Lemma wird das charakteristische Polynom einer Matrix
+mit Hilfe der oben definierten $R$, $S$ und $M$ ausgedr"uckt:
+
+\begin{lemma}
+\label{Berk84Satz1}
+% $$$ Claim 1
+    Sei $p(\lambda)$ das charakteristische Polynom der $n \times n$-Matrix
+    $A$. Dann gilt:
+    \[
+        p(\lambda) = (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1})
+                     - R * \adj(M - \lambda * E_{n-1}) * S
+    \]
+\end{lemma}
+\begin{beweis}
+    Es gilt \[ p(\lambda) = \det(A - \lambda * E_n) \]
+    Durch Entwicklung nach der ersten Zeile erh"alt man:
+    \[
+        p(\lambda)= (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1}) +
+        \sum_{j=2}^n (-1)^{1+j} a_{1,j}
+        \underline{ \det( (A - \lambda * E_n)_{(1|j)} ) }
+    \]
+    Nun werden die in der obigen Gleichung unterstrichenen Determinanten
+    jeweils nach der ersten Spalte entwickelt:
+    \begin{eqnarray*}
+        & p(\lambda)=
+        & (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1}) +
+    \\  & & \sum_{j=2}^n
+            \underbrace{ (-1)^{1+j} a_{1,j} }_{ \mbox{(*1)} }
+        \sum_{k=2}^n (-1)^{1+(k-1)} a_{k,1}
+            \det(
+                \underbrace{
+                    (A - \lambda * E_n)_{(1,k|1,j)}
+                }_{ \mbox{(*2)} }
+            )
+    \end{eqnarray*}
+    Wenn man in dieser Gleichung (*1) mit der inneren Summe multipliziert
+    und (*2) mit Hilfe von $M$ ausdr"uckt erh"alt man:
+    \[
+        p(\lambda)= (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1}) +
+        \sum_{j=2}^n
+        \sum_{k=2}^n (-1)^{1+j+k} \underbrace{ a_{1,j} a_{k,1} }_{ \mbox{(*)} }
+            \det( (M - \lambda * E_{n-1})_{(k-1|j-1)} )
+    \]
+    Hier l"a"st sich (*) mit Hilfe von $R$ und $S$ formulieren:
+    \[
+        p(\lambda)= (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1}) +
+        \sum_{j=2}^n
+        \sum_{k=2}^n (-1)^{1+j+k} r_j s_k
+            \det( (M - \lambda * E_{n-1})_{(k-1|j-1)} )
+    \]
+    Dies wiederum ist in Matrizenschreibweise und mit Hilfe der Adjunkten
+    einer Matrix ausgedr"uckt nichts anderes als
+    \[
+        p(\lambda) = (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1})
+                     - R * \adj(M - \lambda * E_{n-1}) * S \MyKomma
+    \]
+    was zu beweisen war.
+\end{beweis}
+
+Vor Lemma \ref{Berk84Satz2} m"ussen wir hier zun"achst einen wichtigen
+Satz behandeln (\cite{MM64} S. 50 f):
+
+\begin{satz}[Cayley und Hamilton]
+\label{SatzCayleyHamilton}
+\index{Cayley und Hamilton!Satz von}
+    Sei $p(\lambda)$ das charakteristische Polynom von $A$. Dann gilt:
+    \[ p(A)=0_{n,n} \]
+\end{satz}
+\begin{beweis}
+    Aus Satz \ref{SatzAdj} folgt
+    \begin{equation}
+    \label{Equ1SatzCayleyHamilton}
+        (A - \lambda E_n) \adj(A - \lambda E_n) = p(A) E_n
+    \end{equation}
+    Da die Elemente von \[ \adj(A - \lambda E_n) \] aus Unterdeterminanten
+    von $A$ gewonnen werden, bestehen diese Elemente aus Polynomen "uber
+    $\lambda$ vom maximalen Grad \[ n - 1 \] Also gilt f"ur geeignete
+    $n \times n$-Matrizen \[ B_j, 1 \leq j \leq n-1 \] die folgende 
+    Beziehung:
+    \Beq{Equ2SatzCayleyHamilton} 
+        \adj(A - \lambda E_n) = 
+        B_{n-1} \lambda^{n-1} + \ldots + B_1 \lambda + B_0
+    \Eeq
+    Au"serdem kann man $p(A)$ schreiben als
+    \Beq{Equ3SatzCayleyHamilton}
+        p(A) = c_n \lambda^n + \ldots + c_1 \lambda + c_0
+    \Eeq
+    Dr"uckt man \equref{Equ1SatzCayleyHamilton} mit Hilfe von
+    \equref{Equ2SatzCayleyHamilton} und \equref{Equ3SatzCayleyHamilton} aus,
+    erh"alt man
+    \[
+        (A - \lambda E_n)(B_{n-1} \lambda^{n-1} + \ldots
+        + B_1 \lambda + B_0)
+            =
+        (c_n \lambda^n + \ldots + c_1 \lambda + c_0) E_n
+    \]
+    Multipliziert man die Terme auf beiden Seiten aus und vergleicht die
+    Koeffizienten miteinander, erh"alt man folgende Gleichungen:
+    \[
+        \begin{array}{lllcr}
+                     & - & B_{n-1} & =      & c_n E_n
+        \\  AB_{n-1} & - & B_{n-2} & =      & c_{n-1} E_n
+        \\  AB_{n-2} & - & B_{n-3} & =      & c_{n-2} E_n
+        \\           &   &         & \vdots &
+        \\  AB_1     & - & B_0     & =      & c_1 E_n
+        \\  AB_0     &   &         & =      & c_0 E_n
+        \end{array}
+    \]
+    Multipliziert man beide Seiten der
+    ersten dieser Gleichungen mit $A^n$, beide Seiten der zweiten
+    mit $A^{n-1}$, allgemein beide Seiten der $j$-ten mit $A^{n-j+1}$, und
+    addiert sie, erh"alt man
+    \[ 0_{n,n} =
+       c_n \lambda^n + c_{n-1} \lambda^{n-1} + \ldots + c_1 A = p(A)
+    \]
+\end{beweis}
+
+Die Adjunkte in Lemma \ref{Berk84Satz1} l"a"st sich mit Hilfe der
+Koeffizienten des charakteristischen Polynoms $q(\lambda)$ von $M$
+ausdr"ucken. In Koeffizientendarstellung besitzt $q(\lambda)$ die
+Form:
+\[ q(\lambda) = q_{n-1} \lambda^{n-1} + q_{n-2} \lambda^{n-2} + \ldots
+                + q_1 \lambda + q_0
+\]
+
+Es gilt folgende Aussage:
+
+\begin{lemma}
+\label{Berk84Satz2}
+% $$$ Claim 2
+    \begin{equation}
+    \label{Berk84Equ1}
+        \adj(M - \lambda * E_{n-1}) =
+            - \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k-1} q_l
+    \end{equation}
+\end{lemma}
+\begin{beweis}
+    Multipliziert man beide Seiten von \equref{Berk84Equ1} mit
+    \[ M - \lambda * E_{n-1} \MyKomma \]
+    erh"alt man auf der linken Seite
+    \[ \adj(M - \lambda * E_{n-1}) * (M - \lambda * E_{n-1}) \MyPunkt \]
+    Dies ist nach Satz \ref{SatzAdj} gleich
+    \begin{eqnarray*}
+        & & E_{n-1} * \det(M - \lambda * E_{n-1}) \\
+        & = & q(\lambda) * E_{n-1} \MyPunkt
+    \end{eqnarray*}
+
+    Auf der rechten Seite von Gleichung \equref{Berk84Equ1} erh"alt man
+    \[ - ( \underbrace{M}_{\mbox{(*1)}}
+           \underbrace{- \lambda * E_{n-1})}_{\mbox{(*2)}}
+         )
+         \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k-1} q_l
+    \]
+    Bei der Multiplikation erh"alt man f"ur (*1) und (*2) im obigen je
+    eine Doppelsumme:
+    \[ - \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k} q_l
+       + \sum_{k=0}^{n-2} \lambda^{k+1} \sum_{l=k+1}^{n-1} M^{l-k-1} q_l
+    \]
+    Durch Umordnen der Indizes der zweiten Doppelsumme erh"alt man
+    \begin{equation}
+    \label{Berk84Equ2}
+        - \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k} q_l
+        + \sum_{k=1}^{n-1} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k} q_l
+    \end{equation}
+    Nach Satz \ref{SatzCayleyHamilton} gilt
+    \begin{equation}
+    \label{Berk84Equ3}
+        \sum_{l=0}^{n-1} M^l q_l = 0
+    \end{equation}
+    Somit kann man die linke Seite von Gleichung \equref{Berk84Equ3} zur
+    zweiten Doppelsumme von Term \equref{Berk84Equ2} addieren und erh"alt
+    \[
+        - \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k} q_l
+        + \sum_{k=0}^{n-1} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k} q_l
+    \]
+    Wenn man nun die Vorzeichen der beiden Doppelsummen sowie
+    die benutzten Indizes betrachtet, erkennt man, da"s sich der Gesamtterm
+    vereinfacht darstellen l"a"st, da gro"se Teile zusammengenommen $0$
+    ergeben. Die Teile, die sich nicht auf diese
+    Weise gegenseitig aufheben, lassen sich schreiben als
+    \[ \sum_{k=0}^{n-1} \lambda^k E_{n-1} q_{k} \MyKomma \]
+    was gleichbedeutend ist mit
+    \[ q(\lambda) * E_{n-1} \MyPunkt \]
+
+    Also stimmen die beiden Seiten von Gleichung \equref{Berk84Equ1}
+    "uberein.
+\end{beweis}
+
+Die beiden Lemmata \ref{Berk84Satz1} und \ref{Berk84Satz2} f"uhren zu
+folgendem Satz \cite{Samu42}:
+
+\begin{satz}[Samuelson]
+\label{SatzSamuelson}
+\index{Samuelson!Satz von}
+% $$$ Claim 2 into Claim 1
+    \begin{equation}
+    \label{EquSatzSamuelson}
+        p(\lambda) =
+            (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1})
+            + R * \left(
+              \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k-1} q_l
+            \right) * S
+    \end{equation}
+\end{satz}
+\begin{beweis}
+    Lemma \ref{Berk84Satz2} angewendet auf Lemma \ref{Berk84Satz1}
+    ergibt die Behauptung.
+\end{beweis}
+
+% **************************************************************************
+
+\MySection{Determinantenberechnung mit Hilfe des Satzes von Samuelson}
+\label{SecAlgBerk}
+\index{Berkowitz!Algorithmus von}
+\index{Algorithmus!von Berkowitz}
+
+Um Satz \ref{SatzSamuelson} zur Determinantenberechnung zu benutzen
+\cite{Berk84}, sind weitere "Uberlegungen notwendig, die in diesem
+Unterkapitel behandelt werden.
+
+Betrachtet man die Methodik des entstehenden Algorithmus, erkennt man
+"Ahnlichkeit zu C-Alg. . Auch dort wird ein schon l"anger bekannter Satz
+mit Hilfe von zus"atzlichen "Uberlegungen f"ur eine parallelen Algorithmus
+verwendet.
+
+Zu beachten ist, da"s in diesem Unterkapitel f"ur die Multiplikation 
+zweier $n \times n$-Matrizen $n^{2+\gamma}$ Prozessoren in Rechnung 
+gestellt werden (vgl. S. \pageref{PageAlg2MatMult}).
+
+Benutzt man die Koeffizientendarstellung f"ur die charakteristischen
+Polynome von $A$ und $M$, l"a"st sich Gleichung
+\equref{EquSatzSamuelson} umformulieren in
+\[
+   \sum_{i=0}^n p_i \lambda^i =
+       (a_{1,1} - \lambda) * \sum_{i=0}^{n-1} q_i \lambda^i
+       + R * \left(
+         \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k-1} q_l
+       \right) * S  
+   \MyPunkt
+\]
+Vergleicht man die Koeffizienten der $\lambda^i$ auf beiden Seiten
+der Gleichung und definiert \[ q_{-1} := 0 \MyKomma \] erh"alt man
+\begin{eqnarray}
+    p_n     & = & -q_{n-1}                 \label{Equ1Berk84KoeffVergl}
+\\  p_{n-1} & = & a_{1,1}q_{n-1} - q_{n-2} \label{Equ2Berk84KoeffVergl}
+\\  \forall i=n-2 \ldots 0 : \: p_i & = &  \label{Equ3Berk84KoeffVergl}
+        a_{1,1}q_i-q_{i-1}+\sum_{j=i+1}^{n-1}RM^{j-i-1}S q_i
+\end{eqnarray}
+Die Beziehungen zwischen den Koeffizienten, die diese Gleichungen
+beschreiben, kann man auch durch eine Matrizengleichung 
+ausdr"ucken. Dazu
+wird Matrix $C_t$ definiert als untere Dreiecks-Toeplitz-Matrix der
+Gr"o"se $(n-t+2) \times (n-t+1)$. Ihre Elemente werden definiert durch
+\[ (c_t)_{i,j} :=
+       \left\{
+           \begin{array}{lcr}
+               -1                       & : & i=1
+            \\ a_{t,t}                  & : & i=2
+            \\ R_t M_t^{i-3} S_t        & : & i>2
+           \end{array}
+       \right.
+\]
+Die Matrix hat also das folgende Aussehen:
+\[
+    \left[ \begin{array}{ccc}
+        -1                   & 0         & \cdots \MatStrut
+    \\  a_{t,t}              & -1        & \ddots \MatStrut
+    \\  R_t S_t              & a_{t,t}   & \ddots \MatStrut
+    \\  R_t M_t S_t          & R_t S_t   & \ddots \MatStrut
+    \\  \vdots               & \ddots    & \ddots \MatStrut
+    \\  R_t M_t^{n-t-1} S_t  &           &        \MatStrut
+    \end{array} \right]
+\] \MyPunktA{30em} 
+Insbesondere hat $C_n$ die Form
+\[ 
+    \left[ \begin{array}{c}
+    -1 \\ a_{n,n}
+    \end{array} \right]
+\]
+
+Mit Hilfe dieser Definition erh"alt man aus den Gleichungen
+\equref{Equ1Berk84KoeffVergl}, \equref{Equ2Berk84KoeffVergl} und
+\equref{Equ3Berk84KoeffVergl} die folgende Matrizengleichung:
+\Beq{Berk84Equ19}
+   \left[ \begin{array}{c}
+       p_n \\
+       p_{n-1} \\
+       \vdots \\
+       p_0
+   \end{array} \right]
+   =
+   C_1
+   \left[ \begin{array}{c}
+       q_{n-1} \\
+       q_{n-2} \\
+       \vdots \\
+       q_0
+   \end{array} \right]
+\Eeq
+Auf die gleiche Weise, wie man 
+Satz \ref{SatzSamuelson} auf die Matrizen $A$ und $M$ anwendet, kann man 
+diesen Satz auch auf die Matrizen $M$ und $M_2$, $M_2$ und $M_3$, etc.
+anwenden und erh"alt so Matrizengleichungen, die in ihrer Form der 
+Gleichung \equref{Berk84Equ19} entsprechen. 
+
+Wendet man diese Matrizengleichungen aufeinander an, erh"alt man:
+\Beq{EquProdCi}
+   \left[ \begin{array}{c}
+       p_n \\
+       p_{n-1} \\
+       \vdots \\
+       p_0
+   \end{array} \right]
+   =
+   \prod_{i=1}^{n} C_i
+\Eeq
+Um die Koeffizienten des charakteristischen Polynoms von $A$ auf die
+geschilderte Weise zu berechnen, mu"s man also die Matrizen $C_i$
+berechnen und dann miteinander multiplizieren. Nach
+\ref{SatzDdurchP} ist damit auch die Determinante der Matrix $A$ berechnet.
+
+F"ur jede  $(n-i+2) \times (n-i+1)$-Matrix $C_i$ bei ist 
+der $(n-i)$-elementige Vektor
+\Beq{EquRMSVektor}
+    T_t := [ R_i S_i, \, R_i M_i S_i, \, R_i M_i^2 S_i, \, 
+    \ldots , \, R_i M_i^m S_i ], \: m:= n-i-1
+\Eeq
+zu berechnen. Da also $T_n$ keine Elemente enth"alt, ist die Berechnung
+der Vektoren $T_1$ bis $T_{n-1}$ erforderlich.
+
+Man kann jeden Exponenten $k$ eines Elementes \[ R_i * M_i^k * S_i \] von 
+$T_i$ in der Form \[ k = u + v * \left\lceil \sqrt{m} \right\rceil \] mit
+\begin{eqnarray*}
+    & 0 \leq u < \left\lceil \sqrt{m} \right\rceil &
+\\  & 0 \leq v \leq \left\lfloor \sqrt{m} \right\rfloor &
+\end{eqnarray*}
+eindeutig darstellen. Man k"onnte statt $\sqrt{m}$ auch einen anderen
+Wert zwischen $0$ und $m$ nehmen. Jedoch f"uhrt die Wahl von $\sqrt{m}$ 
+dazu, da"s sich die Gr"o"se der Mengen aller $u$ und $v$ um h"ochstens $1$
+unterscheidet.
+
+Um $T_i$ effizient zu erhalten, kann man zun"achst die den Mengen der $u$
+und $v$ entsprechenden Vektoren
+\[
+   U_i := \left[ R_i,\, R_i M_i,\, R_i M_i^2,\, 
+                 \ldots ,\, R_i M_i^{\lc \sqrt{m} \rc - 1} 
+          \right]
+\]
+und
+\[
+   V_i := \left[ S_i,\, M_i^{\lc\sqrt{m}\rc} S_i,\, 
+                    M_i^{2\lc\sqrt{m}\rc} S_i,\,
+                \ldots,\, M_i^{\lf\sqrt{m}\rf \lc\sqrt{m}\rc} S_i
+          \right]
+\]
+berechnen und danach jedes Element des einen Vektors mit jedem Element
+des anderen multiplizieren.
+
+Genau genommen werden auf diese Weise einige Werte zuviel berechnet, wie
+sich bei noch exakterer Analyse des Algorithmus zeigt. Es sind jedoch
+vernachl"assigbar wenige. Die Berechnung dieser Werte kann durch
+vernachl"assigbar geringen zus"atzlichen Aufwand verhindert werden. Um die
+Darstellung des Algorithmus nicht unn"otig un"ubersichtlich zu machen,
+werden diese Werte nicht weiter beachtet.
+
+Vor Beginn der Rechnung wird ein \label{PageWahlEpsilon} 
+\[ \epsilon \in \Rationals \, , \: 0 < \epsilon \leq 0.5 \]
+festgelegt\footnote{ein Wert $\epsilon>0.5$ ist m"oglich, jedoch von
+                     seinen Auswirkungen her uninteressant}.
+O. B. d. A. sei $\epsilon$ so gew"ahlt, da"s 
+gilt\footnote{erf"ullt $\epsilon$ diese Bedingung nicht, wird dadurch
+              die Analyse des Algorithmus unn"otig un"ubersichtlich}
+\[
+   \exists \, p \in \Nat : \: p * \epsilon = 0.5 \MyPunkt
+\]
+
+Die Wahl von $\epsilon$ beeinflu"st das Verh"altnis zwischen der Anzahl
+der Schritte und der Anzahl der dabei besch"aftigten Prozessoren.
+Dies wird weiter unten durch die Analyse deutlich.
+
+F"ur den Rest dieses Unterkapitels gelte die Vereinbarung, da"s mit
+\[ a^b \] der Wert \[ \lc a^b \rc \] gemeint ist.
+
+Mit Hinweis auf die Bemerkungen im Anschlu"s an die Behandlung der
+Matrizenmultiplikation in Satz \ref{SatzAlgMatMult} wird im folgenden
+f"ur die Multiplikation zweier $n \times n$-Matrizen ein Aufwand von
+\[ \gamma_S (\lc \log(n) \rc + 1) \] Schritten und
+\[ \gamma_P n^{2+\gamma} \] Prozessoren in Rechnung gestellt.
+
+Im folgenden ist mit $T$, $U$ und $V$ jeweils $T_i$, $U_i$ bzw. $V_i$
+gemeint, wobei $1 \leq i < n$ gilt.
+
+Um den Vektor $U$ zu berechnen, benutzen wir folgenden iterativen 
+Algorithmus\footnote{zur Vereinfachung der Darstellung werden keine 
+ganzzahligen Werte zur Indizierung benutzt}: \nopagebreak[3]
+\begin{itemize}
+\item
+      Der Vektor $Z_\alpha$ wird wie folgt definiert:
+      \[ 
+         Z_\alpha := \left[ R_i,\, R_i M_i,\, R_i M_i^2,\, 
+                           \ldots ,\, R_i M_i^{m^\alpha - 1} 
+                     \right]
+      \]
+      Das bedeutet, es gilt
+      \[
+          Z_0 = [ R_i ]
+      \]
+      Das Ziel ist es, $Z_{0.5}= U$ zu berechnen. 
+      Der Vektor $Z_0$ ist bekannt, da $R_i$ Teil der Eingabe ist.
+\item
+      Wenn $Z_{\alpha}$ bekannt ist, im ersten Schleifendurchlauf
+      also $Z_0$, dann wird daraus $Z_{\alpha+\epsilon}$ wie folgt 
+      berechnet:
+      \begin{itemize}
+      \item
+            Berechne
+            \[ Y_{\alpha+\epsilon} :=
+               \left[
+                   M_i^{m^\alpha},\, M_i^{2m^\alpha},\, M_i^{3m^\alpha},
+                      \, \ldots,\,
+                   M_i^{m^\epsilon m^\alpha}
+               \right]
+            \]
+            Nach \ref{SatzAlgPraefix} in Verbindung mit \ref{SatzAlgMatMult}
+            erh"alt man f"ur die Anzahl der Schritte
+            \begin{eqnarray*}
+               & & \gamma_S \lceil \log(m^\epsilon) \rceil 
+                   (\lceil \log(m) \rceil +1)
+            \\ & \leq & %  <  ist hier falsch !
+                        \gamma_S \lceil (\epsilon \lceil \log(m) \rceil + 1)
+                            (\lceil \log(m) \rceil + 1 )
+                     \rceil
+            \\ & = & \gamma_S \lc \epsilon \lceil \log(m) \rceil^2 +
+                         (\epsilon + 1) \lceil \log(m) \rceil + 1
+                     \rc
+            \end{eqnarray*}
+            und f"ur die Anzahl der
+            Prozessoren 
+            \[ \gamma_P \lf 0.75 m^\epsilon \rf m^{2+\gamma}
+                   <
+               \gamma_P m^{2+\gamma+\epsilon} \MyPunkt
+            \]
+            Die
+            daf"ur n"otige Startmatrix $M_i^\alpha$ erh"alt man als
+            Nebenergebnis aus der Berechnung von $Y_\alpha$. Die Startmatrix
+            f"ur die Berechnung von $Y_\epsilon$ ist $M_i$.
+      \item
+            Der Vektor $X_{\alpha+\epsilon}$ wird folgenderma"sen definiert:
+            \[
+               X_{\alpha+\epsilon} := 
+               \left[
+                   R_i M_i^{m^\alpha}, \,R_i M_i^{m^\alpha + 1}, \,
+                   R_i M_i^{m^\alpha + 2}, \, \ldots, 
+                   \, R_i M_i^{m^{\alpha+\epsilon}-1}
+               \right]
+            \]
+            Es wird nun $X_{\alpha+\epsilon}$ aus $Z_\alpha$ und 
+            $Y_{\alpha+\epsilon}$ berechnet.
+
+            Der Vektor
+            $Z_\alpha$ besitzt $m^\alpha$ Elemente, die ihrerseits Vektoren
+            der L"ange $m$ darstellen. Sie werden mit
+            \[
+               z_{\alpha,1},\, z_{\alpha,2},\, \ldots,\, z_{\alpha,m^\alpha}
+            \] bezeichnet.
+            Der Vektor $Y_{\alpha+\epsilon}$ besitzt $m^\epsilon$
+            Elemente. Diese Elemente sind $m \times m$-Matrizen und werden
+            mit
+            \[ y_{\alpha+\epsilon,1},\, y_{\alpha+\epsilon,2},\, \ldots,\,
+               y_{\alpha+\epsilon,m^\epsilon}
+            \] bezeichnet.
+           
+            \begin{tabbing}
+                Der Vektor $X_{\alpha+\epsilon}$ wird wie folgt
+                berechnet: \\
+                    \hspace{1.5em} \= \hspace{1.5em} \= \kill 
+                \> Parallel f"ur $i:= 1$ bis $m^\epsilon-1$ : \\
+                \> \>  Parallel f"ur $j:= 1$ bis $m^\alpha$:
+            \end{tabbing}
+            \vspace{-4ex}
+            \[
+               x_{ \alpha+\epsilon,(i-1)*m^\epsilon+j}
+                 := z_{\alpha,j} * y_{\alpha+\epsilon,i}
+            \]
+            Bei dieser Berechnung f"allt auf, da"s 
+            $y_{\alpha+\epsilon,m^\epsilon}$ nicht verwendet wird. Diese 
+            Matrix bildet die Startmatrix f"ur die Berechnung von
+            $Y_{\alpha+2\epsilon}$ im n"achsten Schleifendurchlauf
+            (s. o.).
+
+            F"ur die Analyse des Aufwandes der Berechnung von 
+            $X_{\alpha+\epsilon}$ wird $Z_\alpha$ als Matrix betrachtet.
+            Die $z_{\alpha,j}$ bilden die Zeilenvektoren dieser Matrix.
+            So gesehen sind also $m^\epsilon$ Matrizenmultiplikationen 
+            durchzuf"uhren. Dies kann von 
+            \[ \gamma_P m^{2+\gamma+\epsilon} \]
+            Prozessoren in 
+            \[ \gamma_S \lceil \log(m) \rceil + 1 \] 
+            Schritten durchgef"uhrt werden.
+      \item 
+            Die ersten $m^\alpha$ Elemente des in diesem 
+            Schleifendurchlauf gesuchten Vektors $Z_{\alpha+\epsilon}$
+            werden durch die Elemente des Vektors $Z_\alpha$ gebildet und
+            alle weiteren durch die Elemente des soeben berechneten 
+            Vektors $X_{\alpha+\epsilon}$. 
+      \end{itemize}
+      Betrachtet man den Aufwand zur Berechnung von $Y_{\alpha+\epsilon}$
+      und $X_{\alpha+\epsilon}$ zusammen, erh"alt man f"ur die
+      Berechnung von $Z_{\alpha+\epsilon}$ aus $Z_{\alpha}$
+      \[ 
+         \gamma_S \lc \epsilon \lceil \log(m) \rceil^2 +
+            (\epsilon + 2) \lceil \log(m) \rceil + 2                      
+         \rc
+      \]
+      Schritte und \[ \gamma_P m^{2+\gamma+\epsilon} \] Prozessoren.
+\item
+      Insgesamt erfolgen \[ \frac{1}{2 \epsilon} \]
+      Schleifendurchl"aufe. Der Aufwand zur Berechnung von $U$ betr"agt
+      deshalb
+      \begin{eqnarray*}
+         & & \frac{ 0.5 \gamma_S }{ \epsilon }
+         \lc \epsilon \lceil \log(m) \rceil^2 +
+            (\epsilon + 2) \lceil \log(m) \rceil + 2                      
+         \rc
+      \\ 
+         & \leq & 0.5 \gamma_S
+         \lc \lceil \log(m) \rceil^2 +
+            \left( 1 + \frac{2}{\epsilon} \right) \lceil \log(m) \rceil + 
+            \frac{2}{\epsilon}
+         \rc
+      \end{eqnarray*} Schritte und
+      \[ \gamma_P m^{2+\gamma+\epsilon} \] Prozessoren.
+\end{itemize}
+
+Im Anschlu"s an die Berechnung von $U$ erfolgt
+die Berechnung von $V$ auf die gleiche Weise.
+Der einzige wesentliche Unterschied zwischen den beiden
+Berechnungsvorg"angen ist die andere
+Startmatrix zur Berechnung des $Y_{\epsilon}$ entsprechenden Vektors. Hier
+wird $M_i^{m^{0.5}}$ statt $M_i$ ben"otigt. Man erh"alt $M_i^{m^{0.5}}$
+aus $M_i$ mit Hilfe der Bin"arbaummethode
+nach \ref{SatzAlgBinaerbaum}. Dies kann in
+\begin{eqnarray*}
+    &      & \gamma_S \lc \log(m^{0.5}) \rc (\lc \log(m) \rc + 1)
+\\  & \leq & \gamma_S \lc 0.5 \lc \log(m) \rc (\lc \log(m) \rc + 1) \rc
+\\  & =    & \gamma_S \lc 0.5 (\lc \log^2(m) \rc + \lc \log(m) \rc + 1)  \rc
+\end{eqnarray*}
+Schritten von
+\begin{eqnarray*}
+    &      & \gamma_P \lc 0.5 m^{0.5} m^{2+\gamma} \rc
+\\  & \leq & \gamma_P \lc 0.5 m^{2.5+\gamma} \rc
+\end{eqnarray*}
+Prozessoren geleistet werden.
+Ist die Startmatrix berechnet, ist der weitere Aufwand zur Berechnung von
+$V$ gleich dem Aufwand zur Berechnung von $U$. Also kann $V$ insgesamt 
+in\footnote{Da die Terme, die die Anzahl der Schritte und Prozessoren
+    beschreiben, bereits nach oben abgesch"atzt sind, wird bei der
+    Zusammenfassung von Termen, die durch Gau"sklammern eingefa"st sind,
+    auf eine weitere Absch"atzung verzichtet.}
+\begin{eqnarray*}
+   & & \gamma_S \lc 0.5 (\lc \log(m) \rc^2 + \lc \log(m) \rc + 1) +
+           0.5  \left( \lceil \log(m) \rceil^2 +
+           \left( 1 + \frac{2}{\epsilon} \right) \lceil \log(m) \rceil +
+           \frac{2}{\epsilon} \right)
+       \rc
+\\ & = & \gamma_S
+     \lc
+         \lc \log(m) \rc^2 + 
+         \left( 1 + \frac{1}{\epsilon} \right) \lc \log(m) \rc + 
+         \frac{1}{\epsilon} + 0.5
+     \rc
+\end{eqnarray*}
+Schritten erledigt werden. Die Anzahl der Prozessoren betr"agt
+\begin{eqnarray*}
+    \max \left( 
+              \underbrace{ \gamma_P m^{2+\gamma+\epsilon} }_{\mbox{Term 1}}
+         \, ,
+              \underbrace{ \gamma_P \lc 0.5 m^{2.5+\gamma} \rc 
+                         }_{\mbox{Term 2}}
+         \right) \MyPunkt
+\end{eqnarray*}
+Da mit steigendem $m$ Term 2 st"arker w"achst als Term 1, wird die 
+Analyse mit Term 2 f"ur die Anzahl der Prozessoren fortgesetzt.
+
+Parallel zur Berechnung von $U$ wird zuerst
+$M_i^{m^{0.5}}$ und mit Hilfe dieser Matrix dann $V$ berechnet. Der Aufwand
+daf"ur betr"agt insgesamt
+\[   \gamma_S
+     \lc
+         \lc \log(m) \rc^2 + 
+         \left( 1 + \frac{1}{\epsilon} \right) \lc \log(m) \rc + 
+         \frac{1}{\epsilon} + 0.5
+     \rc
+\] 
+Schritte und
+\[ 
+   \gamma_P \lb m^{2+\gamma+\epsilon} + \lc 0.5 m^{2.5+\gamma} \rc \rb
+\] Prozessoren.
+
+Um den nach \equref{EquRMSVektor} gesuchten Vektor $T$ zu erhalten, 
+m"ussen 
+noch die Elemente der Vektoren $U$ und $V$, die ja ihrerseits wiederum 
+Vektoren darstellen, miteinander multipliziert werden.
+Die Vektoren $U$ und $V$ besitzen eine L"ange von $m^{0.5}$.
+Die Multiplikation zweier Elemente dieser Vektoren k"onnen
+analog zur Matrizenmultiplikation in \ref{SatzAlgMatMult} in 
+\[ \lc \log(m) \rc + 1 \] Schritten von \[ m \] Prozessoren erledigt 
+werden. Insgesamt sind \[ m^{0.5} * m^{0.5} = m \] solcher Multiplikationen
+durchzuf"uhren. Die Berechnung von $T$ aus $U$ und $V$ kann
+also in 
+\[ \lc \log(m) \rc + 1 \] Schritten von \[ m^2 \] Prozessoren 
+durchgef"uhrt werden.
+
+Betrachtet man den Gesamtaufwand zur Berechnung von $U$, $V$ und $T$,
+kommt man auf
+\[ \gamma_S
+   \lc
+       \lc \log(m) \rc^2
+       + \left( 1 + \frac{1}{\gamma_S} 
+       + \frac{1}{\epsilon} \right) \lc \log(m) \rc
+       + \frac{1}{\epsilon} + \frac{1}{\gamma_S} + 0.5
+   \rc
+\] 
+Schritte und  
+\Beq{EquBerkProzT}
+   \gamma_P \lb m^{2+\gamma+\epsilon} + \lc 0.5 m^{2.5+\gamma} \rc \rb
+      \leq
+   \gamma_P \lb m^{2+\gamma+\epsilon} + 0.5 m^{2.5+\gamma} + 1 \rb
+\Eeq
+Prozessoren. 
+
+Nach der
+obigen Analyse der Berechnung einer der Vektoren kann die parallele
+Berechnung aller Vektoren $T_1$ bis $T_{n-1}$ in
+\Beq{TermBerkSchritte}
+   \gamma_S
+   \lc
+       \lc \log(n-2) \rc^2 
+       + \left( 1 + \frac{1}{\gamma_S}
+       + \frac{1}{\epsilon} \right) \lc \log(n-2) \rc + 
+       \frac{1}{\epsilon} + \frac{1}{\gamma_S} + 0.5
+   \rc
+\Eeq
+Schritten durchgef"uhrt werden. Da die Berechnung eines Vektors $T_i$ f"ur 
+$i>1$ bei gleichem $\epsilon$ schneller ist als die Berechnung von 
+$T_1$, ist es m"oglich, dadurch Prozessoren zu sparen, da"s man 
+$\epsilon$ f"ur jeden Vektor $T_i$ verschieden w"ahlt, und zwar als Funktion
+von 
+\begin{itemize}
+\item
+      der Gr"o"se $n$ der Eingabematrix $A$,
+\item 
+      der L"ange $m+1$ des jeweiligen Vektors $T_i$ und
+\item
+      dem $\epsilon$, da"s zur Berechnung des Vektors $T_1$
+      verwendet wird.
+\end{itemize}
+Das separat f"ur jeden Vektor $T_i$ zu w"ahlende $\epsilon$ wird 
+mit\footnote{ Es wurde bereits definiert: $m:= n-i-1$.}
+$\epsilon_m$ bezeichnet.
+
+Da die Vektoren $T$ f"ur $m \leq n-2$ berechnet werden sollen, mu"s f"ur
+jedes $\epsilon_m$ mit $\epsilon_m \neq \epsilon$ die 
+Bedingung $m \leq n-3$ erf"ullt sein.
+Da gleichzeitig $m \geq 1$ erf"ullt sein mu"s, wird f"ur die folgenden
+Analysen $n \geq 4$ angenommen. Andernfalls ist die Anwendung der Idee
+zur Wahl der $\epsilon_m$ nicht sinnvoll.
+
+Wie $\epsilon_m$ zu w"ahlen ist, ergibt sich aus
+Term \equref{TermBerkSchritte}. Es mu"s gelten:
+\[
+   \lc \log(m) \rc^2 
+   + \left( 1 + \frac{1}{\gamma_S} 
+   + \frac{1}{\epsilon_m} \right) \lc \log(m) \rc +
+   \frac{1}{\epsilon_m}
+       \leq
+   \lc \log(n-2) \rc^2 
+   + \left( 1 + \frac{1}{\gamma_S} 
+   + \frac{1}{\epsilon} \right) \lc \log(n-2) \rc +
+   \frac{1}{\epsilon}
+\]
+L"ost man diese Ungleichung nach $\epsilon_m$ auf erh"alt man:
+\Beq{EquWaehleEpsilonM}
+   \epsilon_m
+       \geq
+   \frac{
+       \lceil \log(m) \rceil + 1
+   }{
+       \lceil \log(n-2) \rceil^2 +
+       \lb 1 + \frac{1}{\gamma_S} 
+              + \frac{1}{\epsilon} 
+       \rb \lceil \log(n-2) \rceil +
+       \frac{1}{\epsilon} -
+       \lceil \log(m) \rceil^2 -
+       \lb 1 + \frac{1}{\gamma_S} \rb \lceil \log(m) \rceil
+   }
+\Eeq
+Die Gau"sklammern in dieser Ungleichung f"uhren zu einigen wichtigen
+Konsequenzen f"ur $n$, $m$ und $\epsilon_m$. Es gelte dazu 
+\begin{eqnarray*}
+    & k \in \Nat & \\
+    & 1 \leq 2^k < m_1 \leq 2^{k+1} \leq n-2 & \\
+    & 1 \leq 2^k < m_2 \leq 2^{k+1} \leq n-2 & \MyPunkt
+\end{eqnarray*}
+Aus \equref{EquWaehleEpsilonM} folgt dann
+\[
+    \epsilon_{m_1} = \epsilon_{m_2} \MyPunkt
+\]
+Das bedeutet insbesondere, da"s es u. U. einige $m$ mit 
+$m \leq n-3$ gibt, f"ur die gilt 
+\[ \epsilon_m = \epsilon \MyPunkt \] Der ung"unstigste Fall tritt f"ur
+\[ n-2 = 2^{k+1} \] ein. Bei diesem Fall ist nur f"ur 
+\[ m \leq \frac{n-2}{2} \]
+die Bedingung \[ \epsilon_m < \epsilon \] erf"ullt.
+
+F"ur die weitere Analyse ist es an dieser Stelle sinnvoll, die Gau"sklammern
+im Term auf der rechten Seite von \equref{EquWaehleEpsilonM} zu beseitigen. 
+Dazu wird
+der Term nach oben abgesch"atzt.
+
+Terme, die in Gau"sklammern eingefa"st sind, kann man mit Hilfe der
+Beziehung
+\Beq{EquSchaetzeGauss}
+    a \leq \lc a \rc \leq a + 1
+\Eeq
+absch"atzen. Es gilt jedoch
+\begin{eqnarray*}
+   &      & \lc \log(x) \rc \\
+   & \leq & \log(x) + 1     \\
+   & =    & \log(2x) \MyPunkt
+\end{eqnarray*} 
+Zu beachten sind hier die Konsequenzen, wenn die Absch"atzung mit Hilfe
+von \equref{EquSchaetzeGauss} vorgenommen werden. Falls $n-2$ eine 
+Zweierpotenz ist, ergibt die auf diese Weise abgesch"atzte Ungleichung 
+\equref{EquWaehleEpsilonM} nur
+f"ur \[ m \leq \frac{n-2}{4} \] Werte f"ur $\epsilon_m$, so da"s 
+\[ \epsilon_m < \epsilon \MyPunkt \]
+Eine Verbesserung dieser Absch"atzung der Gau"sklammerfunktion ist 
+w"unschenswert.
+
+Dazu wird definiert, da"s eine Funktion $f(x)$
+\index{konkav} {\em konkav auf einem Intervall I} ist, falls f"ur ihre
+zweite Ableitung $f''(x)$ gilt:
+\[ \forall x \in I: \: f''(x) \leq 0 \MyPunkt \]
+
+Soll die Gau"sklammer einer konkaven Funktion $h(x)$ gebildet und die
+Fl"ache unter der resultierenden Kurve berechnet werden, so l"a"st sich
+der Ausdruck auch durch
+\[ \int \lc h(x) dx \rc \leq \int (h(x) + 0.5) dx \]
+nach oben absch"atzen. In Abbildung \ref{PicKonkav} ist dies verdeutlicht.
+Dort ist Fl"ache 1 gr"o"ser als Fl"ache 2.
+\begin{figure}[htb]
+\begin{center}
+    \input{bilder/konkav}
+    \caption{Integration der Gau"sklammer einer konkaven Funktion}
+    \label{PicKonkav}
+\end{center}
+\end{figure}
+Somit kommen wir auf
+\begin{eqnarray}
+    & & \int \lc \log(x) \rc dx \nonumber \\
+    & \leq & \int (\log(x) + 0.5 ) dx \label{EquLogNullFuenf} \\
+    & = & \int \log(\sqrt{2}x) dx \nonumber \MyPunkt
+\end{eqnarray}
+Ist der abzusch"atzende Gau"sklammerterm Teil einer Funktion 
+\[ h_2(\lc h(x) \rc,\, x ) \MyKomma \] so l"a"st sich die beschriebene
+Absch"atzung durchf"uhren, falls $h_2$ monoton ist. Diese Bedingung ist bei 
+den folgenden Anwendungen erf"ullt.
+
+F"ur die folgenden Untersuchungen wird die Funktion
+\[ g : \, \Rationals \rightarrow \Rationals \] eingef"uhrt. Sie sei
+{ \em im Riemann'schen Sinne integrierbar } \cite{BS87} (S. 289)
+auf dem Intervall \[ ( - \infty, \infty ) \] und
+wird als Platzhalter f"ur die Funktion verwendet, die schlie"slich zur 
+Absch"atzung der Gau"sklammerfunktion benutzt wird.
+Je genauer sie die Gau"sklammerfunktion absch"atzt, umso besser werden
+die Analyseergebnisse.
+
+Mit Hilfe von \equref{EquWaehleEpsilonM} wird folgende Funktion zur 
+Berechnung von $\epsilon_m$ bei gegebenen $n$ und $\epsilon$ definiert:
+\[ f(m):=
+   \frac{
+       g(\log(m))+ 1
+   }{
+       g^2(\log(n-2))
+       + \lb 1 + \frac{1}{\gamma_S} 
+               + \frac{1}{\epsilon} 
+         \rb g(\log(n-2))
+       + \frac{1}{\epsilon} -
+       g^2(\log(m))-
+       \lb 1 + \frac{1}{\gamma_S} \rb g(\log(m))
+   }
+\]
+Mit Hilfe dieser Funktion kommt man anhand von \equref{EquBerkProzT}
+f"ur die Anzahl der Prozessoren zur Berechnung aller Vektoren $T$ auf:
+\begin{eqnarray}
+\nonumber
+   & & 
+   4 + (n-2)^{2+\gamma+\epsilon} + \frac{ (n-2)^{2.5+\gamma} }{ 2 } +
+   \sum_{m=2}^{n-3}
+       \left( m^{2+\gamma+f(m)} + \frac{ m^{2.5+\gamma} }{ 2 } + 1
+       \right)
+\\ 
+\nonumber
+   & \leq & 
+   \overbrace{
+       4 + (n-2)^{2+\gamma+\epsilon} + \frac{ (n-2)^{2.5+\gamma} }{ 2 }
+   }^{t_1:=}
+       +
+   \int\limits_{2}^{n-2}
+       \left( m^{2+\gamma+f(m)} + \frac{ m^{2.5+\gamma} }{ 2 } + 1
+       \right) dm
+\\ 
+%%\label{EquBerkProzInt1} wird nicht ben"otigt
+   & = &
+       \overbrace{ 
+           t_1 + \left. m \right|_2^{n-2} +
+           \left. \left(
+               \frac{1}{7+2\gamma} m^{3.5+\gamma}
+           \right) \right|_2^{n-2} 
+       }^{t_2:=}
+       +
+       \int\limits_2^{n-2}
+           m^{2+\gamma+f(m)} dm
+\\
+\label{EquBerkProzInt2}
+   & = & t_2 +
+       \int\limits_2^{n-2}
+       \overbrace{
+           \MathE^{(2+\gamma+f(m))\ln(m)}
+       }^{t_3:=} \, dm
+\end{eqnarray}
+F"ur die Integration von $t_3$ sind 3 Methoden von Bedeutung:
+\begin{MyDescription}
+\MyItem{Numerische Berechnung}
+    Diese Methode ist f"ur gegebene $n$ und $\epsilon$ eine gangbare
+    M"oglichkeit \cite{EM88} (Kap. 9). F"ur eine allgemeine 
+    Analyse ist sie jedoch nicht geeignet.
+\MyItem{Analytische Berechnung}
+    Bezeichne $t_4$ die erste Ableitung von 
+    \[ (2+\gamma+f(m))\ln(m) \MyPunkt \]
+    Bezeichne $t_5'$ die erste Ableitung des zu bestimmenden Terms $t_5$.
+    Da $t_3$ eine Exponentialfunktion ist, mu"s die gesuchte Stammfunktion,
+    die Form $t_3 t_5$ besitzen.
+    Die Ableitung dieses Ausdrucks ergibt 
+    \[ (t_3 t_5)'= t_3 t_4 t_5+t_3 t_5' = t_3 \,
+       \underline{ (t_4 t_5 + t_5') } \MyPunkt 
+    \]
+    Da der unterstrichene Teil den Wert 1 besitzen mu"s, ist die 
+    Differentialgleichung \[ t_5' = 1 - t_4 t_5 \] zu l"osen. 
+    Dies ist eine {\em explizite gew"ohnliche Differentialgleichung 
+    erster Ordnung} \cite{BS87} (S. 414 ff.).
+
+    Man gelangt zu der Vermutung, da"s zu $t_3$ keine Stammfunktion 
+    existiert, da sowohl die Integration der Differentialgleichung, 
+    als auch die Integration von $t_3$ mit Hilfe der Eigenschaften
+    unbestimmter Integrale \cite{BS87} (S. 295) nicht zu 
+    einem Ergebnis zu f"uhren scheinen. Unterst"utzt wird diese Vermutung
+    durch die Tatsache, da"s f"ur \[ \MathE^{m^2} \] keine Stammfunktion 
+    existiert.
+\MyItem{Absch"atzung der Stammfunktion nach oben}
+    Diese Methode ist am besten geeignet und wird im folgenden benutzt.
+    Dazu wird der oben erw"ahnte Term $t_5$ so bestimmt, da"s gilt
+    \Beq{EquBerkUngleichung}
+        t_4 t_5 + t_5' \geq 1 \MyPunkt
+    \Eeq 
+\end{MyDescription}
+
+Der Nenner von $f(m)$ wird mit $t_6$ bezeichnet, der Z"ahler mit $t_7$.
+Die Ableitung von $t_3$ ergibt:
+\begin{eqnarray*}
+   \lefteqn{ 
+       t_3' = t_3 
+       \lb
+           \frac{2}{m} + \frac{\gamma}{m}
+       \rb
+   } \\
+   & + &
+       \frac{
+           \lb 
+               g'(\log(m)) \frac{\log(m)}{m} + \frac{ g(\log(m)) }{m} 
+               + \frac{1}{m} 
+           \rb t_6
+       }{ t_6^2 
+       } \\
+   & + &
+       \frac{
+           t_7 \ln(m) 
+           \lb \frac{ 2 g(\log(m)) g'(\log(m)) }{m \ln(2) }
+               + \frac{ \lb 1 + \frac{1}{\gamma_S} \rb
+                        g'(\log(m)) 
+                 }{ m \ln(2) }
+           \rb
+       }{ t_6^2
+       } 
+\end{eqnarray*}
+Wie bereits beschrieben wurde, ist es an dieser Stelle m"oglich
+\Beq{EquDefGaussNullFuenf}
+    g(x) := x + 0.5
+\Eeq
+als obere Absch"atzung der Gau"sklammerfunktion zu verwenden. Es ist zu
+beachten, da"s diese Absch"atzung nicht f"ur die Berechnung von $\epsilon_m$
+bei der Anwendung des Algorithmus in einer konkreten Situation
+benutzt werden darf. Die Benutzung von \equref{EquDefGaussNullFuenf} an
+dieser Stelle ist nur zul"assig, weil die Absch"atzung des gesamten 
+Integrals in \equref{EquBerkProzInt2} das Ziel ist.
+
+Wie ebenfalls bereits beschrieben wurde, ist darauf zu achten, da"s die
+auftretenden Werte f"ur $\epsilon_m$ kleiner oder gleich $\epsilon$ sind.
+Damit dies der Fall ist muss wegen der mit \equref{EquDefGaussNullFuenf} 
+gew"ahlten Absch"atzung gelten:
+\begin{MyEqnArray}
+    \MT  \log( \sqrt{2}m ) \MT \leq \MT \lc \log( n - 2 ) \rc 
+\MNl
+    \Rightarrow \MT \log(m) \MT \leq \MT
+        \lc \log \lb \frac{ n - 2 }{ \sqrt{2} } \rb \rc
+\MNl
+    \Rightarrow \MT m \MT \leq \MT 
+        2^{ \lc \log \lb \frac{ n - 2 }{ \sqrt{2} } \rb \rc }
+\end{MyEqnArray}
+
+Ungleichung
+\equref{EquBerkUngleichung} wird erf"ullt, wenn man 
+\[ t_5 = m \] w"ahlt. Die G"ultigkeit dieser Behauptung ergibt
+sich insbesondere aus
+der Betrachtung der Gr"o"senordnungen der Z"ahler und Nenner in der
+Ableitung von $t_3$.
+
+So erh"alt man durch Absch"atzung von \equref{EquBerkProzInt2} nach oben
+f"ur die Anzahl der Prozessoren:
+\begin{eqnarray*}
+    & & t_2 + 
+        \int\limits_{ 2^{\lf \log \lb \frac{n-2}{\sqrt{2}} \rb \rf} }^{n-2} 
+            m^{2+\gamma+0.5} dm
+        + \int\limits_2^{ 2^{\lf \log \lb \frac{n-2}{\sqrt{2}} \rb \rf} }
+            \MathE^{ (2+\gamma+f(m)) \ln(m) } dm \\
+    & \leq & t_2 + 
+        \left. \frac{1}{3.5+\gamma} m^{3.5+\gamma} 
+        \right|_{ 2^{\lf \log \lb \frac{n-2}{\sqrt{2}} \rb \rf} }^{n-2}
+        + \left. \lb m^{ 2+\gamma+f(m) } m \rb
+          \right|_2^{ 2^{\lf \log \lb \frac{n-2}{\sqrt{2}} \rb \rf} } \\
+    & = &  4 + (n-2)^{2+\gamma+\epsilon} + 
+               \frac{ (n-2)^{2.5+\gamma} }{ 2 } \\
+    & & 
+         + \left. m \right|_2^{n-2} +
+           \left. \left(
+               \frac{1}{7+2\gamma} m^{3.5+\gamma}
+           \right) \right|_2^{n-2} 
+        +  
+        \left. \frac{1}{3.5+\gamma} m^{3.5+\gamma} 
+        \right|_{ 2^{\lf \log \lb \frac{n-2}{\sqrt{2}} \rb \rf} }^{n-2} \\
+    & & +
+         \left. m^{3+\gamma+f(m)}
+         \right|_2^{ 2^{\lf \log \lb \frac{n-2}{\sqrt{2}} \rb \rf} }
+\end{eqnarray*}
+Dieser Term wird mit $t_8$ bezeichnet. An ihm erkennt man, da"s die
+Anzahl der Prozessoren mit wachsendem $n$ asymptotisch
+\[
+    \frac{3}{7+2\gamma} (n-2)^{3.5+\gamma}
+\]
+betr"agt.
+
+Schlie"slich m"ussen noch die Matrizen $C_1$ bis $C_n$ miteinander
+multipliziert werden. Dies geschieht mit Hilfe der Bin"arbaummethode
+nach \ref{SatzAlgBinaerbaum}. Es wird definiert
+\[ n':= \lf \frac{n}{2} \rf \MyPunkt \]
+Da nach \ref{SatzToeplizMult}
+bei allen Multiplikationen Dreiecks-Toeplitz-Matrizen verkn"upft werden
+und $C_i$ eine $(n-i+2) \times (n-i+1)$-Matrix handelt, k"onnen diese
+Multiplikationen in
+\Beq{TermBerkSchritteB}
+   (\lc \log(n+1) \rc + 1) \lc \log(n) \rc
+\Eeq Schritten von weniger als
+\begin{eqnarray*}
+    & & \sum_{k=1}^{n'} (n-2k+2) * (n-2k+1) \\
+    & = & \sum_{k=1}^{n'} (2k(2k-1)) \\
+    & = & 4 \sum_{k=1}^{n'} k^2 - 2 \sum_{k=1}^{n'} k \\
+    & \MyStack{\ref{SatzSumK}, \, \ref{SatzSumK2} }{ = } & 
+        4 \frac{n'(n'+1)(2n'+1)}{6} - 2\frac{n'(n'+1)}{2}
+\end{eqnarray*}
+Prozessoren durchgef"uhrt werden. F"ur ein gegebenes $n$ ist
+der Wert dieses Terms ist kleiner als
+der Wert von $t_8$.
+
+In Verbindung mit \ref{SatzDdurchP}
+ergibt sich als Endergebnis der Analyse, da"s mit Hilfe des in diesem 
+Kapitel vorgestellen Algorithmus die Determinante einer $n \times n$-Matrix
+in weniger als\footnote{Summe von \equref{TermBerkSchritte} und
+ \equref{TermBerkSchritteB}}
+\[
+   \gamma_S
+   \lc
+       \lc \log(n-2) \rc^2 
+       + \left( 1 + \frac{1}{\gamma_S}
+       + \frac{1}{\epsilon} \right) \lc \log(n-2) \rc + 
+       \frac{1}{\epsilon} + \frac{1}{\gamma_S} + 0.5
+   \rc +
+   (\lc \log(n+1) \rc + 1) \lc \log(n) \rc
+\]
+Schritten von weniger als $t_8$ Prozessoren berechnet werden kann.
+
+Da in der Praxis f"ur die Matrizenmultiplikation Satz 
+\ref{SatzAlgMatMult} statt der in \cite{CW90} angegebenen Methode 
+benutzt wird, ist f"ur diesen Fall in allen obigen Termen
+\[ \gamma = \gamma_S = \gamma_P = 1 \] zu setzen.
+
+Vergleicht man B-Alg. mit C-Alg., BGH-Alg. und P-Alg., f"allt wiederum
+das Fehlen von Fallunterscheidungen auf. Weiterhin werden wie bei BGH-Alg.
+keine Divisionen verwendet, so da"s B-Alg. auch in Ringen anwendbar ist.
+
+Betrachtet man die Aufwandsanalyse, so erkennt man, da"s B-Alg. 
+leicht schlechter ist als C-Alg. und deutlich besser als BGH-Alg. .
+In Kapitel \ref{ChapPan} wird P-Alg. in diese Rangfolge eingereiht.
+

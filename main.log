@@ -1,0 +1,743 @@
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009) (format=pdflatex 2010.1.2)  16 DEC 2017 00:08
+entering extended mode
+ %&-line parsing enabled.
+**main.tex
+(./main.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, german-x-2009-06-19, ngerman-x-2009-06-19, ancientgreek, ibycus, ar
+abic, basque, bulgarian, catalan, pinyin, coptic, croatian, czech, danish, dutc
+h, esperanto, estonian, farsi, finnish, french, galician, german, ngerman, mono
+greek, greek, hungarian, icelandic, indonesian, interlingua, irish, italian, ku
+rmanji, latin, latvian, lithuanian, mongolian, mongolian2a, bokmal, nynorsk, po
+lish, portuguese, romanian, russian, sanskrit, serbian, slovak, slovenian, span
+ish, swedish, turkish, ukenglish, ukrainian, uppersorbian, welsh, loaded.
+(/usr/local/texlive/2009/texmf-dist/tex/latex/base/latex209.def
+File: latex209.def 1998/05/13 v0.52 Standard LaTeX file
+
+
+          Entering LaTeX 2.09 COMPATIBILITY MODE
+ *************************************************************
+    !!WARNING!!    !!WARNING!!    !!WARNING!!    !!WARNING!!   
+ 
+ This mode attempts to provide an emulation of the LaTeX 2.09
+ author environment so that OLD documents can be successfully
+ processed. It should NOT be used for NEW documents!
+ 
+ New documents should use Standard LaTeX conventions and start
+ with the \documentclass command.
+ 
+ Compatibility mode is UNLIKELY TO WORK with LaTeX 2.09 style
+ files that change any internal macros, especially not with
+ those that change the FONT SELECTION or OUTPUT ROUTINES.
+ 
+ Therefore such style files MUST BE UPDATED to use
+          Current Standard LaTeX: LaTeX2e.
+ If you suspect that you may be using such a style file, which
+ is probably very, very old by now, then you should attempt to
+ get it updated by sending a copy of this error message to the
+ author of that file.
+ *************************************************************
+
+\footheight=\dimen102
+\@maxsep=\dimen103
+\@dblmaxsep=\dimen104
+\@cla=\count79
+\@clb=\count80
+\mscount=\count81
+(/usr/local/texlive/2009/texmf-dist/tex/latex/base/tracefnt.sty
+Package: tracefnt 1997/05/29 v3.0j Standard LaTeX package (font tracing)
+\tracingfonts=\count82
+LaTeX Info: Redefining \selectfont on input line 101.
+)
+\symbold=\mathgroup4
+\symsans=\mathgroup5
+\symtypewriter=\mathgroup6
+\symitalic=\mathgroup7
+\symsmallcaps=\mathgroup8
+\symslanted=\mathgroup9
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 293.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 294.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 295.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 301.
+LaTeX Info: Redefining \em on input line 311.
+
+(/usr/local/texlive/2009/texmf-dist/tex/latex/base/latexsym.sty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup10
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 47.
+)
+LaTeX Font Info:    Redeclaring math delimiter \lgroup on input line 375.
+LaTeX Font Info:    Redeclaring math delimiter \rgroup on input line 377.
+LaTeX Font Info:    Redeclaring math delimiter \bracevert on input line 379.
+)
+(/usr/local/texlive/2009/texmf-dist/tex/latex/base/book.cls
+Document Class: book 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2009/texmf-dist/tex/latex/base/bk10.clo
+File: bk10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count83
+\c@chapter=\count84
+\c@section=\count85
+\c@subsection=\count86
+\c@subsubsection=\count87
+\c@paragraph=\count88
+\c@subparagraph=\count89
+\c@figure=\count90
+\c@table=\count91
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+Compatibility mode: definition of \rm ignored.
+Compatibility mode: definition of \sf ignored.
+Compatibility mode: definition of \tt ignored.
+Compatibility mode: definition of \bf ignored.
+Compatibility mode: definition of \it ignored.
+Compatibility mode: definition of \sl ignored.
+Compatibility mode: definition of \sc ignored.
+LaTeX Info: Redefining \cal on input line 592.
+LaTeX Info: Redefining \mit on input line 593.
+\bibindent=\dimen105
+)
+(/usr/local/texlive/2009/texmf-dist/tex/generic/german/german.sty
+v2.5e 1998-07-08
+Package: german 1998/07/08 v2.5e Support for writing german texts (br)
+\grmnU@D=\dimen106
+german -- \language number for Austrian undefined, default 24 used.
+) (/usr/local/texlive/2009/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+) (./din_a4.sty
+\aiv@width=\skip43
+\tmp@width=\skip44
+) (/usr/local/texlive/2009/texmf-dist/tex/latex/base/makeidx.sty
+Package: makeidx 2000/03/29 v1.0m Standard LaTeX package
+) (/usr/local/texlive/2009/texmf-dist/tex/latex/base/bezier.sty) (./epic.sty
+Enhancements to Picture Environment. Version 1.2 - Released June 1, 1986
+\@@multicnt=\count92
+\d@lta=\count93
+\@delta=\dimen107
+\@@delta=\dimen108
+\@gridcnt=\count94
+\@joinkind=\count95
+\@dotgap=\dimen109
+\@ddotgap=\dimen110
+\@x@diff=\count96
+\@y@diff=\count97
+\x@diff=\dimen111
+\y@diff=\dimen112
+\@dotbox=\box26
+\num@segments=\count98
+\num@segmentsi=\count99
+\@datafile=\read1
+)
+\@indexfile=\write3
+\openout3 = `main.idx'.
+
+
+Writing index file main.idx
+
+Textteile auswaehlen (j/n)?
+
+\eingabe=n
+(./main.aux (./inhalt.aux) (./vorbem.aux) (./csanky.aux) (./bgh.aux)
+(./berk.aux) (./pan.aux) (./implemen.aux) (./endbem.aux) (./index.aux)
+(./anhang.aux))
+\openout1 = `main.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 95.
+LaTeX Font Info:    ... okay on input line 95.
+\c@satz=\count100
+\openout2 = `inhalt.aux'.
+
+ (./inhalt.tex [0
+
+
+
+{/usr/local/texlive/2009/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2
+
+] (./main.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 2.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 2.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 2.
+
+(/usr/local/texlive/2009/texmf-dist/tex/latex/base/ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+) [3] [4])
+\tf@toc=\write4
+\openout4 = `main.toc'.
+
+) [5]
+\openout2 = `vorbem.aux'.
+
+
+(./vorbem.tex [6
+
+
+
+]
+Kapitel 1.
+
+Overfull \hbox (3.74132pt too wide) in paragraph at lines 50--55
+\OT1/cmr/m/n/10 Pro-blem, bis 1976, als Lasz-lo Csanky einen in je-nen Ta-gen [
+]uber-ra-schen-den Al-go-rith-mus ver[]offent-
+ []
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 65.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 65.
+[7]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 165.
+
+ (/usr/local/texlive/2009/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 165.
+ [8] [9]
+[10] [11] [12] (./bilder/pbinbaum.tex) [13] [14] [15] [16
+
+]
+Kapitel 2.
+[17] [18] [19] [20] [21]
+LaTeX Font Info:    Font shape `OMS/cmr/m/it' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 915.
+ [22] [23] [24] [25]) [26]
+\openout2 = `csanky.aux'.
+
+ (./csanky.tex
+Kapitel 3.
+[27
+
+
+
+] [28] [29]
+Overfull \hbox (7.72615pt too wide) in paragraph at lines 236--236
+[]\OT1/cmr/bx/n/14.4 Determinantenberechnung durch 'Di-vi-de and Con-quer' 
+ []
+
+[30] [31] [32] [33] [34] [35] [36] [37] [38] [39] [40] [41] [42]) [43]
+\openout2 = `bgh.aux'.
+
+
+(./bgh.tex [44
+
+
+
+]
+Kapitel 4.
+[45] [46] [47] [48] [49] [50] [51] [52] [53] [54] [55] [56] [57] [58] [59]
+[60] [61] [62]) [63]
+\openout2 = `berk.aux'.
+
+ (./berk.tex [64
+
+
+
+]
+Kapitel 5.
+[65] [66] [67] [68] [69] [70] [71] [72] [73] [74] [75] [76] [77]
+(./bilder/konkav.tex) [78] [79] [80] [81]) [82]
+\openout2 = `pan.aux'.
+
+ (./pan.tex
+Kapitel 6.
+[83
+
+
+
+] [84] [85] [86] [87] [88] [89] [90] [91] [92] [93] [94] [95] [96] [97]
+[98] [99] [100] [101]) [102]
+\openout2 = `implemen.aux'.
+
+ (./implemen.tex
+Kapitel 7.
+[103
+
+
+
+] [104] [105] (./bilder/module.tex) [106]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [107]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [108]
+[109]) [110]
+\openout2 = `endbem.aux'.
+
+ (./endbem.tex
+Kapitel 8.
+[111
+
+
+
+] [112]) [113]
+\openout2 = `index.aux'.
+
+ (./index.tex (./main.bbl [114
+
+
+
+] [115]) (./main.ind [116]
+[117
+
+] [118
+
+]))
+\openout2 = `anhang.aux'.
+
+ (./anhang.tex [119
+
+
+
+] [120
+
+]
+Anhang A.
+(./listings/main.m [121]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [122]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [123]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [124])
+(./listings/det.d
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [125])
+(./listings/det.i [126]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [127]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [128]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [129]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [130]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [131]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [132]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [133]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [134]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [135]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [136]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [137]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [138]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [139]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [140]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [141]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [142]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [143]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [144]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [145]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [146]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [147]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [148]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [149]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [150]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [151]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [152]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [153]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [154]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [155]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [156]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [157]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [158]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [159]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [160]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [161]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [162])
+(./listings/pram.d
+Missing character: There is no ž in font cmtt9!
+ [163]) (./listings/pram.i [164]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [165]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [166]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [167]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [168])
+(./listings/algtest.m [169]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [170]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [171]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [172]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [173]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [174]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [175]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [176]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [177]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [178]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [179]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [180]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [181]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [182]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [183]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [184])
+[185] [186
+
+]
+Anhang B.
+(./listings/cali.d) (./listings/cali.i
+Underfull \vbox (badness 1776) has occurred while \output is active []
+
+ [187])
+(./listings/data.d [188]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [189])
+(./listings/data.i [190]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [191]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [192]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [193]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [194])
+(./listings/frag.d [195]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [196])
+(./listings/frag.i [197]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [198]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [199]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [200])
+(./listings/func.d) (./listings/func.i [201]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [202])
+(./listings/hash.d [203]) (./listings/hash.i [204]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [205]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [206]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [207]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [208]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [209])
+(./listings/inli.d [210]) (./listings/inli.i) (./listings/list.d [211]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [212]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [213]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [214])
+(./listings/list.i [215]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [216]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [217]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [218]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [219]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [220]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [221])
+(./listings/mali.d [222]) (./listings/mali.i [223]) (./listings/mat.d [224])
+(./listings/mat.i [225]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [226])
+(./listings/reli.d
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [227])
+(./listings/reli.i [228]) (./listings/rema.d [229]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [230]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [231])
+(./listings/rema.i [232]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [233]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [234]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [235]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [236]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [237]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [238]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [239]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [240]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [241]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [242]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [243]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [244])
+(./listings/rnd.d [245]) (./listings/rnd.i [246]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [247]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [248])
+(./listings/simptype.d [249]) (./listings/simptype.i [250]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [251])
+(./listings/str.d [252]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [253])
+(./listings/str.i [254]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [255]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [256]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [257])
+(./listings/sys.d [258]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [259])
+(./listings/sys.i [260]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [261])
+(./listings/sysmath.d [262]) (./listings/sysmath.i [263]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [264])
+(./listings/type.d [265]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [266])
+(./listings/type.i [267]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [268]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [269]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [270])
+[271] [272
+
+]
+Anhang C.
+(./listings/listtest.m [273]) (./listings/pramtest.m [274])
+(./listings/rndtest.m [275]) (./listings/strtest.m [276])
+(./listings/typetest.m [277]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [278]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [279]))
+[280] (./main.aux (./inhalt.aux) (./vorbem.aux) (./csanky.aux) (./bgh.aux)
+(./berk.aux) (./pan.aux) (./implemen.aux) (./endbem.aux) (./index.aux)
+(./anhang.aux)) ) 
+Here is how much of TeX's memory you used:
+ 1388 strings out of 493848
+ 16611 string characters out of 3149208
+ 142001 words of memory out of 3000000
+ 4472 multiletter control sequences out of 15000+200000
+ 17479 words of font info for 64 fonts, out of 3000000 for 9000
+ 721 hyphenation exceptions out of 8191
+ 27i,16n,21p,264b,330s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmbx10.pfb></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmbx12.pfb></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmcsc10.pfb></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmex10.pfb></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmmi10.pfb></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmmi5.pfb></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mmi6.pfb></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmm
+i7.pfb></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8
+.pfb></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.p
+fb></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb
+></usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><
+/usr/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></us
+r/local/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/l
+ocal/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/loca
+l/texlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/t
+exlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl10.pfb></usr/local/te
+xlive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/tex
+live/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texl
+ive/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texliv
+e/2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/
+2009/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/20
+09/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2009
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2009/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb></usr/local/texlive/2009/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/local/texlive/2009/texm
+f-dist/fonts/type1/public/amsfonts/latxfont/lasy10.pfb></usr/local/texlive/2009
+/texmf-dist/fonts/type1/public/amsfonts/latxfont/line10.pfb>
+Output written on main.pdf (280 pages, 970117 bytes).
+PDF statistics:
+ 1012 PDF objects out of 1200 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

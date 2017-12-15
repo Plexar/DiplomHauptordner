@@ -1,0 +1,1292 @@
+%
+% Datei: ohnediv2.tex
+% Datum: 16.09.91
+%
+% Datei zur Erzeugung des Textteils 'Berechung in kommutativen Ringen'
+%     (Teil 2) (alter Titel: 'Vermeidung von Divisionen')
+%
+%************************************
+\MySection{Algorithmus von Berkowitz}
+\label{SubsectionBerk84}
+%************************************
+Der in diesem Unterkapitel vorgestellte Algorithmus zur parallelen
+Determinantenberechnung ohne Divisionen stammt von S. J. Berkowitz
+\cite{Berk84}.
+
+In Abschnitt \ref{Sub1Berk84} werden zun"achst einige einfache Grundlagen
+"uber Matrizen und ihre Determinanten sowie ein paar Definitionen
+zusammengefa"st, die in den dann folgenden Abschnitten ben"otigt werden.
+In Abschnitt \ref{Sub2Berk84}
+sind diverse Lemmata zusammengefa"st, mit deren Hilfe in Abschnitt
+\ref{Sub3Berk84} der Algoritmus zur Determinantenberechnung formuliert
+wird.
+
+%******************************************************************
+\MySubSection{Grundlegende Bemerkungen: Matrizen und Determinanten}
+\label{Sub1Berk84}
+%******************************************************************
+
+\MyBeginDef
+\label{Berk84Def1}
+    Sei $A$ eine $n \times n$-Matrix. Dann werden die Matrizen $R_i(A)$,
+    $S_i(A)$ und $M_i(A)$ wie folgt definiert:
+
+    $R_i(A)$ ist eine $1 \times (n-i)$-Matrix --- also ein Vektor --- f"ur
+    deren Elemente gilt: \[ r_i(A)_j := a_{i,(i+j)} \]
+    $R_1(A)$ wird mit \[ R(A) \] bezeichnet. $R_i$ hat somit die Form
+    \[ (a_{i,(i+1)}, \ldots, a_{i,n} \]
+
+    $S_j(A)$ ist eine $(n-i) \times 1$-Matrix, f"ur deren Elemente gilt:
+    \[ s_j(A)_i := a_{(i+j),j} \]
+    $S_1(A)$ wird mit \[ S(A) \] bezeichnet. $S_i$ hat somit die Form
+    \begin{displaymath}
+        \left[
+            \begin{array}{c}
+                a_{(i+1),i} \\
+                \vdots      \\
+                a_{n,i}
+            \end{array}
+        \right]
+    \end{displaymath}
+
+    $M_k(A)$ ist eine $(n-k) \times (n-k)$-Matrix, f"ur deren Elemente gilt:
+    \[ m_k(A)_{ij} := a_{(k+i),(k+j)} \]
+    Also gilt \[ M_0 = A \]
+    $M_1(A)$ wird mit \[ M(A) \] bezeichnet. $M_i$ hat somit die Form
+    \begin{displaymath}
+        \left[
+            \begin{array}{ccc}
+                a_{i+1,i+1} & \cdots & a_{i+1,n} \\
+                \vdots      & \ddots & \vdots  \\
+                a_{n,i+1}   & \cdots & a_{n,n}
+            \end{array}
+        \right]
+    \end{displaymath}
+
+    Wenn der Zusammenhang klar ist, wird in den hier definierten
+    Schreibweisen jeweils das $(A)$ weggelassen.
+\MyEndDef
+
+Graphisch veranschaulicht sieht das Verh"altnis der Matrizen $A$, $R$, $S$
+und $M$ folgenderma"sen aus:
+\begin{displaymath}
+    A = \left[
+            \begin{array}{cc}
+                a_{11} & R \MatStrut \\
+                S      & M \MatStrut
+            \end{array}
+        \right]
+\end{displaymath}
+oder anders ausgedr"uckt
+\begin{displaymath}
+    A =
+    \left[
+    \begin{array}{ccccc}
+        a_{11}     & R_1        & \rightarrow &             & \MatStrut \\
+        S_1        & a_{22}     & R_2         & \rightarrow & \MatStrut \\
+        \downarrow & S_2        & a_{33}      & R_3         & \rightarrow
+                                                              \MatStrut \\
+                   & \downarrow & S_3         & \ddots      & \ddots
+                                                              \MatStrut \\
+                   &            & \downarrow  & \ddots      & \MatStrut
+    \end{array}
+    \right]
+\end{displaymath}
+oder noch anders ausgedr"uckt
+\begin{displaymath}
+    M_i =
+    \left[
+    \begin{array}{cc}
+        a_{i+1,i+1} & R_{i+1} \MatStrut \\
+        S_{i+1}     & M_{i+1} \MatStrut
+    \end{array}
+    \right]
+\end{displaymath}
+
+\MyBeginDef
+\label{Berk84Def2}
+    Seien $A$ und $M$ wie in \ref{Berk84Def1} definiert. Dann ist das
+    {\em charakteristische Polynom von $A$} definiert als
+    \[ p_A(\lambda) := \sum_{k=0}^n p_k \lambda^k =
+       \det(A - \lambda * E_n)
+    \]
+    und das {\em charakteristische Polynom von $M$} als
+    \[ q_M(\lambda) := \sum_{k=0}^{n-1} q_k \lambda^k =
+       \det(M - \lambda * E_{n-1})
+    \]
+    Falls der Zusammenhang klar ist, wird statt \[ p_A(\lambda) \] auch
+    \[ p(\lambda) \] und statt \[ q_M(\lambda) \] auch \[ q(\lambda) \]
+    benutzt.
+\MyEndDef
+
+\begin{bemerkung}[Zeilen- und Spaltenentwicklung]
+    Sei $A$ eine $n \times n$-Matrix. Dann gilt f"ur ihre Determinante die
+    Entwicklung nach der $i$-ten Zeile
+    \[ \det(A) = \sum_{j=1}^n (-1)^{i+j} a_{i,j} \det( A_{(i|j)} ) \]
+    und die Entwicklung nach der $j$-ten Spalte
+    \[ \det(A) = \sum_{i=1}^n (-1)^{i+j} a_{i,j} \det( A_{(i|j)} ) \]
+\end{bemerkung}
+
+\MyBeginDef
+    Sei $A$ eine $n \times n$-Matrix. Dann hei"st die $n \times n$-Matrix
+    \[ \adj(A) \] { \em Adjunkte von $A$ }. Sei \[ B = \adj(A) \]
+    Dann wird $B$ definiert als
+    \[ b_{i,j} := (-1)^{i+j} \det( A_{(j|i)} ) \]
+\MyEndDef
+
+\begin{bemerkung}
+    Sei $A$ eine $n \times n$-Matrix. Dann gilt f"ur ihre Adjunkte
+    \[ \adj(A) * A = A * \adj(A) = E_n * \det(A) \]
+\end{bemerkung}
+
+\begin{satz}[Calay und Hamilton]
+\label{Berk84Satz0}
+    Sei $A$ eine $n \times n$-Matrix. Sei
+    \[ p(\lambda) = \sum_{k=0}^n p_k \lambda^k \]
+    ihr charakteristisches Polynom. Dann gilt
+    \[ \sum{k=0}^n p_k A^k = 0 \]
+\end{satz}
+\begin{beweis}
+    siehe z. B. \cite{MM64} Seite 50
+\end{beweis}
+
+\MyBeginDef
+\label{Berk84Def3}
+    Sei $B$ eine $n \times m$-Matrix. Sie hei"st { \em Toeplitz-Matrix},
+    falls f"ur ihre Elemente gilt:
+    \[ b_{i,j} = b_{i-\min(i,j)+1,j-\min(i,j)+1} \]
+\MyEndDef
+
+Wenn $B$ eine Toeplitz-Matrix ist, hat sie also folgendes Aussehen:
+\begin{displaymath}
+    \left[ \begin{array}{ccccc}
+        b_{1,1} & b_{1,2} & b_{1,3} & b_{1,4} & \cdots \MatStrut \\
+        b_{2,1} & b_{1,1} & b_{1,2} & b_{1,3} & \ddots \MatStrut \\
+        b_{3,1} & b_{2,1} & b_{1,1} & b_{1,2} & \ddots \MatStrut \\
+        b_{4,1} & b_{3,1} & b_{2,1} & b_{1,1} & \ddots \MatStrut \\
+        \vdots  & \ddots  & \ddots  & \ddots  & \ddots \MatStrut
+    \end{array} \right]
+\end{displaymath}
+
+\MyBeginDef
+\label{Berk84Def4}
+    Sei $B$ eine $n \times m$-Matrx. Sie hei"st {\em untere Dreiecksmatrix},
+    wenn jedes Matrizenelement \[ b_{i,j} \] gleich $0$ ist,
+    falls \[ i < j \]
+
+    Sie hei"st {\em obere Dreiecksmatrix}, wenn jedes Matrizenelement
+    \[ b_{i,j} \] gleich $0$ ist, falls \[ i > j \]
+\MyEndDef
+
+Somit besitzt eine untere Dreiecksmatrix folgendes Aussehen:
+\begin{displaymath}
+    \left[ \begin{array}{ccccc}
+        b_{1,1} &   0     &   0     &   0     & \cdots \MatStrut \\
+        b_{2,1} & b_{1,1} &   0     &   0     & \cdots \MatStrut \\
+        b_{3,1} & b_{2,1} & b_{1,1} &   0     & \cdots \MatStrut \\
+        b_{4,1} & b_{3,1} & b_{2,1} & b_{1,1} & \ddots \MatStrut \\
+        \vdots  & \vdots  & \vdots  & \vdots  & \ddots \MatStrut
+    \end{array} \right]
+\end{displaymath}
+und eine obere Dreiecksmatrix entsprechend das folgende Aussehen:
+\begin{displaymath}
+    \left[ \begin{array}{ccccc}
+        b_{1,1} & b_{1,2} & b_{1,3} & b_{1,4} & \cdots \MatStrut \\
+          0     & b_{2,2} & b_{2,3} & b_{2,4} & \cdots \MatStrut \\
+          0     &   0     & b_{3,3} & b_{3,4} & \cdots \MatStrut \\
+          0     &   0     &   0     & b_{4,4} & \cdots \MatStrut \\
+        \vdots  & \vdots  & \vdots  & \ddots  & \ddots \MatStrut
+    \end{array} \right]
+\end{displaymath}
+
+
+%********************************
+\MySubSection{Das Pr"afixproblem}
+\label{AlgPrafix}
+%********************************
+
+Von einer effizienten L"osung des Pr"afixproblems wird u. a. in Lemma
+\ref{Berk84Satz3} Gebrauch gemacht. Es ist auch f"ur sich betrachtet
+interessant und wird deshalb hier behandelt (\cite{LF80},
+\cite{Wege89} S. 83 ff.). Es l"a"st sich folgenderma"sen formulieren:
+\begin{quote}
+    Gegeben sei die Halbgruppe \[ (M,\circ) \] D. h. die Abbildung $\circ$
+    ist assoziativ auf $M$. Weiterhin seien \[ x_1,x_2,x_3,\ldots,x_{n}\]
+    Elemente aus $M$. Es wird definiert
+    \[ p_i := x_1 \circ x_2 \circ x_3 \circ \ldots \circ x_i \]
+    Das Pr"afixproblem besteht darin, alle Elemente der Menge
+    \[ { p_i | 1 \leq i \leq n } \] zu berechnen.
+\end{quote}
+Es sind u. a. zwei M"oglichkeiten denkbar, dies mit parallelen
+Algorithmen zu erreichen.
+\begin{itemize}
+    \item Die erste M"oglichkeit:
+        \begin{enumerate}
+            \item L"ose das Pr"afixproblem parallel f"ur
+                  \[ x_1,\ldots,x_{\lceil n/2 \rceil} \]
+                  und
+                  \[ x_{\lceil n/2+1 \rceil},\ldots,x_n \]
+                  so da"s \[ p_1,\ldots,p_{\lceil n/2 \rceil} \]
+                  nach diesem Schritt bereits berechnet sind.
+            \item
+                  Berechne aus \[ p_{\lceil n/2 \rceil} \] und
+                  der L"osung des Problems f"ur
+                  \[ x_{\lceil n/2+1 \rceil},\ldots,x_n \]
+                  parallel in einem weiteren Schritt
+                  \[ p_{\lceil n/2+1 \rceil},\ldots,p_{n/2} \]
+        \end{enumerate}
+    \item
+        Die zweite M"oglichkeit, die hier kurz dargestellt werden soll,
+        sieht folgenderma"sen aus (o. B. d. A. sei $n$ eine Zweierpotenz):
+        \begin{enumerate}
+            \item
+                Berechne parallel in einem Schritt
+                \[ x_1 \circ x_2, x_3 \circ x_4, \ldots,
+                   x_{n-1} \circ x_n \]
+            \item
+                L"ose das Pr"afixproblem f"ur diese
+                $n/2$ Werte. Damit werden alle $p_i$ mit geradem $i$
+                berechnet.
+            \item
+                Die noch fehlenden $p_i$ f"ur ungerade $i$ k"onnen nun
+                parallel in einem weiteren Schritt aus der L"osung f"ur die
+                $n/2$ Werte und den $x_i$ mit ungeradem $i$ berechnet
+                werden.
+        \end{enumerate}
+\end{itemize}
+Diese beiden M"oglichkeiten k"onnen zu einem Algorithmus zusammengefa"st
+werden, was im anschlie"senden Satz angegeben wird.
+\begin{satz}
+\label{SatzLadnerFischer}
+    Gegeben sei die Halbgruppe \[ (M,\circ) \] Das Pr"afixproblem
+    f"ur $n$ Elemente \[ x_1,x_2,\ldots,x_n \] von $M$ l"a"st sich
+    von \[ \lfloor \frac{n}{2} \rfloor \] Prozessoren in 
+    \[ \lceil \log(n) \rceil \] Schritten l"osen.
+\end{satz}
+\begin{beweis}
+    Sei $n$ o. B. d. A. eine Zweierpotenz. In dem Fall, da"s $n$ keine
+    Zweierpotenz ist, wird $n$ durch die n"achst h"ohere Zweierpotenz $n'$
+    ersetzt und alle Verkn"upfungen mit Elementen $x_i$ von $M$ f"ur
+    \[ i>n \] werden nicht durchgef"uhrt. Dies f"uhrt zu den Gau"sklammern
+    um die Anzahlen der Schritte und der Prozessoren
+    in der obigen Behauptung verglichen mit den Endergebnissen im
+    folgenden Beweis.
+
+    Benutze folgenden Algorithmus:
+    \begin{enumerate}
+    \item
+          Wenn \[ n=1 \] dann ist $x_1$ das Ergebnis.
+    \item
+          Wenn \[ n=2 \] dann ist \[ x_1, x_1 \circ x_2 \]
+          das Ergebnis.
+    \item
+          Schritte \ref{Berk84Lab6} und \ref{Berk84Lab3} parallel:
+          \begin{enumerate}
+          \item \label{Berk84Lab6}
+                \begin{enumerate}
+                \item \label{Berk84Lab4}
+                      Berechne parallel in einem Schritt
+                      \[ x_1 \circ x_2,\ldots
+                         x_{n/2-1} \circ x_{n/2}
+                      \]
+                \item \label{Berk84Lab1}
+                      Benutze den Algorithmus rekursiv zur L"osung des
+                      Problems f"ur die in Schritt \ref{Berk84Lab4}
+                      erhaltenen $n/4$ Werte. Somit sind die $p_i$ f"ur
+                      \[ 1 \leq i \leq n/2 \] mit geraden $i$, und somit
+                      auch $p_{n/2}$ bereits berechnet.
+                \item \label{Berk84Lab2}
+                      Es gilt hier \[ 1 \leq i \leq n/2 \]
+                      Wenn \[ n/2 > 2 \] dann
+                      berechne parallel in einem Schritt mit Hilfe der $p_i$
+                      aus \ref{Berk84Lab1} und der $x_i$ mit ungeradem $i$
+                      die fehlenden $p_i$ mit ungeradem $i$.
+                \end{enumerate}
+          \item \label{Berk84Lab3}
+                Benutze den Algorithmus rekursiv zur L"osung des Problems
+                f"ur \[ x_{n/2+1},\ldots,x_n \]
+          \end{enumerate}
+    \item \label{Berk84Lab5}
+          Bereits wenn \ref{Berk84Lab1} und \ref{Berk84Lab3}
+          beendet sind, k"onnen in einem Schritt parallel zu
+          \ref{Berk84Lab2} aus $p_{n/2}$ und den Ergebnissen von
+          \ref{Berk84Lab3} die $p_i$ mit \[ n/2+1 \leq i \leq n \] berechnet
+          werden.
+    \end{enumerate}
+    Zur Analyse der ben"otigten Schritt und Prozessoren bezeichne $s(n)$
+    die Anzahl der Schritt zur L"osung des Pr"afixproblems f"ur $n$
+    Eingabewerte $x_1$ bis $x_n$ mit Hilfe des obigen Algorithmus und $p(n)$
+    die Anzahl der dazu ben"otigten Prozessoren.
+    \begin{itemize}
+    \item Hier wird zun"achst die Anzahl der Schritte betrachtet.
+          Es gilt \[ s(1) = 0, s(2) = 1, s(4)=2 \]
+          Bei der Betrachtung des Algorithmus erkennt man, da"s folgende
+          Rekursionsformel G"ultigkeit besitzt:
+          \begin{equation}
+          \label{Berk84Equ6}
+              \forall n>4: s(n) = \max(s(n/4)+2,s(n/2))
+          \end{equation}
+          Wenn man diese Formel auf $s(n/2)$ anwendet und das Ergebnis in
+          die obige Formel einsetzt, erh"alt man
+          \[ \forall n>4: s(n) = \max(s(n/4)+2,\max(s(n/8)+2,s(n/4))) \]
+          Aufgrund der Assoziativit"at der $\max$-Funktion ist dies
+          gleichbedeutend mit
+          \[ \forall n>4: s(n) = \max(s(n/4)+2,s(n/8)+2,s(n/4)) \]
+          Man erkennt sofort, da"s dies wiederum bedeutet:
+          \[ \forall n>4: s(n) = s(n/4)+2 \]
+          Bei dem Versuch, diese Rekursion aufzul"osen, st"o"st man auf
+          \[ \forall n>4: s(n) =
+                 s\left(
+                     \underline{ n/4^{\lfloor \log_4 n \rfloor} }
+                  \right)
+                  + 2 \lfloor \log_4 n \rfloor
+          \]
+          Es gibt hier zwei M"oglichkeiten:
+          \begin{enumerate}
+          \item $n$ ist eine Viererpotenz. In diesem Fall hat der
+                unterstrichene Teil der obigen Gleichung den Wert $1$. Die
+                Funktion $s$ darauf angewendet ergibt $0$. Man erh"alt
+                \[ \forall n>4: s(n) = 2 \log_4 n \]
+                Die Anwendung einiger Logarithmengesetze f"uhrt zu
+                \[ \forall n>4: s(n) = \log_2 n \]
+          \item $n$ ist keine Viererpotenz. In diesem Fall hat der
+                unterstrichene Teil der obigen Gleichung den Wert $2$ und
+                es gilt \[ s(2)=1 \] Man erh"alt
+                \[ \forall n>4: s(n) = 1 + 2 \lfloor \log_4 n \rfloor \]
+                Mit Hilfe einiger Logarithmengesetze erh"alt man 
+                \begin{equation}
+                \label{Berk84Equ9}
+                    \forall n>4: s(n) = 1 + 2 
+                    \left\lfloor 
+                        \frac{1}{2} \log_2 n 
+                    \right\rfloor 
+                \end{equation}
+                Da $n$ keine Viererpotenz ist, hat \[ \log_2 n \] einen
+                ungeraden Wert. Da $n$ aber trotzdem eine Zweierpotenz ist,
+                gilt 
+                \[ \log_2 n - 2 
+                        \left\lfloor 
+                            \frac{1}{2} \log_2 n 
+                        \right\rfloor = 1 
+                \]
+                Gleichung \equref{Berk84Equ9} ist also "aquivalent zu
+                \[ \forall n>4: s(n) = \log_2 n \]
+          \end{enumerate}
+          Man erh"alt also in beiden F"allen als Ergebnis
+          \[ \forall n>4: s(n) = \log_2 n \]
+          Vergleicht man nun diese Gleichung mit den Anfangswerten der
+          Rekursionsgleichung \equref{Berk84Equ6},
+          ergibt sich als Endergebnis
+          \[ s(n) = \log_2 n \]
+    \item F"ur die Anzahl der ben"otigten Prozessoren $p(n)$ gilt:
+          \[ p(1) = 0, p(2) = 1, p(4)= 2 \]
+          Ferner gilt offensichtlich folgende Rekursionsgleichung:
+          \begin{equation}
+          \label{Berk84Equ8}
+              \forall n>4: p(n)= \max(n/2,p(n/4)+p(n/2),n/4+p(n/2))
+          \end{equation}
+          Beim Ausrechnen der Werte von $p(8)$, $p(16)$ und $p(32)$
+          mit Hilfe dieser Rekursionsgleichung gelangt man zu der
+          Vermutung, da"s gilt:
+          \begin{equation}
+          \label{Berk84Equ7}
+              p(n) = \frac{n}{2}
+          \end{equation}
+          Dies wird durch Induktion bewiesen. Zu beachten
+          ist, da"s nach Voraussetzung nur die Potenzen von $2$ als Werte
+          f"ur $n$ in Frage kommen. F"ur die Anfangswerte $2$ und $4$
+          der Rekursionsgleichung ist die Behauptung \equref{Berk84Equ7}
+          offensichtlich erf"ullt.
+
+          Sei also nun \[ n>4 \] und es gelte \[ p(n)= n/2 \] und
+          \[ p(n/2) = n/4 \]
+          Es ist zu zeigen, da"s dann auch \[ p(2n)= n \] richtig ist.
+          Nach der Rekursionsgleichung \equref{Berk84Equ8} gilt
+          \[ p(2n) = \max(n, p(n/2)+p(n), n/2 + p(n)) \]
+          Die Anwendung der Induktionsvoraussetzung f"uhrt zu
+          \[ p(2n) = \max(n, n/4 + n/2, n/2 + n/2) \] und somit zu
+          \[ p(2n) = n \] was zu zeigen war. F"ur die Anzahl der ben"otigen
+          Prozessoren gilt also
+          \[ \forall n \geq 2: p(n) = n/2 \]
+          Da die L"osung des  Problems f"ur \[ n=1 \] trivial ist, wird
+          die Quantifizierung nicht weiter beachtet.
+    \end{itemize}
+\end{beweis}
+
+\label{AlgPrafixLab1}
+Um Erkl"arungen zu vereinfachen wird in die auf die Anwendung des in Satz
+\ref{SatzLadnerFischer} vorgestellten Algorithmus durch
+    \[ \FunkPrafix(\WortOperation,x_1,\ldots,x_n) \]
+Bezug genommen. Dies bedeutet, da"s der Ladner-Fischer-Pr"afixalgorithmus
+unter Benutzung der angegebenen assoziativen Verkn"upfung \WortOperation auf
+die angegebenen $n$ Werte angewendet wird. Wird \WortOperation abk"urzend
+mit
+$\circ$ bezeichnet, dann ist das Ergebnis des Algorithmus die Liste der
+Werte
+\[ x_1, x_1 \circ x_2, \ldots, x_1 \circ x_2 \circ \ldots \circ x_n \]
+Die Formulierung \[ \FunkPrafix(\ldots) \]
+ist so zu behandeln, als w"urde das Ergebnis an dieser Stelle stehen.
+
+Ein Anwendungsbeispiel w"are
+\[ y:= \FunkPrafix(\WortMatMult,< \mbox{Matrix} \: 1 >,\ldots ,
+        < \mbox{Matrix} \: n >)
+\]
+
+%*******************************
+\MySubSection{GanzzahligeWurzel}
+\label{AlgIntRoot}
+%*******************************
+Gegeben sei \[ n,x \in \Nat \] In diesem Abschnitt wird das Problem 
+behandelt, wie dann $w$ mit der Eigenschaft
+\[ w = \lceil \sqrt[x]{n} \rceil \] berechnet werden kann.
+Man benutzt folgenden Algorithmus:
+\begin{enumerate}
+\item 
+      \[ w_0 := 0 \] (Initialisierung: kein Schritt)
+\item 
+      \[ \forall 1 \leq i \leq n: w_i:= 
+         \underbrace{ i * i * \ldots * i }_{\mbox{$x$ mal}}
+      \]
+      Benutze hierzu den Pr"afixalgorithmus (siehe \ref{AlgPrafix}). 
+      Dies erfordert \[ \lceil \log(x) \rceil \] Schritte und
+      \[ n \frac{x}{2} \] Prozessoren.
+\item 
+      F"ur \[ 1 \leq i \leq n \] pr"ufe die Bedingung
+      \[ w_i \geq n > w_{i-1} \]
+      Das $i$, das die obige Bedingung erf"ullt, ist das gesuchte $w$.
+
+      (ein Schritt; $n$ Prozessoren)
+\end{enumerate}
+Dieser Algorithmus ben"otigt insgesamt \[ 1 + \lceil \log(x) \rceil \] 
+Schritte und \[ n \frac{x}{2} \] Prozessoren. Auf ihn wird durch 
+\[ \FuncIntRoot(x,n) \] Bezug genommen.
+
+
+%**************************************************
+\MySubSection{Zusammenstellung von Teilergebnissen}
+\label{Sub2Berk84}
+%**************************************************
+
+\begin{lemma}
+\label{Berk84Satz1}
+% $$$ Claim 1
+    Sei $A$ eine $n \times n$-Matrix. Sei $p(\lambda)$ ihr
+    charakteristisches Polynom. Seien $R$, $S$ und $M$ Matrizen wie in
+    \ref{Berk84Def1} definiert. Dann gilt:
+    \begin{displaymath}
+        p(\lambda) = (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1})
+                     - R * \adj(M - \lambda * E_{n-1}) * S
+    \end{displaymath}
+\end{lemma}
+\begin{beweis}
+Es gilt \[ p(\lambda) = \det(A - \lambda * E_n) \]
+Durch Entwicklung der Determinante nach der ersten Zeile erh"alt man:
+\begin{displaymath}
+    p(\lambda)= (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1}) +
+    \sum_{j=2}^n (-1)^{1+j} a_{1,j}
+    \underline{ \det( (A - \lambda * E_n)_{(1|j)} ) }
+\end{displaymath}
+Nun werden die in der obigen Gleichung unterstrichenen Determinanten
+jeweils nach der ersten Spalte entwickelt:
+\begin{eqnarray*}
+    p(\lambda)= & & \\
+    & (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1}) + & \\
+    & \sum_{j=2}^n
+        \underbrace{ (-1)^{1+j} a_{1,j} }_{ \mbox{(*1)} }
+    \sum_{k=2}^n (-1)^{1+(k-1)} a_{k,1}
+        \det(
+            \underbrace{
+                (A - \lambda * E_n)_{(1,k|1,j)}
+            }_{ \mbox{(*2)} }
+        ) &
+\end{eqnarray*}
+Wenn man in der obigen Gleichung (*1) mit der inneren Summe multipliziert
+und (*2) mit Hilfe der Matrix $M$ aus \ref{Berk84Def1} ausdr"uckt
+erh"alt man:
+\begin{displaymath}
+    p(\lambda)= (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1} +
+    \sum_{j=2}^n
+    \sum_{k=2}^n (-1)^{1+j+k} \underbrace{ a_{1,j} a_{k,1} }_{ \mbox{(*)} }
+        \det( (M - \lambda * E_{n-1})_{(k-1|j-1)} )
+\end{displaymath}
+In der obigen Gleichung l"a"st sich (*) mit Hilfe der Matrizen $R$ und
+$S$ aus \ref{Berk84Def1} formulieren:
+\begin{displaymath}
+    p(\lambda)= (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1} +
+    \sum_{j=2}^n
+    \sum_{k=2}^n (-1)^{1+j+k} r_j s_k
+        \det( (M - \lambda * E_{n-1})_{(k-1|j-1)} )
+\end{displaymath}
+Dies wiederum ist in Matrizenschreibweise und mit Hilfe der Adjunkten einer
+Matrix ausgedr"uckt nichts anderes als
+\begin{displaymath}
+    p(\lambda) = (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1})
+                 - R * \adj(M - \lambda * E_{n-1}) * S
+\end{displaymath}
+was zu beweisen war.
+\end{beweis}
+
+
+\begin{lemma}
+\label{Berk84Satz2}
+% $$$ Claim 2
+    Sei $A$ eine $n \times n$-Matrix. Seien $R$, $S$ und $M$ wie in
+    \ref{Berk84Def1} definiert. Seien \[ p(\lambda) \] und \[ q(\lambda) \]
+    wie in \ref{Berk84Def2} definiert. Dann gilt
+    \begin{equation}
+    \label{Berk84Equ1}
+        \adj(M - \lambda * E_{n-1}) =
+            - \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k-1} q_l
+    \end{equation}
+\end{lemma}
+\begin{beweis}
+    Multipliziere beide Seiten von \equref{Berk84Equ1} mit
+    \[ M - \lambda * E_{n-1} \]
+    Auf der linken Seite erh"alt man
+    \[ \adj(M - \lambda * E_{n-1}) * (M - \lambda * E_{n-1}) \]
+    Dies ist gleich
+    \[ E_{n-1} * \det(M - \lambda * E_{n-1}) \]
+    und somit gleich
+    \[ q(\lambda) * E_{n-1} \]
+
+    Auf der rechten Seite von Gleichung \equref{Berk84Equ1} erh"alt man
+    \[ - ( \underbrace{M}_{\mbox{(*1)}}
+           \underbrace{- \lambda * E_{n-1})}_{\mbox{(*2)}}
+         )
+         \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k-1} q_l
+    \]
+    Bei der Multiplikation erh"alt man f"ur (*1) und (*2) im obigen Term
+    zwei Doppelsummen:
+    \[ - \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k} q_l
+       + \sum_{k=0}^{n-2} \lambda^{k+1} \sum_{l=k+1}^{n-1} M^{l-k-1} q_l
+    \]
+    Durch Umordnen der Indizes der zweiten Doppelsumme erh"alt man
+    \begin{equation}
+    \label{Berk84Equ2}
+        - \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k} q_l
+        + \sum_{k=1}^{n-1} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k} q_l
+    \end{equation}
+    Nach Satz \ref{Berk84Satz0} gilt
+    \begin{equation}
+    \label{Berk84Equ3}
+        \sum_{l=0}^{n-1} M^l q_l = 0
+    \end{equation}
+    Somit kann man die linke Seite von Gleichung \equref{Berk84Equ3} zur
+    zweiten Doppelsumme von Term \equref{Berk84Equ2} addieren und erh"alt
+    \[
+        - \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k} q_l
+        + \sum_{k=0}^{n-1} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k} q_l
+    \]
+    Wenn man nun die Vorzeichen der beiden Doppelsummen betrachtet sowie
+    die benutzten Indizes erkennt man leicht, da"s sich der Gesamtterm
+    vereinfacht darstellen l"a"st, da gro"se Teile zusammengenommen $0$
+    ergeben. Die Teile, die sich nicht auf diese
+    Weise gegenseitig aufheben, lassen sich schreiben als
+    \[ \sum_{k=0}^{n-1} \lambda{k} E_{n-1} q_{k} \]
+    was gleichbedeutend ist mit
+    \[ q(\lambda) * E_{n-1} \]
+
+    Also stimmen die beiden Seiten von Gleichung \equref{Berk84Equ1}
+    "uberein.
+\end{beweis}
+
+
+\begin{satz}[Samuelson]
+\label{Berk84Satz2a}
+% $$$ Claim 2 into Claim 1
+    Sei $A$ eine $n \times n$-Matrix. Seien $R$, $S$ und $M$ wie in
+    \ref{Berk84Def1} definiert. Sei $p(\lambda)$ das charakteristische
+    Polynom von $A$. Dann besteht nach P. A. Samuelson \cite{Samu42} die
+    folgende Beziehung zwischen den charakteristischen Polynomen von $A$ und
+    $M$:
+    \begin{equation}
+    \label{Berk84Equ20}
+        p(\lambda) =
+            (a_{1,1} - \lambda) * \det(M - \lambda * E_{n-1})
+            + R * \left(
+              \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k-1} q_l
+            \right) * S
+    \end{equation}
+\end{satz}
+\begin{beweis}
+    Lemma \ref{Berk84Satz2} angewendet auf Lemma \ref{Berk84Satz1}
+    ergibt die Behauptung.
+\end{beweis}
+
+
+\begin{lemma}
+\label{Berk84Satz3}
+% $$$ Claim 3
+    Sei $A$ eine $n \times n$-Matrix. Seien $R_i$, $S_i$ und $M_i$ wie in
+    ref{Berk84Def1} definiert. Sei $i$ fest gew"ahlt. $m$ bezeichne die
+    Anzahl der Zeilen und Spalten von $M_i$ und somit auch die Anzahl der
+    Elemente von $R_i$ und $S_i$. Sei
+    \[ T := \{ R_i * M_i^k * S_i | 0 \leq k \leq m \} \]
+    $T$ l"a"st sich bei \[ m \geq 2 \] in 
+    \[ 7 + 5 \log(m) + 2 \log^2(m)  \] Schritten von
+    \[ \frac{m^4}{4} \] Prozessoren berechnen.
+    Bei \[ m=1 \] sind \[ 2 \] Schritte und \[ 2 \] Prozessoren 
+    erforderlich.
+    
+    F"ur diesen Satz und seinen Beweis wird angenommen, da"s mit
+    ganzzahligen Werten f"ur Schritte und Prozessoren gearbeitet wird. 
+    Falls nicht etwas anderes angegeben ist, m"ussen die jeweiligen Werte
+    in obere Gau"sklammern eingefa"st werden.
+\end{lemma}
+\begin{beweis}
+    Bei der Betrachtung der Elemente von $T$ erkennt man, da"s man den 
+    den Exponenten $k$ von $M_i$ eindeutig ausdr"ucken kann durch
+    \begin{equation}
+    \label{Berk84Equ11}
+        k = u + v * \lceil \sqrt{m} \rceil
+    \end{equation}
+    Dabei gilt
+    \begin{enumerate}
+    \item \[ v \leq \lfloor \sqrt{m} \rfloor \] da der maximale
+           Exponent von $M_i$ gleich $m$ ist.
+    \item \[ u < \lceil \sqrt{m} \rceil \] um die Eindeutigkeit der 
+          Darstellung zu gew"ahrleisten, da man andernfalls $v$ um $1$ 
+          erh"ohen und $u$ um \[ \lceil \sqrt{m} \rceil \] erniedrigen
+          k"onnte.
+    \end{enumerate}
+    Zu beachten ist bei Gleichung \equref{Berk84Equ11} die Anwendung der
+    Gau"sklammern in Verbindung mit den Bedingungen f"ur $u$ und $v$. Auf
+    diese Weise behalten die Aussagen z. B. auch im Fall \[ k = x - 1 \]
+    mit einer beliebigen Quadratzahl $x$ ihre G"ultigkeit.
+
+    Es ist sinnvoll \[ \sqrt{m} \] statt
+    \[ \sqrt[x]{m} \] mit \[ x \neq 2 \] zu betrachten, da es bei \[ x=2 \]
+    gleichviele m"ogliche Werte --- abgesehen von Auswirkungen der
+    Gau"sklammern --- f"ur $u$ und $v$ gibt, was sich positiv auf die
+    Effizienz des untenstehenden Algorithmus auswirkt.
+
+    Gleichung \equref{Berk84Equ11} f"uhrt zu der Idee, zwei Mengen $U$ und
+    $V$ von Vektoren zu berechnen, die den m"oglichen Werten von
+    $v$ und $w$ entsprechen und
+    um dann daraus $T$ durch Skalarprodukte der Vektoren aus $U$ und der
+    Vektoren aus $V$ zu erhalten. Die beiden Mengen haben folgende
+    Form:
+    \begin{eqnarray}
+        \label{Berk84Equ16}
+        U & := & \{ R * M^i | 0 \leq i < \lceil \sqrt{m} \rceil \}
+    \\  \label{Berk84Equ17}
+        V & := & \{ M^{i*\lceil \sqrt{m} \rceil} * S |
+                                   0 \leq i \leq \lfloor \sqrt{m} \rfloor \}
+    \end{eqnarray}
+    U. u. lassen sich mit den Elemente von $U$ und $V$ durch paarweises
+    Verkn"upfen je eines Elementes aus $U$ mit einem Element aus $V$ mehr
+    Werte berechnen als $T$ enth"alt. In diesem Fall, wie zum Beispiel bei
+    \[ m=16 \] d"urfen nicht alle Paare von Elemente aus $U$ und $V$
+    miteinander verkn"upft werden. Sei $x$ eine Quadratzahl. Dann werden
+    nur bei \[ m=x-1 \] alle Paare ben"otigt.
+
+    Der Algorithmus l"a"st sich in drei Teile aufteilen:
+    \begin{itemize}
+    \item 
+          In Teil \ref{Berk84Satz3Lab2} wird $U$ berechnet.
+    \item
+          In Teil \ref{Berk84Satz3Lab3} wird $V$ berechnet.
+    \item
+          In Teil \ref{Berk84Satz3Lab4} wird $T$ aus $U$ und $V$ berechnet.
+    \end{itemize}
+    Zu beachten sind die Typen der im folgenden Algorithmus verwendeten 
+    Variablen:
+    \begin{itemize}
+    \item $Z_j$ mit \[ j \in \Nat_0 \] sind Listen, d. h. Vektoren 
+          unbestimmter Gr"osse, deren Elemente mit der gewohnten Indizierung
+          angesprochen werden. Ihre Elemente sind Vektoren der Gr"o"se $m$.
+    \item $Y_j$ mit \[ j \in \Nat_0 \] sind ebenfalls Listen, jedoch sind
+          ihre Elemente $m \times m$-Matrizen.
+    \item $r$ ist eine Matrix.
+    \item $i$,$w_1$ und $w_2$ sind nat"urliche Zahlen.
+    \end{itemize}
+    F"ur \[ m = 1 \] w"are die L"osung des Problems sehr einfach und w"urde
+    $2$ Schritte und $2$ Prozessoren erfordert. Deshalb wird im folgenden
+    Algorithmus \[ m \geq 2 \] angenommen:
+    \begin{enumerate}
+    \item \label{Berk84Satz3Lab2}
+      \begin{enumerate}
+      \item \[ Z_0:= R; i:= 1 ; r:= M \] (Initialisierung: kein Schritt)
+      \item \[ w_1:= \FuncIntRoot(2,m) \] (siehe \ref{AlgIntRoot}) Dies 
+            erfordert
+            \[ 2 \] Schritte und \[ m \] Prozessoren.
+      \item W"ahle ein \[ x \in \Nat; x \geq 2 \] Die Analyse des Einflu"ses
+            von $x$ auf die Anzahl der Schritte und Prozessoren erfolgt 
+            weiter unten. Zur Vereinfachung wird angenommen, da"s $x$ 
+            gerade ist.
+            \[ w_2 := \FuncIntRoot(x,m) \] (siehe \ref{AlgIntRoot}) 
+            Erforderlich sind \[ 1 + \lceil \log(x) \rceil \] Schritte und 
+            \[ m \frac{x}{2} \] Prozessoren.
+      \item \label{Berk84Satz3Lab1}
+            \[ Y_i:= \FunkPrafix(\WortMatMult,
+                         \underbrace{r, \ldots, r
+                         }_{\mbox{ $w_2$ mal }})
+            \]
+            $M$ ist eine $m \times m$-Matrix. Eine parallele Multiplikation
+            zweier solcher Matrizen erfordert \[ 1 + \log(m) \] Schritte und
+            \[ \frac{n^3}{2} \] Prozessoren. Somit erfordert der
+            Pr"afixalgorithmus (vgl. Satz \ref{SatzLadnerFischer}) hier
+            \[ \log(m) + \log^2 (m) \] Schritte und
+            \[ \frac{m^4}{4} \] Prozessoren.
+
+            W"ahle als neues $r$ (f"ur den n"achsten Schleifendurchlauf) das
+            Element von $Y_i$ mit dem maximalen Exponenten, d. h. also
+            \[ r:= \underbrace{r * r * \ldots * r
+                   }_{\mbox{ $w_2$ mal }}
+            \] 
+            wobei $*$ hier die Matrizenmultiplikation bezeichnet. Dies
+            ist nur die neue Bezeichnung f"ur etwas, das schon berechnet
+            wurde, und erfordert keinen weiteren Schritt.
+
+            Entferne das gerade gew"ahlte $r$ aus $Y_i$.
+
+            \ref{Berk84Satz3Lab1} wird \[ \frac{x}{2} \] mal durchlaufen,
+            wie in \ref{Berk84Satz3Lab5} erkl"art wird. "Uber alle 
+            Durchl"aufe betrachtet erfordert \ref{Berk84Satz3Lab1}
+            \[ \frac{x}{2} (\log(m) + \log^2 (m)) \] Schritte und
+            \[ \frac{m^4}{4} \] Prozessoren.
+      \item \label{Berk84Satz3Lab5}
+            $Y_i$ ist an dieser Stelle (vgl.
+            \pageref{AlgPrafixLab1}) eine Liste von Matrizen. Aus dieser
+            Liste
+            $Y_i$ und aus $Z_{i-1}$ wird $Z_i$ berechnet.
+            Dazu wird angenommen, da"s zun"achst gilt
+            \[ Z_i = Z_{i-1} \] Die Berechnung des entg"ultigen
+            Werts von $Z_i$ wird wie folgt durchgef"uhrt:
+            \begin{equation}
+            \label{Berk84Equ10}
+                \forall x \in Y_i: \forall y \in Z_{i-1}:
+                    Z_i := Z_i \circ \FunkMatMult(y,x)
+            \end{equation}
+            $\circ$ bezeichnet hier die Konkatenationsoperation f"ur Listen.
+
+            An dieser Stelle ist eine besondere Bedingung zu beachten.
+            Ziel des Algorithmusteils ist es, mit einem $Z_i$ zu enden,
+            das \[ w_1 \] Elemente enth"alt. Deshalb
+            wird angenommen, da"s \equref{Berk84Equ10} so ausgewertet wird,
+            da"s zuerst das erste Element von $Y_i$ mit allen Elementen
+            von $Z_{i-1}$ verkn"upft wird, dann das zweite Element von $Y_i$
+            mit allen Elementen von $Z_{i-1}$ usw. . Sobald $Z_i$ $w_1$
+            Elemente enth"alt, wird die Berechnung abgebrochen. Da die 
+            Berechnung nicht sequentiell, wie hier angenommen, sondern 
+            parallel erfolgt, werden alle Ergebnisse berechnet und nur
+            die ben"otigten beachtet.
+
+            Beim Abbruch enth"alt $Z_i$ die Elemente
+            \[ R, RM, RM^2, \ldots, RM^{w_1-1} \]
+            Also ist das n"achste noch unbenutzte Element von $Y_i$ die
+            Matrix \[ M^{w_1} \] Falls es kein weiteres Element in $Y_i$
+            gibt, enth"alt $r$ diese Matrix. F"ur den Algorithmusteil
+            \ref{Berk84Satz3Lab3} wird diese Matrix mit $r_2$ bezeichnet.
+
+            Die Anzahl der Schritte und Prozessoren zur Berechnung von
+            \equref{Berk84Equ10} h"angt von $Y_i$ und $Z_{i-1}$ ab.
+            \begin{itemize}
+            \item Die Elemente von $Y_i$ sind $m \times m$-Matrizen. Ihre
+                  Anzahl betr"agt \[ w_2^i - 1 \]
+            \item Die Elemente von $Z_{i-1}$ sind Vektoren der L"ange
+                  $m$. Ihre Anzahl betr"agt \[ w_2^{i-1} \]
+            \end{itemize}
+            Die Multiplikation einer $1 \times m$-Matrix (d. h. eines
+            Vektors) mit einer $m \times m$-Matrix erfordert
+            \[ 1 + \log(m) \]
+            Schritte und \[ \frac{m^2}{2} \] Prozessoren. Die Berechnung von
+            \equref{Berk84Equ10} erfordert also \[ 1 + \log(m) \] Schritte
+            und
+            \begin{equation}
+            \label{Berk84Equ14}
+               \frac{  (w_2^i - 1)
+                       w_2^{i-1}
+                       m^2
+                    }{2}
+            \end{equation}
+            Prozessoren.
+
+            Entscheident f"ur die Anzahl der Schritte und Prozessoren ist
+            Frage, wie oft dieser Algorithmusteil durchlaufen wird, bzw.
+            welchen Wert $i$ beim letzten Durchlauf besitzt. Es gilt
+            \[ w_1 = m^{1/2} \] und \[ w_2 = m^{1/x} \] Nach der $i$-ten
+            Abarbeitung dieses Algorithmusschritts enth"alt $Z_i$ (au"ser
+            im letzten Durchlauf, wegen vorherigem Abbruch)
+            \[ \prod_{j=1}^i \lceil m^{1/x} \rceil \] Elemente. 
+            Der Abbruch erfolgt, wenn 
+            \[ \lceil m^{1/2} \rceil \leq
+               \prod_{j=1}^i \lceil m^{1/x} \rceil
+            \]
+            Also erfolgen
+            \begin{equation}
+            \label{Berk84Equ12}
+                \left\lceil  \frac{\frac{1}{2}}{\frac{1}{x}} \right\rceil
+            \end{equation} Durchl"aufe. Man kann somit in
+            \equref{Berk84Equ14} \[ w_2 \] durch \[ \lceil m^{1/x} \rceil \]
+            und \[ i \] mit \equref{Berk84Equ12} durch \[ \frac{x}{2} \]
+            ersetzen und erh"alt
+            \[
+               \frac{  ((m^{1/x})^{x/2} - 1)
+                       (m^{1/x})^{x/2 -1}
+                       m^2
+                    }{2}
+            \]
+            Durch Absch"atzung wird daraus
+            \[ \frac{ m^{1/2} m^{1/2} m^2 }{2} \]
+            Insgesamt "uber alle Durchl"aufe gesehen erfordert die
+            Abarbeitung von \ref{Berk84Satz3Lab1}
+            \[ \frac{x}{2}(1 + \log(m)) \] Schritte und weniger
+            als \[ \frac{m^3}{2} \] Prozessoren.
+      \item \[ i:= i + 1 \] Da $i$ nur als Index fungiert, wird
+            dieser Schritt nicht gez"ahlt.
+      \item Falls \[ U_{i-1} \] aus weniger als
+            \[ w_1 \] Vektoren besteht, setze bei
+            \ref{Berk84Satz3Lab1} fort.
+            Dies ist nur eine Schleifenbedingung und wird deshalb ebenfalls
+            nicht als Schritt gez"ahlt.
+
+            Falls nicht verzweigt wurde, ist das zuletzt berechnete
+            \[ Z_{i-1} \] die gesuchte Menge (bzw. Liste) $U$.
+      \end{enumerate}
+      In den obigen Termen f"ur die Kosten der Berechnungen erkennt man
+      h"aufig den Faktor \[ \frac{x}{2} \] Dabei ist $x$ eine gerade 
+      nat"urliche Zahl gr"o"ser oder gleich $2$. Dieser Faktor wird minimal,
+      wenn man \[ x=2 \] w"ahlt.
+      
+      Beim Vergleich der Anzahlen der Prozessoren erkennt man, da"s
+      \ref{Berk84Satz3Lab1} \[\frac{m^4}{4} \] Prozessoren ben"otigt und
+      \ref{Berk84Satz3Lab1} \[ \frac{m^3}{2} \] Prozessoren. F"ur
+      \[ m \geq 2 \] gilt \[ \frac{m^4}{4} \geq \frac{m^3}{2} \]
+
+      Insgesamt ben"otigt die Abarbeitung von \ref{Berk84Satz3Lab2} also
+      \[ 2 \log(m) + \log^2(m) + 5 \] Schritte und \[ \frac{m^4}{4} \]
+      Prozessoren.
+    \item \label{Berk84Satz3Lab3} Teil \ref{Berk84Satz3Lab3} verl"auft
+          analog zum Teil \ref{Berk84Satz3Lab2} und wird deshalb etwas
+          verk"urzt dargestellt:
+      \begin{enumerate} % $$$$ kein Vorteil bei Parallelit"at
+      \item \[ Z_0:= S; i:= 1 ; r:= r_2 \] (Initialisierung: kein Schritt)
+      \item \label{Berk84Satz3Lab6}
+            \[ Y_i:= \FunkPrafix(\WortMatMult,
+                         \underbrace{r, \ldots, r
+                         }_{\mbox{ $w_2$ mal }}
+            \] Dies erfordert (vgl. \ref{Berk84Satz3Lab1})
+            \[ \log(m) + \log^2 (m) \] Schritte und
+            \[ \frac{m^4}{4} \] Prozessoren.
+
+            W"ahle als neues $r$ das
+            Element von $Y_i$ mit dem maximalen Exponenten, d. h. also
+            \[ r:= \underbrace{r * r * \ldots * r
+                   }_{\mbox{ $w_2$ mal }}
+            \]
+            Entferne das gerade gew"ahlte $r$ aus $Y_i$.
+
+            "Uber alle 
+            Durchl"aufe betrachtet erfordert \ref{Berk84Satz3Lab6}
+            \[ \frac{x}{2} (\log(m) + \log^2 (m)) \] Schritte und
+            \[ \frac{m^4}{4} \] Prozessoren.
+      \item \label{Berk84Satz3Lab7}
+            Es gelte zun"achst
+            \[ Z_i = Z_{i-1} \]
+            (Initialisierung: kein Schritt, keine Prozessoren)
+            
+            Berechne
+            \begin{equation}
+            \label{Berk84Equ15}
+                \forall x \in Y_i: \forall y \in Z_{i-1}:
+                    Z_i := Z_i \circ \FunkMatMult(x,y)
+            \end{equation}
+            Es
+            wird angenommen, da"s \equref{Berk84Equ15} so ausgewertet wird,
+            da"s zuerst das erste Element von $Y_i$ mit allen Elementen
+            von $Z_{i-1}$ verkn"upft wird, dann das zweite Element von $Y_i$
+            mit allen Elementen von $Z_{i-1}$ usw. . Sobald $Z_i$ $w_1$
+            Elemente enth"alt, wird die Berechnung abgebrochen. Da die 
+            Bearbeitung parallel erfolgt, werden alle Ergebnisse berechnet
+            und nur die ben"otigten beachtet.
+
+            Bei der Betrachtung der Definitionsgleichung \ref{Berk84Equ17}
+            der Menge $U$ f"allt auf, da"s bei nicht ganzzahligem 
+            \[ \sqrt(m) \] der Abbruch bei \[ w_1 -1 \] Elementen in $Z_i$
+            erfolgen m"u"ste. Dies wird hier zur Vereinfachung 
+            vernachl"assigt, was keinen Einfl"u"s auf die Effizienz des
+            Algorithmus hat.
+
+            Insgesamt "uber alle Durchl"aufe gesehen erfordert die
+            Abarbeitung von \ref{Berk84Satz3Lab6}
+            \[ \frac{x}{2}(1 + \log(m)) \] Schritte und weniger
+            als \[ \frac{m^3}{2} \] Prozessoren 
+            (vgl. \ref{Berk84Satz3Lab1}).
+      \item \[ i:= i + 1 \] Da $i$ nur als Index fungiert, wird
+            dieser Schritt nicht gez"ahlt.
+      \item Falls \[ U_{i-1} \] aus weniger als
+            \[ w_1 \] Vektoren besteht, setze bei
+            \ref{Berk84Satz3Lab6} fort.
+            Dies ist nur eine Schleifenbedingung und wird deshalb ebenfalls
+            nicht als Schritt gez"ahlt.
+
+            Falls nicht verzweigt wurde, ist das zuletzt berechnete
+            \[ Z_{i-1} \] die gesuchte Menge (bzw. Liste) $V$.
+      \end{enumerate}
+
+      Insgesamt ben"otigt die Abarbeitung von \ref{Berk84Satz3Lab2}
+      \[ 2 \log(m) + \log^2(m) + 1\] Schritte und \[ \frac{m^4}{4} \]
+      Prozessoren.
+    \item \label{Berk84Satz3Lab4} % Teil \ref{Berk84Satz3Lab4}
+      Aus den in \ref{Berk84Satz3Lab2} und \ref{Berk84Satz3Lab3} berechneten
+      Mengen $U$ und $V$ wird nun die gesuchte Menge $T$ berechnet.
+      \begin{enumerate}
+      \item $T$ sei eine leere Liste (Initialisierung: kein Schritt, keine
+            Prozessoren).
+      \item Berechne
+            \begin{equation}
+            \label{Berk84Equ18}
+               \forall y \in V: \forall x \in U: 
+                   T := T \circ \FunkMatMult(x,y)
+            \end{equation}
+            Es wird wiederum angenommen, da"s Ergebnisse der 
+            Multiplikationen der $x$ und $y$ miteinander in folgender
+            Reihenfolge beachtet werden:
+            zuerst die Multiplikationen des ersten Elementes von $V$ mit
+            allen Elementen von $U$, dann die Multiplikationen des
+            zweiten Elementes von $V$ mit allen Elementen von $U$ usw. .
+            Die Ergebnisse werden so beachtet, da"s $T$ anschlie"send 
+            \[ m + 1 \] Elemente enth"alt. Alle weiteren Ergebnisse werden
+            nicht beachtet (wohl aber berechnet, da alles parallel 
+            geschieht). 
+            
+            Sowohl $U$ als auch $V$ enthalten $w_1$ (s. o.) Elemente. Jedes
+            Element ist ein Vektor der L"ange $m$. Eine Skalarmultiplikation
+            zweier Vektoren miteinander erfordert 
+            \[ 1 + \lceil \log(m) \rceil \] Schritte und 
+            \[ \lceil \frac{m}{2} \rceil \] Prozessoren.
+            Es sind \[ \lceil \sqrt{m} \rceil^2 \] Multiplikationen 
+            n"otig. Also sind insgesamt 
+            \[ 1 + \lceil \log(m) \rceil \] Schritte und
+            \[ \lceil \frac{m}{2} \rceil \lceil \sqrt{m} \rceil^2 \]
+            Prozessoren zur Berechnung von \equref{Berk84Equ18} 
+            erforderlich.
+      \item $T$ ist das Endergebnis des Algorithmus.
+      \end{enumerate}
+    Insgesamt ben"otigt der Algorithmus 
+    \[ 7 + 5 \log(m) + 2 \log^2(m) \] Schritte und \[ \frac{m^4}{4} \] 
+    Prozessoren.
+    \end{enumerate}
+
+    Zu beachten ist, da"s die parallele Abarbeitung von 
+    \ref{Berk84Satz3Lab2} und \ref{Berk84Satz3Lab3} keinen 
+    Geschwindigkeitsvorteil liefern w"urde, da der Wert f"ur $r_2$, der 
+    in \ref{Berk84Satz3Lab2} als zus"atzliches Ergebnis anf"allt, in 
+    \ref{Berk84Satz3Lab3} zuerst berechnet werden m"u"ste, was auch nicht
+    schneller m"oglich w"are, als dies in \ref{Berk84Satz3Lab2} geschieht.
+\end{beweis}
+
+
+\begin{lemma}
+\label{Berk84Satz4}
+% $$$ Claim 4
+    Sei $A$ eine $n \times m$-Matrix und $B$ eine $m \times p$-Matrix. Beide
+    seien untere Dreiecks-Toeplitz-Matrizen (vgl. Definitionen
+    \ref{Berk84Def3} und \ref{Berk84Def4}). F"ur die Matrix $C$ gelte
+    \[ C = A * B \]
+    Dann ist $C$ ebenfalls eine untere Dreiecks-Toeplitz-Matrix.
+    Sie kann in \[ 1 + \lceil \log(m) \rceil \] Schritten von
+    \[ \left(
+           \min(n,p) * \max(n-p,0) + \frac{\min(n,p) * (\min(n,p)+1)}{2}
+       \right) * m
+    \] Prozessoren berechnet werden.
+% $$$$ hier Anzahlen von Schritten und Prozessoren pr"ufen
+\end{lemma}
+\begin{beweis}
+    Es sind drei Eigenschaften von $C$ zu zeigen:
+    \begin{enumerate}
+        \item $C$ ist eine untere Dreiecksmatrix.
+        \item $C$ ist eine Toeplitz-Matrix.
+        \item $C$ kann mit dem oben angegebenen Aufwand an Schritten und
+              Prozessoren berechnet werden.
+    \end{enumerate}
+    Dies geschieht in drei entsprechenden Beweisschritten. Dazu ist zu
+    beachten, da"s die einzelnen Elemente von $C$ nach der Gleichung f"ur
+    die Matrizenmultiplikation berechnet werden:
+    \begin{equation}
+    \label{Berk84Equ4}
+        c_{i,j}= \sum_{k=1}^m a_{i,k} b_{k,j}
+    \end{equation}
+    Nun die einzelnen Beweisschritte:
+    \begin{itemize}
+        \item
+            Um zu beweisen, da"s $C$ ebenfalls eine untere Dreiecksmatrix
+            darstellt, ist zu zeigen
+            \[ i < j \Rightarrow c_{i,j} = 0 \]
+            Dies erfolgt durch Fallunterscheidung anhand des Index $k$ in
+            Gleichung \equref{Berk84Equ4}. Es gibt zwei F"alle:
+            \begin{itemize}
+                \item[ $i < k$ ]
+                    Da $A$ nach Voraussetzung eine untere Dreiecksmatrix
+                    ist und somit
+                    \[ i < j \Rightarrow a_{i,j} = 0 \]
+                    gilt, folgt sofort
+                    \[ a_{i,k} = 0 \]
+                    wodurch der entsprechende Summand in Gleichung
+                    \equref{Berk84Equ4} zu $0$ wird.
+                \item[ $i \geq k$ ]
+                    Nach Voraussetzung gilt \[ i < j \] da f"ur die
+                    Elemente oberhalb der Hauptdiagonalen von $C$ zu zeigen
+                    ist, da"s sie gleich $0$ sind. Daraus folgt aber
+                    \[ k < j \]
+                    Nach Voraussetzung ist $B$ ebenfalls eine untere
+                    Dreiecksmatrix und es gilt somit
+                    \[ i < j \Rightarrow b_{i,j} = 0 \]
+                    Daraus folgt \[ b_{k,j} = 0 \] wodurch wiederum der
+                    entsprechende Summand in Gleichung \equref{Berk84Equ4}
+                    zu $0$ wird.
+            \end{itemize}
+            In beiden F"allen sind die betrachteten Summanden von Gleichung
+            \equref{Berk84Equ4} gleich $0$. Also ist dann auch
+            \[ c_{i,j} = 0 \]
+            was zu zeigen war.
+        \item
+            Damit $C$ eine Toeplitz-Matrix ist, mu"s gelten
+            \[ c_{i,j} = c_{i+1,j+1} \]
+            Mit Hilfe der Summenformel \equref{Berk84Equ4} ausgedr"uckt
+            bedeutet dies
+            \begin{equation}
+            \label{Berk84Equ5}
+                 \sum_{k=1}^m a_{i,k} b_{k,j}
+               = \sum_{l=1}^m a_{i+1,l} b_{l,j+1}
+            \end{equation}
+            Da $C$ eine untere Dreiecksmatrix ist, wie oben bewiesen wurde,
+            m"ussen nur \[ c_{i,j} \] betrachtet werden, f"ur die gilt
+            \[ i \geq j \]
+            Man kann Fallunterscheidungen anhand der Indizes $k$ und $l$
+            durchf"uhren. Es gibt f"ur jeden Index drei F"alle, also
+            insgesamt sechs:
+            \begin{itemize}
+                \item[ $k>i$ ]
+                    Da $A$ nach Voraussetzung eine untere Dreiecksmatrix
+                    ist, gilt in diesem Fall \[ a_{i,k}= 0 \] und der
+                    entsprechende Summand wird zu $0$.
+                \item[ $j>k$ ]
+                    Da $B$ nach Voraussetzung ebenfalls eine untere
+                    Dreiecksmatrix ist, gilt in diesem Fall 
+                    \[ b_{k,j} = 0 \]
+                    und der entsprechende Summand wird zu $0$.
+                \item[ $i \geq k \geq j$ ]
+                    Nur in diesem Fall ergibt sich auf der linken Seite
+                    von Gleichung \equref{Berk84Equ5} f"ur den jeweiligen
+                    Summand ein von $0$ verschiedener Wert. Deshalb kann man
+                    die linke Seite dieser Gleichung auch schreiben als
+                    \[ \sum_{k=j}^i a_{i,k} b_{k,j} \]
+                \item[ $l>i+1$ ]
+                    In diesem Fall gilt, da $A$ eine obere Dreiecksmatrix
+                    ist, \[ a_{i+1,l} = 0 \] Der entsprechende Summand der
+                    Summe in Gleichung \equref{Berk84Equ5} wird somit zu
+                    $0$ und mu"s nicht l"anger betrachtet werden.
+                \item[ $j+1>l$ ]
+                    In diesem Fall gilt \[ b_{l,j+1} = 0 \] da $B$ eine
+                    obere Dreiecksmatrix ist und der entsprechende Summand
+                    in Gleichung \equref{Berk84Equ5} mu"s nicht l"anger
+                    betrachtet werden.
+                \item[ $i+1 \geq l \geq j+1$ ]
+                    Nur in diesem Fall ergibt sich auf der rechten Seite
+                    von Gleichung \equref{Berk84Equ5} ein von $0$
+                    verschiedener Wert f"ur den entsprechenden Summanden.
+                    Man kann also die rechte Seite dieser Gleichung auch
+                    schreiben als
+                    \[ \sum_{l=j+1}^{i+1} a_{i+1,l} b_{l,j+1} \]
+            \end{itemize}
+            Nach der Betrachtung dieser sechs F"alle reduziert sich
+            Gleichung \equref{Berk84Equ5} also, falls man nur die von
+            $0$ verschiedenen Summanden betrachtet, auf die Form
+            \[ \sum_{k=j}^i a_{i,k} b_{k,j} =
+               \sum_{l=j+1}^{i+1} a_{i+1,l} b_{l,j+1}
+            \]
+            Anders geschrieben hat diese Gleichung die Form
+            \begin{eqnarray*}
+            &   a_{i,j} b_{j,j} + a_{i,j+1} b_{j+1,j} + a_{i,j+2} b_{j+2,j}
+                + \ldots + a_{i,i} b_{i,j} 
+            & = \\
+            &   a_{i+1,j+1} b_{j+1,j+1} + a_{i+1,j+2} b_{j+2,j+1} +
+                a_{i+1,j+3} b_{j+3,j+1} + \ldots + a_{i+1,i+1} b_{i+1,j+1}
+            &
+            \end{eqnarray*}
+            Da $A$ und $B$ Toeplitz-Matrizen sind, haben die beiden
+            Seiten dieser Gleichung den gleichen Wert, was zu beweisen war.
+        \item
+            Um einen Wert $ c_{i,j} $ mit Hilfe von Gleichung
+            \equref{Berk84Equ4} zu berechnen, ben"otigt man einen Schritt
+            und $m$ Prozessoren f"ur die Multiplikationen der Faktoren in
+            den einzelnen Summanden und anschlie"send
+            \[ \lceil \log(m) \rceil \] Schritte f"ur parallele Addition
+            der $m$ Werte.
+
+            Die maximale Anzahl der von $0$ verschiedenen Werte bei einer
+            $n \times p$-Matrix, die $C$ ja darstellt, betr"agt
+            \[ \min(n,p) * \max(n-p,0) + \frac{\min(n,p) * (\min(n,p)+1)}{2}
+            \]
+            Wird dieser Wert mit $z$ bezeichnet, ben"otigt man insgesamt
+            \[ z * m \] Prozessoren und \[ 1 + \lceil \log(m) \rceil \]
+            Schritte. Mit Hilfe von Gr"o"senordnungen ausgedr"uckt,
+            ben"otigt man \[ O(\max^3(n,m,p)) \] Prozessoren und
+            \[ O(\log(m) \] Schritte.
+    \end{itemize}
+\end{beweis}
+
+
+%*************************
+\MySubSection{Algorithmus}
+\label{Sub3Berk84}
+%*************************
+
+%\begin{lemma}
+%\label{Berk84Satz6}
+% $$$ Theorem 5
+
+%\end{lemma}
+%\begin{beweis}
+%\end{beweis}
+
+\begin{satz}
+\label{Berk84Satz5}
+% $$$ Algorithmus
+    Die Determinante der Matrix $A$ l"a"st sich in \[ x \] Schritten
+    von \[ x \] Prozessoren berechen. % $$$$
+\end{satz}
+\begin{beweis}
+    Die Matrix $C_t$ wird definiert als untere Dreiecks-Toeplitz-Matrix der
+    Gr"o"se $(n-t+1) \times (n-t)$. Ihre Elemente werden definiert durch
+    \[ (c_t)_{i,j} := 
+           \left\{
+               \begin{array}{lcr}
+                   -1                             & : & i=1 
+                \\ a_{t+1,t+1}                & : & i=2
+                \\ -R_{t+1} M_{t+1}^{i-3} S_{t+1} & : & i>2
+               \end{array}
+           \right.
+    \]
+    Die Matrix hat also das folgende Aussehen:
+    \[
+        \left[ \begin{array}{cccc}
+            -1              & 0              & \cdots & \MatStrut
+        \\  a_{t+1,t+1}     & -1             & 0      & \cdots \MatStrut
+        \\  R_{t+1}S_{t+1}  & a_{t+1,t+1}    & \ddots & \ddots \MatStrut
+        \\  R_{t+1}M_{t+1}S_{t+1} & R_{t+1}S_{t+1} & \ddots & \MatStrut
+        \\  \vdots          & \ddots & \ddots & \MatStrut
+        \\  R_{t+1}M_{t+1}^{n-2}S_{t+1} & & & \MatStrut
+        \end{array} \right]
+    \]
+    F"ur die Koeffizienten der 
+    charateristischen Polynome $p$ der Matrix $A$ und $q$ der
+    Matrix $M$ (vgl. Definition \ref{Berk84Def1}) gilt:
+    \begin{equation}
+    \label{Berk84Equ19}
+       \left[ \begin{array}{c}
+           p_n \\
+           p_{n-1} \\
+           \vdots \\
+           p_0
+       \end{array} \right]
+       =
+       C_0
+       \left[ \begin{array}{c}
+           q_{n-1} \\
+           q_{n-2} \\
+           \vdots \\
+           q_0
+       \end{array} \right]
+    \end{equation}
+    denn Gleichung \equref{Berk84Equ20} aus Satz \ref{Berk84Satz2a} l"a"st
+    sich umformulieren in
+    \[
+        \sum_{i=1}^n p_i \lambda^i =
+            (a_{1,1} - \lambda) * \sum_{i=1}^{n-1} q_i \lambda^i
+            + R * \left(
+              \sum_{k=0}^{n-2} \lambda^{k} \sum_{l=k+1}^{n-1} M^{l-k-1} q_l
+            \right) * S
+    \]
+    Vergleicht man die Koeffizienten der $\lambda^i$ auf beiden Seiten
+    der Gleichung erh"alt man
+    \begin{eqnarray*}
+        p_n     & = & -q_{n-1}
+    \\  p_{n-1} & = & a_{1,1}q_{n-1} - q_{n-2}
+    \\  \forall i=n-2 \ldots 0 : p_i & = & 
+            a_{1,1}q_i-q_{i-1}+\sum_{j=i+1}^{n-1}RM^{j-i-1}S q_i
+    \end{eqnarray*}
+    was in Matrizenschreibweise in Gleichung \equref{Berk84Equ19} 
+    ausgedr"uckt ist.
+
+    Man kann auf die gleiche Weise wie in Gleichung \equref{Berk84Equ19}
+    allgemein die Koeffizienten der charakteristischen Polynome der Matrizen
+    $M_i$ und $M_{i+1}$ (vgl. Definition \ref{Berk84Def1}) betrachten und 
+    erh"alt
+    \begin{equation}
+    \label{Berk84Equ23}
+       \left[ \begin{array}{c}
+           p_n \\
+           p_{n-1} \\
+           \vdots \\
+           p_0
+       \end{array} \right]
+       =
+       \prod_{i=0}{n-1} C_i
+    \end{equation}
+    Um die Koeffizienten von $p$ zu berechnen m"ussen f"ur die Matrizen
+    $C_0$ bis $C_{n-2}$ die Elemente neu berechnet werden, da $C_{n-1}$ 
+    nur $-1$ und $a_{n,n}$ enth"alt. Dazu wird Satz \ref{Berk84Satz3} 
+    benutzt.
+    Bei der Berechnung der Elemente der Matrix $C_i$ gilt f"ur
+    das $m$ aus diesem Satz \[ m = n-(i+1) \] Die Berechnungen werden
+    f"ur alle Matrizen parallel durchgef"uhrt. Also ben"otigt diese
+    Berechnung
+    \[
+        (7 + 5 \log(n-1) + 2 \log^2(n-1)
+    \]
+    Schritte und 
+    \begin{equation}
+    \label{Berk84Equ21}
+        2 + \sum_{m=1}^{n-2} \frac{m^4}{4}
+    \end{equation}
+    Es gilt (\cite{Sieb80} Seite 7)
+    \begin{equation}
+    \label{Berk84Equ22}
+        \sum_{k=1}^n k^4 = \frac{1}{30}n(n+1)(2n+1)(3n^2+3n-1)
+    \end{equation}
+    wendet man Gleichung \equref{Berk84Equ22} auf Term \equref{Berk84Equ21}
+    an, erh"alt man f"ur die Anzahl 
+    der Prozessoren
+    \[
+        \frac{6n^5-39n^4+94n^3-104n^2+53n+230}{120}
+    \]
+    
+    Um die Determinante der Matrix A zu erhalten, ist es jetzt noch
+    erforderlich $p_0$ in Gleichung \equref{Berk84Equ23} mit Hilfe des
+    Ladner-Fischer-Pr"afixalgorithmus zu berechnen. Das geschieht durch
+    Multiplikation der Matrizen $C_i$. Den gr"o"sten Aufwand erfordert
+    die Multiplikation der $(n+1)\times n$-Matrix $C_0$ mit der
+    $n \times (n-1)$-Matrix $C_1$. Dies erfordert    
+    \[
+        \lceil \log(n+1) \rceil + 1 
+    \]
+    Schritte und
+    \[
+        n^3+n^2
+    \]
+    Prozessoren. Der Pr"afixalgorithmus mit einer assoziativen Verkn"upfung,
+    die nur einen Schritt und einen Prozessor erfordert, ben"otigt
+    \[ \lceil \log(n) \rceil \]
+    Schritte und 
+    \[ \left\lfloor \frac{n}{2} \right\rfloor \] 
+    Prozessoren. Die Anwendung des Pr"afixalgorithmus auf die Matrizen
+    $C_i$ erfordert also maximal
+    \[ (\lceil \log(n+1) \rceil + 1) * \lceil \log(n) \rceil
+    \]
+    Schritte und
+    \[ \frac{n^4+n^3}{2} \]
+    Prozessoren. Nimmt man den Aufwand zur Berechnung der $C_i$ und ihrer
+    Multiplikation zusammen und sch"atzt ihn nach oben ab, erh"alt 
+    man
+    \[
+        7 + 6 \log(n+2) + 3 \log^2(n+2)
+    \]
+    Schritte und
+    \[
+        \frac{6n^5+21n^4+94n^3-104n^2+53n+230}{120}
+    \] Prozessoren.
+\end{beweis}
+

@@ -1,0 +1,90 @@
+%
+% Datei: anhang.tex (Listings)
+%
+\begin{appendix}
+\sloppy
+\thispagestyle{empty}
+\vspace*{6cm}
+\begin{center}
+   \LARGE
+   Algorithmen zur parallelen Determinantenberechnung \\[1cm]
+   \Large
+   Holger Burbach \\[1cm]
+   Oktober 1992 \\[1.5cm]
+   \LARGE Anhang (Quelltexte)
+\end{center}
+
+\MyChapter{Implementierung der parallelen Determinantenberechnung}
+\label{ChapImplDet}
+
+In diesem Kapitel sind alle Module gesammelt, denen das vorrangige
+Interesse der Implementierung gilt.
+
+\input{listings/main.m}
+\input{listings/det.d}
+\input{listings/det.i}
+\input{listings/pram.d}
+\input{listings/pram.i}
+\input{listings/algtest.m}
+
+% **************************************************************************
+
+\MyChapter{Unterst"utzungsmodule}
+\label{ChapSupport}
+
+In diesem Kapitel sind alle Module alphabetisch sortiert gesammelt,
+denen nicht das Hauptinteresse der Implementierung gilt, die jedoch zur
+Implementierung der Module in Kapitel \ref{ChapImplDet} erforderlich
+sind.
+
+\input{listings/cali.d}
+\input{listings/cali.i}
+\input{listings/data.d}
+\input{listings/data.i}
+\input{listings/frag.d}
+\input{listings/frag.i}
+\input{listings/func.d}
+\input{listings/func.i}
+\input{listings/hash.d}
+\input{listings/hash.i}
+\input{listings/inli.d}
+\input{listings/inli.i}
+\input{listings/list.d}
+\input{listings/list.i}
+\input{listings/mali.d}
+\input{listings/mali.i}
+\input{listings/mat.d}
+\input{listings/mat.i}
+\input{listings/reli.d}
+\input{listings/reli.i}
+\input{listings/rema.d}
+\input{listings/rema.i}
+\input{listings/rnd.d}
+\input{listings/rnd.i}
+\input{listings/simptype.d}
+\input{listings/simptype.i}
+\input{listings/str.d}
+\input{listings/str.i}
+\input{listings/sys.d}
+\input{listings/sys.i}
+\input{listings/sysmath.d}
+\input{listings/sysmath.i}
+\input{listings/type.d}
+\input{listings/type.i}
+
+%***************************************************************************
+
+\MyChapter{Testprogramme}
+\label{ChapTest}
+
+In diesem Kapitel sind alle Programmodule gesammelt, die zum Test von
+Teilen der Gesamtimplementierung erforderlich sind.
+
+\input{listings/listtest.m}
+\input{listings/pramtest.m}
+\input{listings/rndtest.m}
+\input{listings/strtest.m}
+\input{listings/typetest.m}
+
+\end{appendix}
+

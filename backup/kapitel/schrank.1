@@ -1,0 +1,86 @@
+%%\begin{lemma}
+%%\label{Csan76Satz5}
+%%    Sei A eine invertierbare $ n \times n $-Matrix. Seien
+%%    $ \lambda_1 ,\ldots ,\lambda_n $ die Eigenwerte von A. Dann gilt: 
+%%    \begin{displaymath}
+%%        \forall 1 \leq k \leq n:
+%%            \sum_{i=1}^n \lambda_i^k = \tr(A^k)
+%%    \end{displaymath}
+%%\end{lemma}
+%%\begin{beweis}
+%%Dieses Lemma soll als Grundlage aus der Linearen Algebra ohne Beweis
+%%bleiben (siehe z. B. \cite{Rao65} oder \cite{MM64}).
+% rg A = n <-> A invertierbar (Wegner (6.17))
+% A besitzt n verschiedene Eigenwerte -> A diagonalisierbar (Wegner (10.7))
+% A und CAC^{-1} besitzen dieselben Eigenwerte (Wegner (10.2))
+
+% $$$ w"unschenswert: genauer Beweis (nicht zu lang)
+%%\end{beweis}
+
+\begin{lemma}
+\label{Csan76Satz6}
+Sei $ s_k := \tr(A^k) $.
+Betrachte das Gleichungssystem
+\begin{displaymath}
+    \left[
+    \begin{array}{cccccc}
+        1      & 0      & \cdots &        &         & 0       \MatStrut \\
+        s_1    & 2      & 0      & \cdots &         & \vdots  \MatStrut \\
+        s_2    & s_1    & 3      & 0      & \cdots  &         \MatStrut \\
+        s_3    & s_2    & s_1    & 4      & \ddots  &         \MatStrut \\
+        \vdots & \vdots & \vdots & \ddots & \ddots  & 0       \MatStrut \\
+        s_{n-1}& s_{n-2}& s_{n-3}& \cdots &  s_1    & n       \MatStrut \\
+    \end{array}
+    \right]
+    \left[
+    \begin{array}{c}
+        c_1    \MatStrut \\
+        c_2    \MatStrut \\
+        c_3    \MatStrut \\
+        c_4    \MatStrut \\
+        \vdots \MatStrut \\
+        c_n    \MatStrut \\
+    \end{array}
+    \right]
+    = - 
+    \left[
+    \begin{array}{c}
+        s_1    \MatStrut \\
+        s_2    \MatStrut \\
+        s_3    \MatStrut \\
+        s_4    \MatStrut \\
+        \vdots \MatStrut \\
+        s_n    \MatStrut \\
+    \end{array}
+    \right]
+\end{displaymath}
+in Matrizenschreibweise: $ {S}c =-s $ .\\
+Falls $ c_n \neq 0 $, dann ist A invertierbar und es gilt:
+\begin{displaymath}
+    A^{-1}= - \frac{ A^{n-1}+c_1A^{n-2}+\cdots+c_{n-1}E }{ c_n }
+\end{displaymath}
+\end{lemma}
+\begin{beweis}
+% $$$$ hier Hinweis auf Textstelle 'Leverrier'
+Diese Formeln beschreiben das Verfahren von Leverrier zur Berechnung der 
+Koeffizienten des charakteristischen Polynoms einer Matrix mit der 
+Modifikation von D. K. Faddejew \cite{FF63} (S. 317), mit 
+deren Hilfe man u. a. die Inverse einer Matrix berechnen kann.
+
+% $$$$ Fortsetzung hier
+(Fortsetzung in Arbeit) 
+\end{beweis}
+
+\begin{lemma}
+\label{Csan76Satz7}
+    Eine Dreieckmatrix l"a"st sich in $\log^2(n)+{O}(\log(n))$ 
+    (parallelen !) Schritten invertieren.
+\end{lemma}
+\begin{beweis}
+    Verfahren zur L"osung dieses Problems wurden von D. Heller \cite{Hell73}
+    und L. Csanky \cite{Csan74} unabh"angig voneinander entwickelt.
+    
+% $$$$ Fortsetzung hier
+(Fortsetzung in Arbeit)
+\end{beweis}
+

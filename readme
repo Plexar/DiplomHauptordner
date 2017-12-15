@@ -1,0 +1,57 @@
+
+Dieses Verzeichnis enthaelt diverse Dateien fÅr die Diplomarbeit mit dem 
+Thema 'Algorithmen zur parallelen Determinanten-Berechnung'.
+
+****************************************************************************
+
+Vorgehen um aus den Dateien des Verzeichnisses die aktuelle Version
+der Diplomarbeit als DVI-Datei ( main.dvi' ) zu erstellen
+(als Shell-Kommandos; das vorliegende Verzeichnis sei das aktuelle) :
+
+# ggf. zuerst:  Pfade in  'bin\mod2list.mup'  korrekt einstellen
+bin\mod2list
+glatex main
+bibtex main
+makeindx main
+glatex main
+glatex main
+
+# gesamte "Ubersetzungszeit auf ATARI MEGA ST: ca. 1 h 45'
+
+****************************************************************************
+
+Kurzbeschreibung der Dateien des Verzeichnisses und ihrer Bedeutung:
+
+Datei        ! Bedeutung
+-------------!--------------------------------------------------------------
+*.tex         Diplomarbeit, geschrieben in TeX;
+              Hauptdatei (beim Uebersetzen anzugeben) ist 'main.tex'
+
+diplom.bib    fuer die Diplomarbeit verwendete Literaturstellen im
+              BiBTeX-Format
+
+backup        Verzeichnis mit Textteilen, die nicht Bestandteil der 
+              Diplomarbeit sind, jedoch evtl. noch brauchbar sein koennten
+
+basic         Verzeichnis mit Basic-Programmen, die im Laufe der 
+              Bearbeitung des Themas entstanden sind
+              
+bilder        Verzeichnis mit Bildern, die im Text der Diplomarbeit
+              verwendet werden (mit TeXDraw erstellt)
+              
+bin           Shell-Scripts und Programme zur Bearbeitung der Diplomarbeit
+              (z. B. Verpacken aller Daten in ein ZOO-Archiv     oder
+                     Erstellung der fuer TeX verstaendlichen Version 
+                     der Modula-2 Quelltexte )
+                     
+form          Verzeichnis mit FORM-Programmen zur Bearbeitung diverser
+              mathematischer Probleme, die waehrend der Bearbeitung der
+              Diplomarbeit aufgetreten sind
+              
+listings      Verzeichnis mit fuer TeX verstaendlichen Versionen der 
+              Quelltexte im Verzeichnis  'modula2'
+
+modula2       Verzeichnis mit Quelltexten der mit MEGAMAX-Modula-2 
+              geschriebenen Programme fuer die Diplomarbeit
+              
+

@@ -1,0 +1,114 @@
+\indexentry{Berechnungsmodell}{8}
+\indexentry{PRAM}{8}
+\indexentry{CRCW}{8}
+\indexentry{Modellrechner}{8}
+\indexentry{Bezeichnungen!nat{\Myu}rliche Zahlen}{9}
+\indexentry{Bezeichnungen!Schritt}{9}
+\indexentry{Zeitkomplexit{\Mya}t}{9}
+\indexentry{Parallelisierungsgrad}{9}
+\indexentry{Bezeichnungen!Indizierung}{9}
+\indexentry{Einheitsmatrix}{9}
+\indexentry{Nullmatrix}{9}
+\indexentry{Permutation}{9}
+\indexentry{Pr{\Mya}fixproblem}{10}
+\indexentry{Algorithmus!Pr{\Mya}fixproblem}{11}
+\indexentry{Algorithmus!parallele Grundrechenarten}{14}
+\indexentry{Algorithmus!parallele Matrizenmultiplikation}{14}
+\indexentry{invertierbar}{17}
+\indexentry{Transponierte}{17}
+\indexentry{Spur}{18}
+\indexentry{Permutation}{18}
+\indexentry{Inversion}{18}
+\indexentry{Signatur einer Permutation}{18}
+\indexentry{Determinante!Definition}{19}
+\indexentry{Zeilenoperationen!elementare}{19}
+\indexentry{Spaltenoperationen!elementare}{19}
+\indexentry{Rang}{20}
+\indexentry{Spaltenrang}{20}
+\indexentry{Zeilenrang}{20}
+\indexentry{Rang}{21}
+\indexentry{Gleichungssystem}{22}
+\indexentry{Unterraum}{22}
+\indexentry{Kern!einer linearen Abbildung}{23}
+\indexentry{Gleichungssystem!homogenes}{24}
+\indexentry{Gleichungssystem!inhomogenes}{24}
+\indexentry{Polynom!charakteristisches}{25}
+\indexentry{Gleichung!charakteristische}{25}
+\indexentry{Matrizendarstellung!des charakteristischen Polynoms}{25}
+\indexentry{Matrix!charakteristische}{26}
+\indexentry{Koeffizientendarstellung}{26}
+\indexentry{Eigenwert}{26}
+\indexentry{Eigenvektor}{26}
+\indexentry{Rangabfall}{26}
+\indexentry{Stirling'sche Ungleichungen}{27}
+\indexentry{Laplace!Entwicklungssatz von}{28}
+\indexentry{Zeilenentwicklung}{30}
+\indexentry{Spaltenentwicklung}{30}
+\indexentry{Entwicklung! nach einer Zeile oder Spalte}{30}
+\indexentry{Divide and Conquer}{30}
+\indexentry{Csanky!Algorithmus von}{30}
+\indexentry{Algorithmus!von Csanky}{30}
+\indexentry{Linearfaktorendarstellung}{32}
+\indexentry{Vielfachheit}{32}
+\indexentry{Polynomdivsion}{34}
+\indexentry{Differenzierung!von Produkten}{35}
+\indexentry{Newton!Gleichungen von}{36}
+\indexentry{Adjunkte}{37}
+\indexentry{Leverrier!Methode von}{38}
+\indexentry{Frame!Satz von}{40}
+\indexentry{Algorithmus!von Csanky}{40}
+\indexentry{Csanky!Algorithmus von}{40}
+\indexentry{Spuroperator}{41}
+\indexentry{Gau{\Mys}s'sches Eliminationsverfahren}{45}
+\indexentry{Dreiecksmatrix}{45}
+\indexentry{Zeilenoperationen!elementare}{45}
+\indexentry{Einheit!in einem Ring}{46}
+\indexentry{Ring!{\Myu}ber {\mit M}}{46}
+\indexentry{Potenzreihenring!{\Myu}ber {\mit M}}{46}
+\indexentry{homogene Komponente}{47}
+\indexentry{konstanter Term}{47}
+\indexentry{Taylor!Satz von}{47}
+\indexentry{Konvergenzradius}{47}
+\indexentry{Konvergenzbereich}{47}
+\indexentry{Kroneckersymbol}{49}
+\indexentry{Programm "uber R[]}{53}
+\indexentry{Toepliz-Matrizen}{65}
+\indexentry{Toepliz-Matrizen!Multiplikation von}{65}
+\indexentry{Cayley und Hamilton!Satz von}{70}
+\indexentry{Samuelson!Satz von}{72}
+\indexentry{Berkowitz!Algorithmus von}{72}
+\indexentry{Algorithmus!von Berkowitz}{72}
+\indexentry{konkav}{78}
+\indexentry{Linearkombination}{83}
+\indexentry{linear unabh{\Mya}ngig}{84}
+\indexentry{linear abh{\Mya}ngig}{84}
+\indexentry{Basis}{84}
+\indexentry{Dimension}{84}
+\indexentry{kanonische Basis}{84}
+\indexentry{Diagonalmatrix}{86}
+\indexentry{diagonalisierbar}{86}
+\indexentry{Eigenraum}{86}
+\indexentry{direkte Summe}{87}
+\indexentry{Minimalpolynom}{87}
+\indexentry{Minimumgleichung}{87}
+\indexentry{Minimumgleichung}{87}
+\indexentry{Krylov!Methode von}{91}
+\indexentry{Norm!eines Vektors}{94}
+\indexentry{H{\Myo}ldernorm}{94}
+\indexentry{p-Norm}{94}
+\indexentry{Norm!einer Matrix}{95}
+\indexentry{Matrixnorm}{95}
+\indexentry{Operatornorm}{95}
+\indexentry{Matrixnorm!induzierte}{95}
+\indexentry{Matrixnorm!nat{\Myu}rliche}{95}
+\indexentry{Norm!nat{\Myu}rliche}{95}
+\indexentry{Spektralradius}{96}
+\indexentry{Inverse!einer Matrix}{96}
+\indexentry{Matrizeninvertierung}{96}
+\indexentry{N{\Mya}herungsinverse}{96}
+\indexentry{symmetrisch}{96}
+\indexentry{Matrix!symmetrische}{96}
+\indexentry{Iterationsverfahren}{98}
+\indexentry{Matrizeninvertierung}{98}
+\indexentry{Inverse!einer Matrix}{98}
+\indexentry{Newton!Iterationsverfahren von}{98}

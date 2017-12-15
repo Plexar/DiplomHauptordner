@@ -1,0 +1,7 @@
+
+Dieses Verzeichnis enthaelt verschiedene Shell-Scripts und Programme 
+zur Bearbeitung der Dateien, aus denen die Diplomarbeit besteht.
+
+'grep.m' enthaelt eine Version von GREP, die zur Benutzung in Verbindung
+mit 'mod2list' ausreichend ist. Sie benutzt verschiedene Module aus 
+dem Verzeichnis 'modula2'.

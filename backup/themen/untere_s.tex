@@ -1,0 +1,217 @@
+ Fehler in diesem Textteil nicht behoben !
+
+\MySection{Determinantenberechnung durch L"osung verwandter Probleme}
+
+Determinanten werden bei verschiedenen Verfahren dadurch berechnet, da"s
+ein verwandtes Problem gel"ost wird, um dann aus dem
+erhaltenen Ergebnis die Determinante zu gewinnen. In diesem Unterkapitel
+wird untersucht, auf welche Weise die Probleme $G$, $I$ und $P$ zur
+Determinantenberechnung verwendet werden k"onnen.
+
+Sei $C$ ein Problem der Gr"o"se $n$
+und $A$ ein Algorithmus zur L"osung dieses Problems.
+Dann wird die parallele Zeitkomplexit"at des Algorithmus mit
+\[ s_{C,A}(n) \] bezeichnet und sein Parallelisierungsgrad mit
+\[ p_{C,A}(n) \] Wenn der Bezug auf den Algorithmus aus dem Zusammenhang
+hervorgeht, oder der Algorithmus unbestimmt ist, werden
+\[ s_C(n) \] bzw. \[ p_C(n) \] benutzt.
+
+Um die "Ubersichtlichkeit zu erh"ohen und Verweise zu erleichtern, erfolgt
+die Formulierung der uns interessierenden Aspekte in Form mathematischer
+S"atze.
+
+In der benutzten Schreibweise f"ur Anzahlen von Schritten und
+Prozessoren tauchen keine Verweise auf Algorithmen auf. Die Ausdr"ucke auf
+den linken Seiten der Gleichungen beziehen jeweils auf den Algorithmus, der
+im Beweis zum jeweiligen Satz angegeben wird. Bei den Ausdr"ucken auf den
+rechten Seiten der Gleichungen wird f"ur das jeweilige Problem $C$
+angenommen, da"s es einen Algorithmus gibt, der $C$ in $s_C(n)$ Schritten
+bei einem Parallelisierungsgrad von $p_C(n)$ l"o"st.
+
+\begin{korollar}
+\label{SatzDdurchP}
+\index{Determinante} \index{charakteristisches Polynom}
+    \begin{eqnarray*}
+        s_D(n) & = & s_P(n)
+    \\  p_D(n) & = & p_P(n)
+    \end{eqnarray*}
+\end{korollar}
+\begin{beweis}
+    Wenn \[ p(\lambda) \] das charakteristische Polynom der Matrix $A$ ist,
+    gilt \[ \det(A) = p(0) \] Dies wird bei Betrachtung der Definition des
+    charakteristischen Polynoms \ref{DefCharPoly} deutlich.
+\end{beweis}
+
+Der folgende Satz liefert zwar ein f"ur uns unbefriedigendes Ergebnis, da
+die L"osung linearer Gleichungssysteme zur Determinantenberechnung in
+enger Beziehung steht \footnote{Literatur dazu ist in
+Unterkapitel \ref{SecMatUndDet}) aufgelistet}, wird er hier trotzdem
+angegeben.
+
+\begin{satz}
+\label{SatzDdurchG}
+\index{Determinante} \index{lineares Gleichungssystem}
+    \begin{eqnarray*}
+        s_D(n)= O(s_G(n))
+    \\  p_D(n)= O(n! * p_G(n))
+    \end{eqnarray*}
+\end{satz}
+\begin{beweis}
+    Zur Berechnung der Determinante wird Satz \ref{SatzCramer} benutzt.
+    Da die Effizienz dieser Methode zu gering ist bez"uglich der
+    Anzahl der besch"aftigten Prozessoren, wird der Beweis nur
+    angedeutet.
+
+    Setzt man \[ b= E_{|1} \] in Gleichung \equref{Equ1SatzCramer} ein,
+    so erh"alt man:
+    \begin{equation}
+    \label{Equ1SatzDdurchG}
+        x_i = \frac{ \det(A_{(1|i)}) }{ \det(A) }
+    \end{equation}
+    Mit Hilfe einiger Grundlagen "uber lineare Gleichungssysteme
+    (z. B. \cite{MM64} ab Seite 30) kann man folgende Aussagen
+    "uber Gleichung \equref{Equ1SatzDdurchG} machen:
+    \begin{itemize}
+    \item Da $A$ invertierbar sein soll, besitzt das
+          inhomogene Gleichungssystem \equref{Equ1SatzCramer} eine
+          nichttriviale L"osung (d. h. $x$ ist nicht der Nullvektor).
+    \item Das bedeutet, da"s es ein $i$ gibt, so f"ur Gleichung
+          \equref{Equ1SatzDdurchG} gilt \[ x_i \neq 0 \]
+    \item Das bedeutet wiederum, da"s es ein $i$ gibt, so da"s
+          \[ \det(A_{(1|i)}) \neq 0 \MyKomma \]
+          da ja $A$ invertierbar und somit
+          \[ \det(A) \neq 0 \]
+          ist.
+    \item Dies schlie"slich bedeutet, da"s die erw"ahnte Matrix
+          $A_{(1|i)}$ ebenfalls invertierbar ist.
+    \item Ein Problem ist es, da"s die Aussage nur {\em es gibt
+          ein $i$} lautet und
+          keinerlei Annahmen "uber die Gestalt der Matrix gemacht
+          werden k"onnen, so da"s zus"atzlicher Aufwand n"otig ist,
+          um das $i$ zu bestimmen. An dieser Stelle ist der Algorithmus
+          erheblich verbesserungsf"ahig, da er alle M"oglichkeiten f"ur $i$
+          ausprobiert, was von exponentiell vielen Prozessoren
+          bewerkstelligt wird.
+    \end{itemize}
+    Man betrachtet nun ein Gleichungssystem, dessen
+    Koeffizientenmatrix durch diese Matrix $A_{(1|i)}$ gebildet wird,
+    behandelt es ebenso und erh"alt so eine Untermatrix
+    $(A_{ (1|i)_{(1|k)} }$ f"ur ein geeignetes $k$, deren Determinante
+    wiederum ungleich $0$ ist.
+
+    Setzt man die Betrachtung in dieser Weise fort, erh"alt man
+    $n-1$ Untermatrizen von $A$
+    \[ \det(A_{(1,\ldots,i|k_1,\ldots,k_i)}) \neq 0 \]
+    wobei $i$ die Werte von $1$ bis $n-1$ annimmt und die $k_i$
+    Werte zwischen $1$ und $n$. Dabei gilt:
+    \begin{itemize}
+    \item Jede der Matrizen ist eine Untermatrix der n"achst
+          gr"o"seren Matrix. Die Untermatrix wurde durch Streichen
+          der ersten Zeile und einer geeigneten Spalte gewonnen.
+    \item Jeder der Matrizen entspricht ein Wert $\dot{x}_i$,
+          der aus der
+          jeweiligen Gleichung \equref{Equ1SatzDdurchG}
+          entsprechenden Gleichung berechnet wurde.
+    \end{itemize}
+    Berechnet man das Produkt der $ \dot{x}_i $,
+    erh"alt man nach Vereinfachung die Gleichung:
+    \[
+        \prod_{i=1}^{n-1} \dot{x}_i =
+            \frac{ \det( {A}_{ ( 1,\ldots,n-1|k_1,\ldots,k_{n-1}
+                               )
+                             }
+                       )
+                 }{
+                   \det( {A}_{(|)} ) }
+    \]
+    Diese Gleichung ist "aquivalent zu:
+    \begin{equation}
+    \label{Equ2SatzDdurchG}
+        \det(A)=
+            \frac{ {a}_{nj} }{
+                   \prod_{k=1}^{n-1} \dot{x}_k }
+    \end{equation}
+    Wobei gilt:
+    \[ \{j\}= \{ 1,\ldots,n \} \setminus \{ k_1,\ldots,k_{n-1} \} \]
+
+    Um nach Gleichung \equref{Equ2SatzDdurchG} die Determinante zu
+    berechnen, sind also zur Auswertung der rechten Seite die
+    Gleichungssysteme zur Berechnung der $\dot{x}_k$ zu l"osen.
+
+    Die beschriebene Vorgehensweise zur Berechnung der Determinante
+    hat, wie bereits erw"ahnt, den Nachteil, da"s der Wert von
+    $i$ in Gleichung \equref{Equ1SatzDdurchG} nicht im voraus bekannt
+    ist. Sobald die Determinante berechnet ist, entspricht ihr im
+    obigen Verfahren eine Folge $v$ von Zahlen mit
+    \[ v = (f(1),f(2),\ldots,f(n-1)) \]
+    f"ur ein \[ f \in \permut_n \]
+    Diese Zahlenfolge $v$ gibt die Untermatrizen von $A$ an, die
+    als Koeffizientenmatrizen f"ur Gleichungssysteme benutzt
+    wurden. Es sind die Matrizen
+    \[ A_{(1,\ldots,i)|f(1),\ldots,f(i))} \]
+    wobei $i$ die Werte von $1$ bis $n-1$ annimmt. Da
+    $\permut_n$ $n!$ viele Elemente enth"alt, f"uhrt das ganze zu dem
+    angegebenen Aufwand an Schritten und Prozessoren.
+\end{beweis}
+
+\begin{satz}
+\label{SatzGdurchI}
+\index{lineares Gleichungssystem}
+\index{Inverse!einer Matrix}
+    \begin{eqnarray*}
+        s_G(n) & = & O(s_I(n))
+    \\  p_G(n) & = & O(\max(p_I(n),n^2))
+    \end{eqnarray*}
+\end{satz}
+\begin{beweis}
+    Gegeben sei ein Gleichungssystem von $n$ Gleichungen mit $n$
+    Unbekannten. In Matrizenschreibweise:
+    \begin{equation}
+    \label{EquNGleiNUnbek}
+        Ax=b
+    \end{equation}
+    Dabei ist
+    $A$ die Koeffizientenmatrix, $x$ der Vektor
+    der $n$ Unbekannten und
+    $b$ der Vektor der $n$ Konstanten auf den rechten Seite der
+    Gleichungen.
+    Zuerst wird $A$ in $s_I(n)$ Schritten von $p_I(n)$ Prozessoren
+    invertiert, wodurch \equref{EquNGleiNUnbek} die Form
+    \[ x=A^{-1}b \] bekommt. Als Folgerung aus \ref{SatzAlgMatMult}
+    kann die Multiplikation von $A^{-1}$ mit $b$ in
+    \[ \lceil \log(n) \rceil + 1 \] Schritten von \[ n^2 \] Prozessoren
+    durchgef"uhrt werden, da $b$ nur ein Vektor der L"ange $n$ und keine
+    $n \times n$-Matrix ist. Es werden insgesamt
+    \[ s_I(n) + \lceil \log(n) \rceil + 1 \] Schritte ben"otigt. Mit
+    Satz \ref{SatzUntereSchranke} folgt die Behauptung.
+\end{beweis}
+
+\begin{korollar}
+\label{SatzDdurchI}
+\index{Determinante} \index{Inverse!einer Matrix}
+    \begin{eqnarray*}
+        s_D(n) & = & O(s_I(n))
+    \\  p_D(n) & = & O(n! * p_I(n))
+    \end{eqnarray*}
+\end{korollar}
+\begin{beweis}
+    Die Behauptung folgt aus \ref{SatzDdurchG} und \ref{SatzGdurchI}.
+\end{beweis}
+
+Die vorangegangenen S"atze liefern insbesondere folgende Ergebnisse:
+\begin{itemize}
+\item
+      Nach \ref{SatzDdurchP} ist die L"osung von $D$ mit Hilfe eines
+      Algorithmus f"ur $P$ eine wichtige M"oglichkeit.
+\item
+      Nach \ref{SatzGdurchI} ist die L"osung von $G$ mit Hilfe eines
+      Algorithmus f"ur $I$ ebenfalls eine bemerkenswerte M"oglichkeit.
+      Da uns die Berechnung von Determinanten interessiert, ist sie
+      f"ur uns jedoch nur indirekt, d. h. in Verbindung mit weiteren
+      Algorithmen, von Bedeutung.
+\item
+      Da nach \ref{SatzDdurchG} die L"osung von $D$ mit Hilfe der L"osung
+      von $G$ in der beschriebenen Weise exponentiell viele Prozessoren
+      besch"aftigt, ist diese M"oglichkeit f"ur uns nicht von Interesse.
+\end{itemize}
+

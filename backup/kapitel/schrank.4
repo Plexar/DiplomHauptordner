@@ -1,0 +1,1292 @@
+
+% ACHTUNG: Dieser Textteil wurde schon abgegeben. Die erforderlichen 
+%          Aenderungen sind noch NICHT vorgenommen
+
+% 
+% Datei: schrank.tex
+% Datum: 04.07.91
+% 
+% Datei zur Erzeugung des Textteils 'Berechnung in K"orpern'
+% 
+%
+%%
+% Hauptprobleme: 
+% -    \cal S_n enth"alt n! Elemente (D mit Hilfe von G verbessern)
+% -    Koeffizienten aus den Nullstellen 1,...,n berechnen
+% -    Gaus'sche Elimination zur Determinantenberechnung
+%%
+% $$$$ Erkl"arende Texte zwischen S"atzen und Def. "uberarbeiten
+% $$$$ \ref's "uberpr"ufen (an Hand eines Ausdrucks)
+% Fortsetzung bei $$$$$
+%%
+\MyChapter{Berechnung in K"orpern}
+\label{SectionSchrank}
+
+% Frage: Ein oder zwei Algorithmen in diesem Kapitel (aus Csan76) ???
+% Antwort: zwei (evtl. drei)
+
+\MySection{Beziehungen zu verwandten Problemen}
+
+\begin{lemma}
+\label{Csan76Satz1}
+% $$$ Frage: w"are \in statt = nicht richtiger in folgender Zeile
+    $ D(n),I(n),G(n),P(n) = \Omega(\log(n)) $
+\end{lemma}
+\begin{beweis}
+    Die L"osungen der Probleme $D$, $I$, $G$ und $P$ f"ur eine 
+    eine $n \times n$-Matrix ${A}$ h"angt von allen 
+    $n^2$ Matrixelementen ab. Der k"urzeste Weg zur Berechnung eines Wertes,
+    in den alle $n^2$ Werte eingehen, sieht folgenderma"sen aus:
+    
+    Wenn man davon ausgeht, da"s in jedem Rechenschritt von einem 
+    Prozessor 2 Eingabewerte durch eine mathematische Operation (s. o.) 
+    verkn"upft werden und maximal viele paarweise verschiedene
+    Eingabewerte parallel verkn"upft werden um einen einzelnen Werte zu 
+    ergeben, in den alle Eingabewerte eingehen, k"onnte man z. B. zuerst
+    die Werte in den Zeilen von ${A}$ paarweise 
+    miteinander verkn"upfen, dann
+    paarweise die Ergebnisse dieser ersten Verkn"upfung usw. . Man erh"alt
+    $n$ Zwischenergebnisse in  \[ \lceil log(n) \rceil \] Schritten.
+
+    Diese Zwischenergebnisse kann man dann in der gleichen Weise in weiteren
+    \[ \lceil log(n) \rceil \] Schritten mit einander verkn"upfen und 
+    kommt so insgesamt
+    auf \[ 2 \lceil \log(n) \rceil \] Schritte.
+\end{beweis}
+
+\begin{lemma}
+\label{Csan76Satz9}
+     Sei n eine nat"urliche Zahl. Sei $I(n)$ bekannt.  Dann gilt
+     \begin{displaymath}
+         G(n)=O(I(n))
+     \end{displaymath}
+\end{lemma}
+\begin{beweis}
+            Ein Algorithmus f"ur ${I}$ kann wie folgt zur L"osung von ${G}$ 
+            benutzt werden:
+
+            Gegeben sei ein Gleichungssystem von $n$ Gleichungen mit $n$
+            Unbekannten. In Matrizenschreibweise: 
+            \begin{equation}
+            \label{Csan76Equ1}
+                {A}x=b
+            \end{equation}
+            Dabei ist
+            ${A}$ die Koeffizientenmatrix, $x$ der Vektor 
+            der $n$ Unbekannten und
+            $b$ der Vektor der $n$ Konstanten auf den rechten Seite der 
+            Gleichungen. $u$ sei eine Hilfsvariable (mit $0$ initialisiert).
+            \begin{enumerate}
+                \item
+                    \label{Csan76Satz3Lab2}
+                    In maximal 12 Schritten kann
+                    das Gleichungssystem \ref{Csan76Equ1} in die Form
+                    \begin{eqnarray*}
+                        \tilde{A}x & =  & \tilde{b} \\
+                        \tilde{b}  & := & E_{|1}
+                    \end{eqnarray*}
+                    gebracht werden:
+                    \begin{enumerate}
+                        \item
+                        \begin{sloppypar}
+                            \label{Csan76Satz3Lab6}
+% 1 Schritt (Summe: 1)
+                            Falls $ {b}_1 \neq 0 $, gehe zu
+                            Schritt \ref{Csan76Satz3Lab1}.\\
+                            (Verzweigung: ein Schritt) 
+                        \end{sloppypar}
+                        \item
+                        \begin{sloppypar}
+                            Parallel f"ur $ i=1 \ldots n $:
+                            \begin{enumerate}
+% 2 Schritte (Summe: 3)
+                                \item Falls $ b_i = 0 $, gehe zu 
+                                      Schritt \ref{Csan76Satz3Lab4}.
+                                      (Verzweigung: ein Schritt)
+                                \item $ u:= i$ An dieser Stelle wird eine
+                                      spezielle Eigenschaft des verwendeten
+                                      Parallelrechner-Modells gebraucht. 
+                                      Dieser
+                                      Befehl wird u. U. von mehreren 
+                                      Prozessoren 
+                                      gleichzeitig ausgef"uhrt, die somit 
+                                      alle 
+                                      schreibend auf $u$ zugreifen. Der 
+                                      Algorithmus
+                                      ist korrekt, unabh"angig davon, 
+                                      welcher Prozessor
+                                      seinen Schreibzugriff tats"achlich 
+                                      durchf"uhren darf.
+                                      (ein Schritt)
+                            \end{enumerate} \nopagebreak
+                            (insgesamt zwei Schritte)
+                        \end{sloppypar}
+                        \item
+                            \label{Csan76Satz3Lab4}
+% 1 Schritt (Summe: 4)
+                            Falls $ u = 0 $, gehe zum Programmende.
+                            In diesem Fall gilt 
+                            \begin{displaymath}
+                                \forall i=1 \ldots n: x_i = 0 
+                            \end{displaymath} \nopagebreak
+                            (Verzweigung: ein Schritt)
+                        \item
+                            An dieser Stelle lie"se sich die
+                            Zeilenvertauschung in den folgenden 3 Schritte
+                            ersparen, indem man die Zeile, f"ur die gilt 
+                            $b_u$ ungleich $0$, jeweils mit Hilfe von $u$ 
+                            als Index anspricht. Das w"urde jedoch keine 
+                            wesentliche Ersparnis bedeuten und die weiteren
+                            Betrachtungen unn"otig un"ubersichtlich 
+                            erscheinen lassen. Deshalb: \\
+                            Parallel f"ur $ j=1 \ldots n $:
+% durch die Zeilenvertauschung wird die Determinante von A invertiert;
+% da diese hier jedoch nicht berechnet wird (hier: G mit Hilfe von I),
+% ist dies ohne Bedeutung
+                            \begin{enumerate}
+% 3 Schritte (Summe: 7)
+                                \item $ h_j := a_{uj} $
+                                \item $ a_{uj} := a_{1j} $
+                                \item \label{Csan76Satz3Lab5}
+                                      $ a_{1j} := h_j $
+                            \end{enumerate}
+                                (insgesamt drei Schritte)
+                        \item
+                            \label{Csan76Satz3Lab1}
+% 1 Schritt (Summe: 8)
+                            $ \tilde{b}_1 := 1 $ (ein Schritt)
+                        \item
+% 1 Schritt (Summe: 9)
+                            Parallel f"ur $ j=1 \ldots n $: \\
+                            $ \tilde{a}_{1j} := {a}_{1j} / {b}_1 $
+                            (insgesamt ein Schritt)
+                        \item
+% 1 Schritt (Summe: 10)
+                            Parallel f"ur $ i=2 \ldots n $ und
+                            $ j=1 \ldots n $: \\
+                            $ \hat{a}_{ij}:= \tilde{a}_{1j} * b_j$
+                            (insgesamt ein Schritt)
+                        \item
+                            \label{Csan76Satz3Lab3}
+% 2 Schritte (Summe: 12)
+                            Parallel f"ur $ i=2 \ldots n $ und 
+                            $ j=1 \ldots n $: \\
+                            $ \tilde{b}_i := 0 $ und 
+                            $ \tilde{a}_{ij} := a_{ij} - \hat{a}_{ij} $
+                            (insgesamt zwei Schritte)
+                    \end{enumerate}
+                    Schritt \ref{Csan76Satz3Lab1} bis Schritt 
+                    \ref{Csan76Satz3Lab3} berechnen also:
+                    \begin{eqnarray*}
+                        \forall i=1 \ldots n: \tilde{b}_i          & := &
+                        \left\{
+                            \begin{array}{rcl}
+                                  1 & : & i = 1 \\
+                                  0 & : & \mbox{sonst} \\
+                            \end{array}
+                        \right.                                    \\
+                        \forall i=1 \ldots n: \forall j=1 \ldots n: 
+                            \tilde{a}_{ij}                         & := & 
+                        \left\{
+                            \begin{array}{rcl}
+                                \frac{a_{ij}}{b_1} & : & i=1 \\
+                                a_{ij}-\frac{a_{1j}}{b_1}*b_i & : & 
+                                        i=2 \ldots n \\
+                            \end{array}
+                        \right.
+                    \end{eqnarray*}
+                    Die Schritte \ref{Csan76Satz3Lab6} bis 
+                    \ref{Csan76Satz3Lab5} stellen sicher,
+                    da"s $b_1$ ungleich $0$ gilt. Wenn man von 
+                    vornherein davon
+                    ausgehen kann, da"s dies erf"ullt ist, werden
+                    bis zu dieser Stelle nur drei Schritte statt zw"olf
+                    ben"otigt.
+                \item
+                    Berechne $ \tilde{A}^{-1} $ ($I(n)$ Schritte)
+                \item
+                    An dieser Stelle sieht das Gleichungssystem in 
+                    Matrizenschreibweise so aus:
+                    \begin{displaymath}
+                        x = \tilde{A}^{-1} \tilde{b} 
+                    \end{displaymath} 
+                    Aufgrund der 
+                    besonderen Form von $ \tilde{b} $, die in den Schritten
+                    \ref{Csan76Satz3Lab2} erreicht wurde, gilt nun: 
+                    \begin{displaymath}
+                        x = \tilde{A}^{-1})_{|1}
+                    \end{displaymath}
+                    Diese Erkenntnis erfordert keinen weiteren Schritt.
+            \end{enumerate}
+            Also gilt: 
+            \begin{displaymath}
+                G(n) \leq I(n)+12
+            \end{displaymath}
+            Falls
+            \begin{displaymath}
+                b = \tilde{b} 
+            \end{displaymath}
+            kommt man sogar ohne weitere Schritte aus, und es gilt: 
+            \begin{displaymath}
+                G(n) \leq I(n)
+            \end{displaymath}
+\end{beweis}
+
+\begin{lemma}
+\label{Csan76Satz10}
+     Sei n eine nat"urliche Zahl. Sei $G(n)$ bekannt. Dann gilt:
+     \begin{displaymath}
+         D(n)=O(G(n) + \log(n))
+     \end{displaymath}
+\end{lemma}
+\begin{beweis}
+            Es ist zu zeigen, wie ein Algorithmus f"ur ${G}$ 
+            zur L"osung von ${D}$
+            verwendet werden kann, bei m"oglichst geringer paralleler
+            Zeitkomplexit"at des resultierenden Al\-go\-rith\-mus.
+            
+            Das Gleichungssystem 
+            \begin{equation}
+            \label{Csan76Satz10Equ3}
+                {A}x=b
+            \end{equation}
+            kann man, wie oben beschrieben,
+            dadurch l"osen, da"s man es in 
+            \begin{displaymath} 
+                x= {A}^{-1}b
+            \end{displaymath}
+            umformt und dann
+            $x$ einfach ausrechnet. Dieses Ausrechnen, mit Hilfe der
+            Cramer'schen Regel, w"urde folgenderma"sen aussehen:
+            \begin{equation}
+                \label{Csan76Satz10Equ1}
+                x_i = \underbrace
+                        {
+                          \frac{ 1 }{ \mbox{det}(A) }*
+                          \sum_{j=1}^n ((-1)^{i+j} \mbox{det}({A}_{ji})
+                        }_{\mbox{Zeile i von $ {A}^{-1} $} } 
+                        \mbox{\hspace{1ex}}b_j)
+            \end{equation}
+            Setzt man 
+            \begin{displaymath}
+                b= E_{|1}
+            \end{displaymath}
+            in Gleichung
+            \ref{Csan76Satz10Equ1} ein, so erh"alt man:
+            \begin{equation}
+            \label{Csan76Satz10Equ2}
+                x_i = \frac{ \det(A_{1i}) }{ \det(A) }
+            \end{equation}
+            Mit Hilfe einiger Grundlagen "uber lineare Gleichungssysteme
+            (z. B. \cite{MM64} ab Seite 30) kann man ein paar Aussagen
+            "uber Gleichung \ref{Csan76Satz10Equ2} machen:
+            \begin{itemize}
+            \item Da $A$ invertierbar sein soll, besitzt das
+                  inhomogene Gleichungssystem \ref{Csan76Satz10Equ3} eine
+                  nichttriviale (d. h. $x$ ist nicht der Nullvektor) 
+                  L"osung.
+            \item Das bedeutet, da"s es ein $i$ gibt, so da"s $x_i$ in 
+                  Gleichung \ref{Csan76Satz10Equ2} ungleich $0$ ist.
+            \item Das bedeutet wiederum, da"s es ein $i$ gibt, so da"s
+                  \begin{displaymath}
+                      \det(A_{1i})
+                  \end{displaymath}
+                  ungleich $0$ ist, da ja $A$ invertierbar ist und somit
+                  \begin{displaymath}
+                      \det(A)
+                  \end{displaymath}
+                  ungleich $0$ ist.
+            \item Dies schlie"slich bedeutet, da"s die erw"ahnte Matrix
+                  $A_{1i}$ ebenfalls invertierbar ist.
+            \item Ein Problem ist es, da"s die Aussage nur {\em es gibt 
+                  ein $i$} lautet und
+                  keinerlei Annahmen "uber die Gestalt der Matrix gemacht
+                  werden k"onnen, so da"s zus"atzlicher Aufwand n"otig ist,
+                  um das $i$ zu bestimmen. Dies wird weiter unten noch 
+                  angesprochen.
+            \end{itemize}
+
+            Man kann nun ein Gleichungssystem betrachten, dessen
+            Koeffizientenmatrix durch diese Matrix $A_1i$ gebildet wird und
+            es ebenso behandeln. Man st"o"st so auf eine Untermatrix 
+            $(A_1i)_1k$ f"ur ein geeignetes $k$, deren Determinante wiederum
+            ungleich 0 ist.
+
+            Setzt man die Betrachtung in dieser Weise fort, erh"alt man
+            eine $n-1$ Untermatrizen von $A$
+            \begin{displaymath}
+                \det(A_{(1,\ldots,i|k_1,\ldots,k_i)}) \neq 0
+            \end{displaymath}
+            wobei $i$ die Werte von $1$ bis $n-1$ annimmt und die $k_i$
+            Werte zwischen $1$ und $n$. Dabei gilt:
+            \begin{itemize}
+            \item Jede der Matrizen ist eine Untermatrix der n"achst 
+                  gr"o"seren Matrix. Die Untermatrix wurde durch streichen
+                  der ersten Zeile und einer geeigneten Spalte gewonnen.
+            \item Jeder der Matrizen entspricht ein Wert $\dot{x}_i$, 
+                  der aus der
+                  jeweiligen Gleichung \ref{Csan76Satz10Equ2}
+                  entsprechenden Gleichung berechnet wurde.
+            \end{itemize}
+            Berechnet man das Produkt der $ \dot{x}_i $,
+            erh"alt man nach Vereinfachung die Gleichung:
+            \begin{displaymath}
+                \prod_{i=1}^{n-1} \dot{x}_i =
+                    \frac{ \det( {A}_{ ( 1,\ldots,n-1|k_1,\ldots,k_{n-1} 
+                                       ) 
+                                     }
+                         }{
+                           \det( {A}_{(|)} ) }
+            \end{displaymath}
+            Diese Gleichung ist "aquivalent zu:
+            \begin{equation}
+                \label{Csan76Equ3}
+                \det(A)= 
+                    \frac{ {a}_{nj} }{ 
+                           \prod_{k=1}^{n-1} \dot{x}_k }
+            \end{equation}
+            Wobei gilt:
+            \begin{displaymath}
+                \{j\}= \{ 1,\ldots,n \} \setminus \{ k_1,\ldots,k_{n-1} \}
+            \end{displaymath}
+            Um $ \det(A) $ zu berechnen, mu"s man also die 
+            Gleichungssysteme zur Berechnung der $ \dot{x}_k $ l"osen und
+            anschlie"send den Wert des Terms auf der rechten Seite von 
+            Gleichung \ref{Csan76Equ3} berechnen.
+
+% $$$ Achtung: falls b (s. o.) anders gew"ahlt wird, stimmt die Aussage im
+%              n"achsten Absatz nicht!
+            Zu beachten ist hierbei, da"s die Gleichungssysteme Sonderf"alle
+            darstellen, die bereits in Lemma \ref{Csan76Satz9}
+            erw"ahnt wurden. Es gilt in den Gleichungssystemen 
+            jeweils:
+            \begin{displaymath} 
+                b = {E}_{|1}
+            \end{displaymath} 
+            Somit kann man das 
+            L"osen der Systeme auf das Invertieren der Matrizen $A$
+            beschr"anken.
+
+            Die beschriebene Vorgehensweise zur Berechnung der Determinante
+            hat, wie bereits angedeutet, den Nachteil, da"s der Wert von
+            $i$ in Gleichung \ref{Csan76Satz10Equ2} nicht im voraus bekannt
+            ist. Sobald die Determinante berechnet ist, entspricht ihr im
+            obigen Verfahren eine Folge $v$ von Zahlen mit 
+            \begin{displaymath}
+                v = (f(1),f(2),\ldots,f(n-1))
+            \end{displaymath}
+            f"ur ein 
+            \begin{displaymath}
+                f \in \permut_n
+            \end{displaymath}
+            Diese Zahlenfolge $v$ gibt die Untermatrizen von $A$ an, die
+            als Koeffizientenmatrizen f"ur Gleichungssysteme benutzt 
+            wurden. Es sind dies die Matrizen
+            \begin{displaymath}
+                A_{(1,\ldots,i)|f(1),\ldots,f(i))}
+            \end{displaymath}
+            wobei $i$ die Werte von $1$ bis $n-1$ annimmt. Leider enth"alt
+            $\permut_n$ $n!$ viele Elemente. 
+
+            All diese "Uberlegungen f"uhren zu folgendem
+            Algorithmus ($ \det({A}) $ sei zu berechnen, wobei 
+            ${A}$ und ${E}$ (Einheitsmatrix) $ n \times n $-Matrizen sind):
+            \begin{enumerate}
+                \item
+% $$$$ Bestimmung von f (ausprobieren) unbefriedigend
+                    Parallel f"ur alle $f$ aus $\permut_n$ und
+                    $ k= 1 \ldots n-1$: \\
+                    L"ose das Gleichungssystem 
+                    \begin{eqnarray*}
+                        {A}_{(1,\ldots,k|f(1),\ldots,f(k))} 
+                        x^{(k,f)} & = & b^{(k,f)}
+                    \\
+                        b^{(k,f)} & := &
+                                       ({E}_{(1,\ldots,k|1,\ldots,k)})_{|1} 
+                    \end{eqnarray*} \nopagebreak
+                    (insgesamt G(n) Schritte)
+                    \begin{displaymath}
+                        \dot{x}^(k,f):= x^{(k,f)}_{f(k)}
+                    \end{displaymath}
+                    (kein Schritt; nur Bezeichnung)
+
+                    Falls ${G}$ mit Hilfe von ${I}$ bearbeitet wird, 
+                    hei"st das: Invertiere
+                    \begin{eqnarray*}
+                        {A}_{(1,\ldots,k|f(1),\ldots,f(k))} \\
+                        f \in \permut_n \\
+                        k = 1, \ldots, n-1
+                    \end{eqnarray*}
+                    (I(n) Schritte)
+                    In diesem Fall gilt f"ur $ \dot{x}^{(k,f)} $:
+                    \begin{eqnarray*}
+                        \tilde{A}^{(k,f)} & := &
+                        {A}^{-1}_{(1,\ldots,k|f(1),\ldots,f(k))}
+                    \\
+                        \dot{x}^(k,f)     & := &
+                            \left\{
+                            \begin{array}{lcr}
+                                \tilde{a}_{1,f(1)}^{(k,f)} & : &
+                                    1 \leq k \leq n-1
+                            \\
+                                1                     & : & \mbox{sonst}
+                            \end{array}
+                            \right.
+                    \end{eqnarray*} \nopagebreak
+                    (kein Schritt; nur Bezeichnungen)
+                \item
+% $$$$ genauer spezifizieren: MultipliziereParallel
+% $$$$ Anzahl der Schritte f"ur 'MultipliziereParallel' eintragen
+                    Parallel f"ur $f \in \permut_n$:
+                    \begin{eqnarray*}
+                        \dot{x}^{(f)} & := &
+                        \mbox{MultipliziereParallel}
+                            (x^{(1,f)}_{f(1)}, \ldots, x^{(n-1,f)}_{f(n-1)})
+                    \\  k & = & 1,\ldots,n-1 
+                    \end{eqnarray*}
+                    Anzahl der Schritte: 
+                    \begin{displaymath}
+                        O(\log(n))
+                    \end{displaymath}
+                    Anzahl der Prozessoren:
+                    \begin{displaymath}
+                        n! * \frac{n}{2}
+                    \end{displaymath}                    
+                \item
+                    Parallel f"ur $f \in \permut_n$:
+                    \begin{displaymath}
+                        \hat{x}^{(f)}:= 
+                        \left\{
+                            \begin{array}{lcr}
+                                a_{n,f(n)} / \dot{x}^{(f)} & : & 
+                                                     \dot{x}^{(f)} \neq 0
+                            \\  0 & : & \mbox{sonst}
+                            \end{array}
+                        \right.
+                    \end{displaymath}
+                    Anzahl der Schritte: $ 2 $ \\
+                    Anzahl der Prozessoren $ n! $
+                \item
+                    \begin{displaymath}
+                        \det(A):= \mbox{FindeUngleichNullParallel}
+                                       (\hat{x}^{(\permut_n)}
+                    \end{displaymath}
+            \end{enumerate}
+            Also gilt:
+            \begin{displaymath}
+                {D}(n) \leq {G}(n)+ O(\log(n))
+            \end{displaymath}
+            bzw.
+            \begin{displaymath}
+               {D}(n) \leq {I}(n)+ O(\log(n))
+            \end{displaymath}
+            Anzahl der Prozessoren:
+            \begin{displaymath}
+                O(!n * \proc(G(n))
+            \end{displaymath}
+            bzw.
+            \begin{displaymath}
+                O(!n * \proc(I(n))
+            \end{displaymath}
+\end{beweis}
+
+\begin{lemma}
+\label{Csan76Satz11}
+    Sei $n$ eine nat"urliche Zahl. Sei $D(n)$ gegeben. Dann gilt:
+    \begin{displaymath}
+        P(n)=O(D(n) + \log(n))
+    \end{displaymath}
+\end{lemma}
+\begin{beweis}
+            Dieser Beweisteil w"urde bei genauer Ausf"uhrung relativ viel
+            Platz beanspruchen, ist jedoch hier nur von untergeordneter 
+            Bedeutung. Deshalb erfolgen Darstellung und Analyse nur
+            skizzenhaft. Zur Anzahl der Prozessoren, die maximal 
+            besch"aftigt werden k"onnen, sei nur gesagt, da"s es 
+            polynomiell viele sind.
+
+            Vor der Beschreibung, wie ein Algorithmus zur 
+            L"osung von ${D}$ f"ur
+            die L"osung von ${P}$ verwendet werden kann, zun"achst noch
+            einige Anforderungen an die Eingabe, die f"ur die
+            Anwendung der Schnellen Fouriertransformation (\cite{Wege89} 
+            (Kapitel 3.11) und \cite{Elli82} (ins Besondere Kapitel 4))
+            vorteilhaft sind:
+            \begin{itemize}
+                \item F"ur die $n \times n$-Matrix ${A}$ mu"s gelten, da"s 
+                      $n+1$ eine Zweierpotenz ist. Falls dies nicht 
+                      erf"ullt ist, wird ${A}$ durch die 
+                      $ n' \times n' $-Matrix $A'$ ersetzt, wobei gilt:
+                      \begin{eqnarray*}
+                          n'      & := & 2^{\lceil \log(n) \rceil}-1
+                       \\ a'_{ij} & := &
+                               \left\{ 
+                               \begin{array}{rcl}
+                                0      & : &  i \neq j \wedge 
+                                                       (i>n \vee j>n) \\
+                                1      & : &  i=j \wedge i>n \\
+                                a_{ij} & : & \mbox{sonst}
+                               \end{array}
+                               \right.
+                      \end{eqnarray*}
+                \item Es sei angenommen, da"s der Modellrechner alle 
+                      arithmetischen Operationen modulo einer beliebigen
+                      Zahl $m$ aus $ \Nat $ durchf"uhrt. Falls dies
+                      nicht der Fall ist, mu"s die Anzahl der arithmetischen
+                      Operationen im Algorithmus mit dem Faktor 2 
+                      multipliziert werden, weil dann jeweils eine 
+                      Modulo-Operation zus"atzlich durchgef"uhrt 
+                      werden mu"s.
+                      Es sei weiterhin angenommen, da"s diese Zahl m 
+                      nachtr"aglich festgelegt werden kann. Sie werde 
+                      bestimmt nach der Formel 
+                      \begin{displaymath}
+                          m:= w^{(n'+1)/2}+1 
+                      \end{displaymath} 
+                      w mu"s 
+                      als Bestandteil der Eingabe so gew"ahlt sein, da"s die
+                      Ausgabe des Algorithmuses leicht interpretiert werden
+                      kann. m kann dann in $\log(n'/2)+1$ Schritten 
+                      berechnet
+                      werden. Nach dessen Berechnung sollen alle weiteren
+                      Berechnungen nur noch modulo m durch\-ge\-f"uhrt werden.
+            \end{itemize}
+            Der Algorithmus f"ur ${D}$ wird benutzt, um 
+            das charakteristische
+            Polynom $g'$ von $A'$ an bestimmten Stellen
+            auszuwerten ohne seine
+            Koeffizientendarstellung zu kennen und so die diskrete 
+            Fouriertransformierte zu berechnen. 
+            Durch die spezielle Wahl von $m$ gilt in $\Integers_m$: 
+
+            $w$ ist $(n'+1)$-te Einheitswurzel und $w$ und $n'$ 
+            haben multiplikative Inverse. Deshalb existiert die Inverse
+            der diskreten Fouriertransformierten. Sie ist identisch mit 
+            $g'$ in Koeffizientendarstellung und wird mit Hilfe der 
+            Schnellen Fouriertransformation berechnet.
+            \begin{enumerate}
+                \item Berechne m aus $n'$ und w ($O(\log(n'))$ Schritte).
+                \item Berechne aus w alle $w^i$ mit $i=0 \ldots n'$
+                        ($O(\log(n'))$ Schritte).
+                \item $A'_i:= A' - E * w^i$ mit 
+                        $i=0 \ldots n'-1$ (ein Schritt).
+                \item $d_i:= \det(A'_i)$ mit $i=0 \ldots n'$ 
+                        ($D(n)$ Schritte))
+                \item Berechne die multiplikativen Inversen $w^{-1}$ und
+                      $n'^{-1}$ von w und $n'$ ($O(\log(w+n'))$ Schritte).
+                      Wenn man w als fest gew"ahlt 
+                      betrachtet, erfordert die Berechnung 
+                      $O(\log(n'))$ Schritte.
+                \item Betrachte die $d_i$ als diskrete 
+                      Fouriertransformierte und berechne ihre 
+                      Inverse \\ ($O(\log(n))$ Schritte).
+                      Das Ergebnis ist
+                      das charakteristische Polynom $g'$ von $A'$ in
+                      Koeffizientendarstellung.
+                \item Durch die spezielle Form von $A'$ gilt: 
+                      \begin{itemize}
+                        \item 1 ist $(n'-n)$-fache Nullstelle von $g'$.
+                        \item $g'$ ist ohne Rest durch $(1-x)^{(n'-n)}$
+                              teilbar.
+                      \end{itemize}
+                      Falls $n'$ ungleich $n$ sein sollte, erh"alt man 
+                      mit Hilfe einer modifizierten Version des 
+                      Euklidischen Algorithmuses zur Berechnung des ggT
+                      in $O(\log(n))$ Schritten $g$ aus $g'$.
+            \end{enumerate}
+            Es werden also insgesamt $D(n)+O(\log(n))$ Schritte ben"otigt.
+\end{beweis}
+
+
+
+\begin{lemma}
+\label{Csan76Satz12}
+    Sei $n$ eine nat"urliche Zahl. Sei $P(n)$ gegeben. Dann gilt:
+    \begin{displaymath}
+        I(n)=O(P(n))
+    \end{displaymath}
+\end{lemma}
+\begin{beweis}
+            \begin{itemize}
+            \item Eine Matrix A kann man bekanntlich nach folgender Formel 
+                  invertieren:
+                  \begin{displaymath}
+                      {A}^{-1} = \frac{1}{\mbox{det}{(A)}}
+                                 ((-1)^{i + j} \mbox{det}(A_{ij}))^{T}
+                  \end{displaymath}
+            \item Sei g das Charakteristische Polynom von A. Dann gilt:
+                  \begin{displaymath}
+                      g(0)=\det(A)
+                  \end{displaymath}
+            \end{itemize}
+            Dies f"uhrt zu folgender M"oglichkeit, einen Algorithmus zur 
+            L"osung von ${P}$ auch zur L"osung von ${I}$ zu benutzen:
+            \begin{enumerate}
+                \item
+                    \begin{enumerate}
+                        \item
+                            Berechne das Charakteristische Polynom g von A
+                            (P(n) Schritte). 
+                            Sei $ \tilde{z} = g(0) $ (nur Bezeichnung; kein
+                            Schritt)
+                        \item
+                            Parallel f"ur $ i,j = 1 \ldots n $:\\
+                            Berechne das charakteristische 
+                            Polynom $ g_{ij} $
+                            von $ {A}_{ij} $ (P(n-1) Schritte). 
+                            Sei $ z_{ij} = g_{ij}(0) $ (nur Bezeichnung; 
+                            kein Schritt).
+                    \end{enumerate}
+                    (insgesamt P(n) Schritte)
+                \item
+                    Sei $ \tilde{A} = {A}^{-1} $.
+                    Parallel f"ur $i,j=1 \ldots n$:
+                    \begin{displaymath}
+                        \tilde{a}_{ij}:= \frac{(-1)^{j+i}*z_{ji}
+                                                 }{\tilde{z}}
+                    \end{displaymath}
+                    (insgesamt 4 Schritte)
+            \end{enumerate}
+            Somit gilt:
+            \begin{displaymath}
+                I(n) \leq P(n) + 4
+            \end{displaymath}
+\end{beweis}
+
+% $$$$ Satz "uberarbeiten:
+%          - Anzahl der Prozessoren feststellen
+\begin{satz}
+\label{Csan76Satz3}
+    Sei $n$ eine nat"urliche Zahl. Dann gilt:
+    \begin{displaymath}
+        D(n)=\Theta(I(n))
+    \end{displaymath}
+    und damit nat"urlich auch
+    \begin{displaymath}
+        I(n)=\Theta(D(n))
+    \end{displaymath}
+\end{satz}
+\begin{beweis}
+    Die Lemmata \ref{Csan76Satz9}, \ref{Csan76Satz10}, \ref{Csan76Satz11} 
+    und \ref{Csan76Satz12} ergeben einen Ringschlu"s. In den Ausdr"ucken,
+    die die parallelen Zeitkomplexit"aten beschreiben, jedoch taucht der 
+    Summand $\log(n)$ auf. Mit Lemma \ref{Csan76Satz1} folgt dennoch die
+    Behauptung.
+\end{beweis} \noindent
+     
+    Zu beachten ist, da"s Satz \ref{Csan76Satz3} nur gilt, 
+    falls $I(n)$, $D(n)$, $G(n)$ und $P(n)$ von 
+    der Gr"o"senordnung $\Omega(\log(n))$ sind. \noindent
+    
+    Man kann im obigen Beweis von Satz \ref{Csan76Satz3}
+    \begin{displaymath}
+        I(n)=O(f(n)) \Leftrightarrow G(n)=O(f(n))
+    \end{displaymath}
+    und
+    \begin{displaymath}
+        G(n)=O(f(n)) \Leftrightarrow D(n)=O(f(n)) 
+    \end{displaymath}
+    auch direkter zeigen, indem
+    man jeweils die Hin- und R"uckrichtung zeigt. Die Teile der Beweise, die 
+    sp"ater f"ur Algorithmen ben"otigt werden, sind jedoch die gleichen und
+    der vorliegende Beweis zeigt noch Zu\-sam\-men\-h"an\-ge zum 
+    Problem P (Berechnung des Charakteristischen Polynoms).
+
+% **************************************************************************
+
+\MySection{Determinantenberechnung durch Matrizeninvertierung}
+
+\MyBeginDef
+    \label{Csan76Def2}
+    Sei ${A}$ eine $n \times n$-Matrix. Sei $k$ eine nat"urliche Zahl. 
+    Definiere $B_k$ durch:
+    \begin{eqnarray}
+        B_1 & := & E \nonumber
+    \\
+        \label{Csan76Equ2}
+        B_k & := & {A}{B}_{k-1}-\frac{E}{k-1} \tr({A}{B}_{k-1})
+    \end{eqnarray}
+\MyEndDef
+
+\begin{satz}
+    \label{Csan76Satz5}
+    Sei Definition \ref{Csan76Def2} vorausgesetzt.
+    Dann gilt:
+    \begin{displaymath}
+        A^{-1} = n \frac{B_n}{\tr(AB_n)}
+    \end{displaymath}
+\end{satz}
+\begin{beweis}
+% $$$ Verweis statt Angabe des Beweises unbefriedigend
+    Dieser Satz wurde
+    von Frame \cite{Fram49} bewiesen.
+\end{beweis}
+
+\MyBeginDef
+    \label{Csan76Def1}
+    Seien $M$ und $N$ jeweils $n \times n$-Matrizen. 
+    Definiere Operator $T$ durch:
+    \begin{eqnarray*}
+        {T}{N} & := & \tr(N)
+    \\
+        (E + MT)N & := & N + {M}{T}{N} 
+    \end{eqnarray*}
+    Somit gilt:
+    \begin{displaymath}
+        N + {M}{T}{N} = N + M \tr(N)
+    \end{displaymath}
+\MyEndDef
+
+\begin{lemma}
+    \label{Csan76Satz6}
+    $B_n$ aus Definition \ref{Csan76Def2} l"a"st sich in
+    \begin{displaymath}
+        \lceil \log(n) \rceil^2 + 2 \lceil \log(n) \rceil + 2
+    \end{displaymath}
+    Schritten von 
+    \begin{displaymath}
+        \frac{n^4}{2}
+    \end{displaymath}
+    Prozessoren berechnen.
+\end{lemma}
+\begin{beweis}
+    Wenn man in Gleichung \ref{Csan76Equ2} f"ur $k$ gleich $n$ rekursiv die 
+    Ausdr"ucke f"ur $B_{n-1}$, $B_{n-2}$ etc. einsetzt erh"alt die 
+    resultierende
+    Formel unter Benutzung des Operators $T$ aus Definition \ref{Csan76Def1}
+    und nach Ausklammern der Faktoren $AB_{k-1}$ im Ausdruck f"ur $B_k$ 
+    folgendes Aussehen:
+    \begin{displaymath}
+        B_n = \left( E - \frac{E}{n-1}T \right)
+              \left\{A
+                  \left[
+                      \left(E - \frac{E}{n-2}T \right)
+                      \left\{A
+                          \left[ 
+                              \cdots
+                              (E - {E}{T})
+                              \{A[E]\}
+                              \cdots
+                          \right]
+                      \right\}
+                  \right]
+              \right\}
+    \end{displaymath}
+    Da die Matrizenmultiplikation assoziativ ist, kann man diese Gleichung
+    in die folgende "uberf"uhren:
+    \begin{equation}
+    \label{Csan76Equ4}
+        B_n = \left(
+                  \underbrace{
+                      A - \overbrace{ \frac{E}{n-1} }^{\mbox{Term 1}}
+                      \overbrace{ {T}{A} }^{\mbox{Term 2}}
+                  }_{\mbox{Term 3}}
+              \right)
+              \left(A - \frac{E}{n-2} {T}{A} \right)
+              \cdots
+              \left(A - \frac{E}{2} {T}{A} \right)
+              (A - {E}{T}{A})
+    \end{equation} \noindent
+    Die Kosten der Berechnung von $B_n$ mit Hilfe dieser Gleichung gemessen 
+    in ben"otigten Schritten und Prozessoren ergeben sich folgenderma"sen:
+
+    Zur Verbesserung der Effektivit"at der Berechnung sei angenommen, da"s 
+    der Wert von Term 1 sowie das Ergebnis der Verkn"upfung von Term 1 mit 
+    Term 2 nicht als Matrix sondern als einzelner Wert gespeichert wird, der 
+    geeignet mit Matrix $A$ verk"upft wird. Unter dieser Voraussetzung 
+    ben"otigt die Berechnung von Term 1 zwei Schritte und einen Prozessor. 
+    Die Berechnung von Term 2 kann parallel zu der von Term 1 durchgef"uhrt
+    werden und ben"otigt $ \lceil \log(n) \rceil $ Schritte und 
+    $\lceil n/2 \rceil $ Prozessoren. Dabei werden die Werte baumartig 
+    verkn"upft. Die Verkn"upfung von Term 1 mit Term 2 ben"otigt einen 
+    Schritt und unter der o. g. Voraussetzung auch nur einen Prozessor.
+
+    Das Ergebnis der Berechnung von Term 3 mu"s im Laufe der Berechnung 
+    zwischengespeichert werden. Wenn man davon ausgeht, das die Matrix $A$ 
+    einmal gegeben ist, m"ussen die Elemente, die von der Subtraktion nicht
+    betroffen sind, zumindest kopiert werden. Die Subtraktion erfordert 
+    somit einen Schritt und $n^2$ Prozessoren. Ohne das Erfordernis,
+    Matrixelemente zu kopieren, w"urden nur $n$ Prozessoren gebraucht.
+    Die Berechnung von Term 3 ben"otigt also insgesamt 
+    \begin{displaymath}
+        \lceil \log(n) \rceil + 2 
+    \end{displaymath}
+    Schritte und $n^2$ Prozessoren.
+
+    Es existieren jedoch $n$ Terme, die in ihrem Aussehen Term 3 "ahnlich 
+    sind. Term 2 braucht f"ur alle $n$ Terme nur einmal berechnet zu
+    werden. Die Term 1 entsprechenden Term m"ussen jeweils separat berechnet 
+    werden, was $n$ Prozessoren erfordert. Um alle in Klammern stehenden 
+    Terme parallel zu berechnen werden somit
+    \begin{displaymath}
+        \lceil \log(n) \rceil + 2
+    \end{displaymath}
+    Schritte und $n^3$ Prozessoren ben"otigt.
+
+    Die so erhaltenen Zwischenergebnisse m"ussen nun noch baumartig jeweils 
+    paarweise durch Matrizenmultiplikation miteinander verkn"upft werden.
+    F"ur eine solche Multiplikation ben"otigt man h"ochstens 
+    \begin{displaymath}
+        \lceil \log(n) \rceil + 1
+    \end{displaymath} 
+    Schritte und $n^3$ Prozessoren.
+    Es m"ussen $ \lceil \log(n) \rceil $ Stufen von Matrizenmultiplikationen 
+    durchgef"uhrt werden um $B_n$ zu erhalten. Insgesamt erfordert die 
+    Berechnung von $B_n$ somit 
+    \begin{displaymath}
+        \lceil \log(n) \rceil^2 + 2 \lceil \log(n) \rceil + 2
+    \end{displaymath}
+    Schritte und 
+    \begin{displaymath}
+        \frac{n^4}{2}
+    \end{displaymath}
+    Prozessoren.
+\end{beweis}
+
+\begin{satz}
+    \label{Csan76Satz2}
+    Sei eine invertierbare $A$ eine $n \times n$-Matrix. Ihre Inverse 
+    l"a"st sich in
+    \begin{displaymath}
+        O(\log^2(n))
+    \end{displaymath}
+    Schritten berechnen. Die Anzahl der dazu
+    ben"otigten Prozessoren ist durch ein Polynom beschr"ankt.
+\end{satz}
+\begin{beweis}
+% $$$$ Alternativbeweis (mit Sc=-s) pr"ufen
+    Es gilt nach Satz \ref{Csan76Satz5}:
+    \begin{equation}
+        \label{Csan76Equ5}
+        A^{-1} = \frac{n}{\tr(AB_n)} B_n
+    \end{equation} \noindent
+
+    Nach Lemma \ref{Csan76Satz6} l"a"st sich $B_n$ in 
+    \begin{displaymath}
+        \lceil \log(n) \rceil^2 + 2 \lceil \log(n) \rceil + 2
+    \end{displaymath}
+    Schritten von $n^4/2$ Prozessoren berechnen. \noindent
+
+    Die Multiplikation zweier $n \times n$-Matrizen l"a"st sich in 
+    \begin{displaymath}
+        \lceil \log(n) \rceil + 1
+    \end{displaymath}
+    Schritten von $n^3$ Prozessoren durchf"uhren. \noindent
+
+    Die Spur einer Matrix l"a"st sich in 
+    \begin{displaymath}
+        \lceil \log(n) \rceil 
+    \end{displaymath}
+    Schritten von $n/2$ Prozessoren berechnen. \noindent
+
+    Somit l"a"st sich der Nenner in Gleichung \ref{Csan76Equ5} unter der
+    Voraussetzung, da"s $B_n$ bereitsberechnet ist, in
+    \begin{displaymath}
+        2 \lceil \log(n) \rceil + 1    
+    \end{displaymath}
+    Schritten von $n^3$ Prozessoren berechnen. Die Division kostet einen
+    weiteren Schritt von einem Prozessor. Schlie"slich ist noch eine 
+    Multiplikation erforderlich, die einen Schritt und $n^2$ Prozessoren 
+    erfordert. 
+    
+    Die Einzelkosten zusammen genommen ergeben f"ur die Anzahl der 
+    Schritte
+    \begin{displaymath}
+        \lceil \log(n) \rceil^2 + 4 \lceil \log(n) \rceil + 5
+    \end{displaymath}
+    und f"ur die Anzahl der ben"otigten Prozessoren 
+    \begin{displaymath}
+        \frac{n^4}{2}
+    \end{displaymath}
+\end{beweis}
+
+Im folgenden wird in mehreren Schritten noch eine weitere Beweism"oglichkeit
+f"ur Satz \ref{Csan76Satz2} angegeben. Zun"achst einige Grundlagen:
+
+\begin{lemma}
+\label{Csan76Satz14}
+    Sei $A$ eine $n \times n$-Matrix. Sei $\lambda$ ein Eigenwert von $A$.
+    Sei $k$ eine nat"urliche Zahl. Dann ist $\lambda^k$ Eigenwert von $A^k$.
+\end{lemma}
+\begin{beweis}
+    Die Eigenwerte der Matrix $A$ sind die Nullstellen ihres
+    charakteristischen Polynoms (\cite{MM64} ab Seite 21):
+    \begin{displaymath}
+        \det(A-\lambda {E})
+    \end{displaymath}
+    F"ur einen Eigenvektor $x$ des Eigenwertes $\lambda$ von $A$ 
+    gilt (\cite{MM64} ab Seite 38):
+    \begin{displaymath}
+        (A-\lambda {E})x = 0_n
+    \end{displaymath}
+    wobei $0_n$ der Vektor ist, dessen $n$ Komponenten s"amtlich gleich 0
+    sind. Ein Wert $\lambda$ ist also genau dann ein Eigenwert von $A$, wenn
+    es einen Vektor $x$ gibt, so da"s gilt:
+    \begin{equation}
+    \label{Csan76Satz14Equ1}
+        {A} x = \lambda x
+    \end{equation}
+    Zu zeigen ist, da"s f"ur alle nat"urlichen Zahlen $k$ gilt:
+    \begin{equation}
+    \label{Csan76Satz14Equ2}
+        {A}^k x = \lambda^k x
+    \end{equation}
+    Dies geschieht sinnvollerweise mit Hilfe von Induktion. Gleichung
+    \ref{Csan76Satz14Equ1} bildet den Induktionsanfang. Es gelte Gleichung
+    \ref{Csan76Satz14Equ2}. Zu zeigen ist, da"s dann auch 
+    \begin{displaymath}
+        {A}^{k+1} x = \lambda^{k+1} x 
+    \end{displaymath}
+    gilt. Dies l"a"st sich umformen in
+    \begin{displaymath}
+        {A}\underline{ {A}^k x } = \lambda \underline{ \lambda^{k} x }
+    \end{displaymath}
+    Nach Induktionsvoraussetzung sind die unterstrichenen Teile gleich. Sie
+    seien mit $y$ bezeichnet. Die Gleichung l"a"st sich dann schreiben als
+    \begin{displaymath}
+        {A} y = \lambda y
+    \end{displaymath}
+    Dies ist nach Voraussetzung richtig.
+\end{beweis}
+
+\begin{lemma}
+\label{Csan76Satz13}
+    Sei $A$ eine invertierbare $ n \times n $-Matrix. Seien
+    $ \lambda_1, \ldots, \lambda_n $ die Eigenwerte von $A$.
+    Sei $k$ eine nat"urliche Zahl. Dann gilt: 
+    \begin{displaymath}
+        \forall 1 \leq k \leq n:
+            \sum_{i=1}^n \lambda_i^k = \tr(A^k)
+    \end{displaymath}
+% $$$$ Aussage verifizieren (Gegenbeispiel entkr"aften)
+\end{lemma}
+\begin{beweis}
+% $$$ w"unschenswert: Gleichung \ref{Csan76Satz13Equ1} beweisen
+    Es gilt (siehe z. B. \cite{MM64} Seite 23):
+    \begin{equation}
+    \label{Csan76Satz13Equ1}
+        \tr{A} = \sum_{i=1}^n \lambda_i
+    \end{equation}
+    Nach Lemma \ref{Csan76Satz14} sind $ \lambda_1^k, \ldots, \lambda_n^k $
+    die Eigenwerte von $A^k$. Also gilt Gleichung \ref{Csan76Satz13Equ1}
+    auch f"ur die jeweiligen Werte von $k$.
+\end{beweis}
+% rg A = n <-> A invertierbar (Wegner (6.17))
+% A besitzt n verschiedene Eigenwerte -> A diagonalisierbar (Wegner (10.7))
+% A und CAC^{-1} besitzen dieselben Eigenwerte (Wegner (10.2))
+
+\begin{lemma}
+\label{Csan76Satz15}
+    Sei $A$ eine $n \times n$-Matrix. Sei $ s_k := \tr(A^k) $.
+    Betrachte das Gleichungssystem
+    \begin{displaymath}
+        \left[
+        \begin{array}{cccccc}
+            1      & 0      & \cdots &        &         & 0       \MatStrut \\
+            s_1    & 2      & 0      & \cdots &         & \vdots  \MatStrut \\
+            s_2    & s_1    & 3      & 0      & \cdots  &         \MatStrut \\
+            s_3    & s_2    & s_1    & 4      & \ddots  &         \MatStrut \\
+            \vdots & \vdots & \vdots & \ddots & \ddots  & 0       \MatStrut \\
+            s_{n-1}& s_{n-2}& s_{n-3}& \cdots &  s_1    & n       \MatStrut \\
+        \end{array}
+        \right]
+        \left[
+        \begin{array}{c}
+            c_1    \MatStrut \\
+            c_2    \MatStrut \\
+            c_3    \MatStrut \\
+            c_4    \MatStrut \\
+            \vdots \MatStrut \\
+            c_n    \MatStrut \\
+        \end{array}
+        \right]
+        = - 
+        \left[
+        \begin{array}{c}
+            s_1    \MatStrut \\
+            s_2    \MatStrut \\
+            s_3    \MatStrut \\
+            s_4    \MatStrut \\
+            \vdots \MatStrut \\
+            s_n    \MatStrut \\
+        \end{array}
+        \right]
+    \end{displaymath}
+    Kurz:
+    \begin{equation}
+    \label{Csan76Satz15Equ1}
+        {S}c = -s
+    \end{equation}
+    Nach L"osen des Gleichungssystems \ref{Csan76Satz15Equ1} l"a"st sich
+    die Inverse der Matrix $A$ berechnen durch:
+    \begin{equation}
+    \label{Csan76Satz15Equ2}
+        A^{-1}= - \frac{A^{n-1}+c_1 A^{n-2}+ \cdots + c_{n-1} E}{c_n}
+    \end{equation}
+    $A$ ist invertierbar wenn gilt
+    \begin{displaymath}
+        c_n \neq 0 
+    \end{displaymath}
+\end{lemma}
+\begin{beweis}
+    Lemma \ref{Csan76Satz13} hilft, die Bedeutung dieses Lemmas leichter 
+    zu erkennen. Es stellt die Methode von Leverrier zur Bestimmung der
+    Koeffizienten des charakteristischen Polynoms mit der Modifikation von
+    D. K. Faddejew \cite{FF63} zur Berechnung der Inversen einer Matrix.
+\end{beweis}
+
+\begin{bemerkung}
+\label{Csan76Satz16}
+    Um das Gleichungssystem \ref{Csan76Satz15Equ1} zu l"osen, ist die
+    Matrix $S$ zu invertieren. Dies geschieht analog zur Invertierung von
+    $A$ mit Hilfe der Formel 
+    \begin{displaymath}
+        S^{-1}= \frac{S^{n-1} + d_1 s^{n-2} + \cdots + d_{n-1} E}{d_n}
+    \end{displaymath}
+    Dabei sind die $d_i$ die Koeffizienten des charakteristischen 
+    Polynoms von $S$. Diese lassen sich aus dessen Nullstellen 
+    $(1,2,\ldots,n)$ in 
+    \begin{displaymath}
+        2\log(n) + O(1)
+    \end{displaymath}
+    Schritten \cite{Csan74} berechnen.
+\end{bemerkung}
+Es gibt noch eine weitere M"oglichkeit, $S$ zu invertieren, n"amlich mit
+Hilfe des folgenden Satzes (\cite{Csan74} Seite 26): 
+% $$$$ Positionen der n"achsten beiden S"atze pr"ufen
+\begin{satz}
+\label{Csan76Satz17}
+    Sei $A$ eine $n \times n$-Matrix. Partitioniere $A$ in 4 Untermatrizen
+    \begin{displaymath}
+    \left[
+        \begin{array}{cc}
+            A_{11} & A_{12} \\
+            A_{21} & A_{22}
+        \end{array}
+    \right]
+    \end{displaymath}
+    Dabei gilt f"ur die Gr"o"sen der Untermatrizen: 
+    \begin{itemize}
+        \item $A_{11}$: \hspace{1em} $k \times k$
+        \item $A_{12}$: \hspace{1em} $m \times k$
+        \item $A_{21}$: \hspace{1em} $m \times k$
+        \item $A_{22}$: \hspace{1em} $m \times m$
+    \end{itemize}
+    mit \[ k+m=n \]
+    Dann gilt (Frobenius-Schur Formel)
+    \begin{displaymath}
+        A^{-1} = 
+        \left[
+            \begin{array}{cc}
+                A_{11}^{-1} - A_{11}^{-1} A_{12} D A_{21} A_{11}^{-1} &
+                    A_{11}^{-1} A_{12} D \\
+                D A_{21} A_{11}^{-1} & -D
+            \end{array}
+        \right]
+    \end{displaymath}
+    mit
+    \begin{displaymath}
+        D = ( A_{21} A_{11}^{-1} A_{12} - A_{22} )^{-1}
+    \end{displaymath}
+\end{satz}
+\begin{beweis} % $$$$ Seitennummer f"ur \cite nachsehen
+    Der Beweis ist in \cite{Bode59} zu finden.
+\end{beweis}
+Dieser Satz f"uhrt zu einer effizienten M"oglichkeit Dreiecksmatrizen
+zu invertieren (\cite{Csan74} Seite 29).
+Im Folgenden wird von einer oberen Dreiecksmatrix ausge-
+gangen. F"ur eine untere Dreiecksmatrix verl"auft die Argumentation 
+analog.
+\begin{satz}
+\label{Csan76Satz18}
+    Eine obere Dreiecksmatrix l"a"st sich 
+    \[ \log^2(n) + \log(n) + O(1) \]
+    Schritten von 
+    \[ O(n^3) \] 
+    Prozessoren invertieren.
+\end{satz}
+\begin{beweis}
+    Sei $U$ die zu invertierende $n \times n$ Matrix. Partitioniere
+    $U$ in 4 Untermatrizen:
+    \begin{displaymath}
+    \left[
+        \begin{array}{cc}
+            U_{11} & U_{12} \\
+               0   & U_{22}
+        \end{array}
+    \right]
+    \end{displaymath}
+    so da"s $U_{11}$ und $U_{22}$ ebenfalls obere Dreiecksmatrizen sind.
+    F"ur die Gr"o"sen der Untermatrizen gelte:
+    \begin{itemize}
+        \item $U_{11}$: \hspace{1em} $k \times k$
+        \item $U_{12}$: \hspace{1em} $m \times k$
+        \item $U_{22}$: \hspace{1em} $m \times m$
+    \end{itemize}
+    mit
+    \begin{eqnarray*}
+        k & = & \lceil \frac{1}{2}n \rceil \\
+        m & = & \lfloor \frac{1}{2}n \rfloor 
+    \end{eqnarray*}
+    Nach Satz \ref{Csan76Satz17} gilt dann:
+    \begin{displaymath}
+        U^{-1} = 
+        \left[
+            \begin{array}{cc}
+                U_{11}^{-1} & - U_{11}^{-1} U_{12} U_{22}^{-1} \\
+                     0      & U_{22}^{-1}
+            \end{array}
+        \right]
+    \end{displaymath} % $$$$ Schreibweise $I_U(n)$ ordentlich einf"uhren!
+    F"ur die parallele Zeitkomplexit"at $I_U(n)$ des Invertierens von $U$
+    gilt:
+    \begin{eqnarray*}
+        I_U(1) & = & 1 \\
+        I_U(n) & = & 
+           \underbrace{ 
+               I_U(\lceil \frac{1}{2}n \rceil) 
+                      }_{\mbox{Term 1}} + 
+           \underbrace{
+               1 + \lceil \log( \lceil \frac{1}{2}n \rceil ) \rceil 
+                      }_{\mbox{Term 2}} +
+           \underbrace{
+               1 + \lceil \log( \lfloor \frac{1}{2}n \rfloor ) \rceil
+                      }_{\mbox{Term 3}}
+    \end{eqnarray*}
+    Die einzelnen Terme geben dabei den Zeitaufwand f"ur folgende 
+    Berechnungen an:
+    \begin{enumerate}
+        \item Berechnung von $U_{11}^{-1}$ und $U_{22}^{-1}$
+        \item Multiplikation von $U_{11}^{-1}$ mit $U_{12}$
+        \item Multiplikation des Ergebnisses von Term 2 mit $U_{22}^{-1}$
+    \end{enumerate} % $$$$ erfordert *(-1) einen Schritt???
+    Die L"osung dieser Rekursionsformel f"ur $I_U(n)$ wird nach oben 
+    durch
+    \begin{displaymath} % $$$$ O-Notation ersetzen
+        \log^2(n) + \log(n) + O(1)
+    \end{displaymath}
+    beschr"ankt.
+    
+    Die meisten Prozessoren werden bei den auftretenden 
+    Matrizenmultiplikationen ben"otigt. Dies sind maximal
+    \begin{displaymath}
+        ( \lceil \frac{1}{2}n \rceil )^3
+    \end{displaymath}
+    St"uck.
+\end{beweis}
+
+und nun der Alternativbeweis f"ur Satz \ref{Csan76Satz2}:
+\begin{beweis}
+% $$$$ O-Notation durch genaue Konstanten ersetzen
+% $$$$ Algorithmus genauer ausf"uhren
+    Berechne die Inverse so, wie es Lemma \ref{Csan76Satz15} und
+    Bemerkung \ref{Csan76Satz16} angeben.
+    \begin{enumerate}
+    \item Berechne \[ \forall k=1,\ldots,n: s_k = \tr(A^k) \] 
+          Dies erfordert \[ \log^2(n)+ O(\log(n)) \]
+          Schritte und
+              \[ \frac{1}{2}n^4 \]
+          Prozessoren.
+% $$$$ Invertierung von S noch nicht verstanden
+    \item Invertiere $S$. Dies erfordert \[ \log^2(n) + O(\log(n)) \]
+          Schritte und \[ O(n^3) \] Prozessoren.
+    \item Berechne $c$ aus \[ c=- S^{-1}s \] 
+          Dies erfordert \[ \log(n) + O(1) \]
+          Schritte und \[ O(n^2) \] Prozessoren.
+    \item Falls \[ c_n \neq 0 \] ist $A$ invertierbar. Berechne $A^{-1}$
+          mit Hilfe von Gleichung \ref{Csan76Satz15Equ2}.
+          Da $A^2$ bis $A^{n-1}$ bereits berechnet sind erfordert dies
+          \[ \log(n) + O(1) \] Schritte und \[ O(n^3) \] Prozessoren.
+    \end{enumerate}
+    Insgesamt erfordert die Invertierung von $A$ also 
+    \[ 2 \log^2(n) + O(\log(n)) \] Schritte und \[ \frac{1}{2} n^4 \] 
+    Prozessoren.
+\end{beweis}
+
+\begin{satz}
+\label{Csan76Satz4}
+% $$$$ Wert f"ur I(n) noch einzusetzen; andere Werte neu zu bestimmen:
+    \[ D(n) \leq I(n) + O(\log(n)) \] also 
+    \[ D(n) = O(\log^2(n)) \] Die Anzahl der ben"otigten Prozessoren
+    betr"agt \[ \frac{1}{2} n^4 \]
+\end{satz}
+\begin{beweis}
+    Der Satz folgt aus Lemma \ref{Csan76Satz3} und Lemma \ref{Csan76Satz2}.
+\end{beweis}
+
+% **************************************************************************
+
+\MySectionA{Weitere M"oglichkeit}{Eine weitere M"oglichkeit zur
+    Determinantenberechnung}
+% $$$$ Erkl"arungen einf"ugen
+
+\MyBeginDef
+\label{Csan76Def3}
+    Sei $B_k$ wie in Definition \ref{Csan76Def2} festgelegt. Definiere $c_k$
+    durch:
+    \begin{displaymath}
+        c_k := - \frac{1}{k} \tr(AB_k)
+    \end{displaymath}
+\MyEndDef
+
+\begin{satz}
+\label{Csan76Satz8}
+    Sei $A$ eine $n \times n$-Matrix. Sei $B_k$ wie in
+    Definition \ref{Csan76Def2} und $c_k$ wie in Definition \ref{Csan76Def3}
+    festgelegt. Dann gilt:
+    \begin{displaymath}
+        \det(A) = - c_n 
+    \end{displaymath}
+    also
+    \begin{displaymath}
+        \det(A) = \frac{1}{n} \tr(AB_k)
+    \end{displaymath}
+\end{satz}
+\begin{beweis}
+% $$$ Verweis statt Angabe des Beweises unbefriedigend
+    Dieser Satz wurde, wie auch Satz \ref{Csan76Satz5} von Frame 
+    \cite{Fram49} bewiesen.
+\end{beweis}
+
+\begin{satz}
+    \label{Csan76Satz7}
+    Sei $A$ eine $n \times n$-Matrix. Ihre Determinante l"a"st sich in 
+    \begin{displaymath}
+        \lceil \log(n) \rceil^2 + 4 \lceil \log(n) \rceil + 4
+    \end{displaymath}
+    von 
+    \begin{displaymath}
+        \frac{n^4}{2}
+    \end{displaymath}
+    Prozessoren berechnen.
+\end{satz}
+\begin{beweis}
+    Es gilt nach Satz \ref{Csan76Satz8}:
+    \begin{equation}
+        \label{Csan76Equ6}
+        \det(A) = \frac{\tr(AB_n)}{n}
+    \end{equation} \noindent
+    Nach Lemma \ref{Csan76Satz6} l"a"st sich $B_n$ in 
+    \begin{displaymath}
+        \lceil \log(n) \rceil^2 + 2 \lceil \log(n) \rceil + 2
+    \end{displaymath}
+    Schritten von $n^4/2$ Prozessoren berechnen. \noindent
+    
+    Der Z"ahler in Gleichung \ref{Csan76Equ6} ist identisch mit dem
+    Nenner in Gleichung \ref{Csan76Equ5} und l"a"st sich, wie bereits
+    im Beweis zu Satz \ref{Csan76Satz2} beschrieben, in 
+    \begin{displaymath}
+        2 \lceil \log(n) \rceil + 1    
+    \end{displaymath}
+    Schritten von $n^3$ Prozessoren berechnen, wenn man vom Aufwand f"ur
+    die Berechnung von $B_n$ absieht. Die Division erfordert einen Schritt
+    von einem Prozessor. Die Kosten zusammengenommen ergeben die Behauptung.
+\end{beweis}
+
+
+\MySection{Zusammenfassung} 
+% formals: Zusammenfassung der behandelten Algorithmen
+% $$$$ Fortsetzung hier
+(in Arbeit)
+
+

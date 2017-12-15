@@ -1,0 +1,630 @@
+
+% noch zu bearbeitende Stellen sind mit $$$$ markiert
+
+% $$$$ Algorithmen noch auf SIMD-Verwendung untersuchen
+
+
+% - Warum laufen die Algorithmen von Csanky nur in K"orper 
+%       der Charakteristik 0 ?
+%   Antwort: Weil Divisionen benutzt werden !!!!!!!!!!!!!!
+% - Csan76 : K"orper mit Charakteristik 0
+%   BGH82  : beliebige K"orper
+%   Berk84 : beliebige K"orper
+%   Pan85  : untere Schranke f"ur Anzahl der Prozessoren
+
+\documentstyle[german,din_a4]{garticle}
+
+\pagestyle{headings}
+\hyphenation
+    { CRCW Pa-ral-lel-rech-ner Mo-dell
+    }
+ 
+\begin{document}
+\bibliographystyle{galpha}
+
+% Auswahl von 'section' f"ur folgende Definition ggf. anzupassen:
+\newtheorem{satz}{Satz}[section]
+\newtheorem{lemma}[satz]{Lemma}
+\newtheorem{korollar}[satz]{Korollar}
+\newtheorem{algorithmus}[satz]{Algorithmus}
+\newenvironment{beweis}{\nopagebreak {\bf Beweis}
+                       }{ \nopagebreak \hfill $ \Box $ }
+
+\nocite{Csan76}
+
+\title{Algorithmen zur parallelen Determinantenberechnung}
+\author{Holger Burbach}
+\date{\today}
+\maketitle 
+
+\tableofcontents
+
+\section{Vorbemerkungen}
+
+In den folgenden Ausf"uhrungen wird vom {\em arbitrary CRCW}
+Parallelrechner-Modell
+ausgegangen. D. h. der Modellrechner besteht aus einer beliebig hohen Anzahl
+gleicher Prozessoren, die alle auf denselben beliebig gro"sen 
+Arbeitsspeicher zugreifen. Innerhalb einer Zeiteinheit kann jeder dieser 
+Prozessoren --- und zwar alle gleichzeitig ---
+zwei Operanden aus dem Speicher lesen, eine der Operationen
+% Negation entspricht * (-1), da Konstanten adressiert werden k"onnen
+Addition, Subtraktion, Multiplikation, Division, Potenzierung oder einen 
+Vergleich ausf"uhren und
+das Ergebnis wieder im Speicher ablegen bzw., bei einem Vergleich, eine 
+Verzweigung im Programm durchf"uhren. Dabei k"onnen die Operanden direkt
+oder indiziert adressiert werden. Die unterschiedliche Dauer der
+Operationen und der Adressierungsarten wird vernachl"assigt.
+Die indizierte Adressierung w"urde tats"achlich mehr Zeit 
+ben"otigen als die direkte, da in dem hier benutzten Rechnermodell
+neben dem adressierten Operator noch zus"atzlich der Index aus dem 
+Datenspeicher gelesen
+werden m"u"ste. Da es sich hier jedoch um konstant gro"sen Mehraufwand 
+handelt, kann dieser f"ur die komplexit"atstheoretische Betrachtung 
+vernachl"assigt werden.
+
+Unter den Parallelrechnern kann man zwei Typen unterscheiden:
+\begin{itemize}
+    \item Multiple Instruction Multiple Data (MIMD)
+    \item Single Instruction Multiple Data (SIMD)
+\end{itemize}
+Bei MIMD-Rechnern ist die Aufgabenverteilung unter den an der Probleml"osung
+beteiligten Prozessoren ein entscheidendes Problem und f"ur den allgemeinen
+Fall schwer l"osbares Problem.
+Wenn man davon ausgeht, da"s die Aufgaben schon unter den 
+Prozessoren verteilt sind, schneiden Algorithmen, die f"ur diese Rechner
+formuliert sind, im Laufzeitverhalten besser ab, als die "aquivalenten 
+Algorithmen auf SIMD-Rechnern (siehe dazu z. B. \cite{Hell73}).
+Bei diesen Rechnern entf"allt aber das die Aufgabenverteilung, weil alle
+im wesentlichen das Gleiche zu tun haben, und es besteht nur noch das 
+Problem des gleichzeitigen Zugriffs auf gemeinsam genutzte Speicherbereiche.
+Die Verwaltung dieses Zugriffs f"uhrt zwar immer zu Laufzeiteinbu"sen, die 
+jedoch nur als konstante Faktoren zu betrachten sind und keinen Einflu"s auf
+die Gr"o"senordnung der Laufzeit haben. Die nachfolgenden Betrachtungen 
+konzentrieren sich auf SIMD-Rechner.
+
+Der Vorgang, in
+dem beliebig viele Prozessoren gleichzeitig je zwei Operanden aus dem Arbeitsspeicher
+lesen, aus diesen Operanden ein Ergebnis berechnen und 
+dieses Ergebnis wieder im Arbeitsspeicher ablegen bzw. eine Verzweigung
+durchf"uhren, wird als ein Schritt 
+bezeichnet.
+
+Von der Ein- und Ausgabe von
+Daten wird abstrahiert. D. h. es wird davon ausgegangen, da"s 
+alle Eingabedaten im Arbeitsspeicher vorhanden sind und die Ausgabedaten 
+ebenfalls dort abgelegt werden.
+
+Sei C ein Problem. Dann bezeichnet die {\em parallele 
+Zeitkomplexit"at} C(n) von C die kleinste Anzahl von Schritten, die ben"otigt
+wird, um C f"ur eine beliegige Eingabe der Gr"o"se n zu l"osen.
+
+F"ur einen Algorithmus zur L"osung eines Problems C interessieren u. a. 
+\begin{itemize}
+    \item die Anzahl der Prozessoren, die maximal gleichzeitig besch"aftigt
+          werden k"onnen {( \em Grad der Parallelit"at)},
+    \item die Anzahl der Speicherzellen der Arbeitsspeichers, die maximal
+          zur Abarbeitung des Algorithmuses ben"otigt wird 
+          {(\em Speicherplatzkomplexit"at)} und
+    \item die Anzahl der Schritte, die ben"otigt wird, um den Algorithmus
+          abzuarbeiten {(\em parallele Zeitkomplexit"at)}.
+\end{itemize}
+Diese Werte k"onnen nicht alle gleichzeitig minimiert werden. Im Folgenden 
+wird vorrangig versucht, die Anzahl der Schritte m"oglichst klein zu 
+halten, indem
+m"oglichst viele Prozessoren besch"aftigt werden. Die Anzahl der ben"otigten
+Speicherzelle wird in diesem Rahmen als unkritisch betrachtet.
+
+Falls nicht anders festgelegt, bezeichnen im Folgenden Gro"sbuchstaben Matrizen
+und Kleinbuchstaben Zahlen. Sei A eine $n \times n$-Matrix und dabei n eine
+nat"urliche Zahl. Dann gelten die Abk"urzungen, wie sie in 
+Tabelle \ref{Csan76Tab1} aufgef"uhrt 
+sind.
+
+\begin{table}[htbp]
+    \label{Csan76Tab1}
+    \begin{center}
+    \begin{tabular}{|p{7.5cm}|c|}
+        \hline
+        \multicolumn{2}{|c|}{Mathematische Bezeichnungen} \\
+        \hline
+        Begriff & Abk"urzung \\ 
+        \hline\hline
+        Determinate von A & det(A) \\
+        \hline
+        Adjunkte (Komplement) von A & adj(A) \\
+        \hline
+        Spur (Summe der Hauptdiagonalelemente, engl. trace) von A & tr(A) \\
+        \hline
+        Spalte j von A & $ {A}_{|j} $ \\
+        \hline
+        Zeile\footnotemark j von A & $ {A}_j $ \\
+        \hline 
+        Element in Zeile i, Spalte j von A & $ a_{ij} $ \\
+        \hline
+        Matrix, die aus A durch Streichen der i-ten Zeile und der j-ten
+        Spalte entsteht & $ {A}_{ij} $ \\
+        \hline
+        Matrix, die aus A durch Streichen der Zeilen 1 bis i und der 
+        Spalten 1 bis j entsteht\footnotemark & $ {A}_{\Box ij} $ \\
+        \hline 
+        Einheitsmatrix & E \\
+        \hline
+        Logarithmus von x zur Basis 2 & $ \log(x) $ \\
+        \hline\hline
+        \multicolumn{2}{|c|}{Parallele Zeitkomplexit"aten verschiedener 
+                           Probleme} \\
+        \hline
+        Problem & Zeitkomplexit"at \\
+        \hline\hline
+        Invertierung von A & I(n) \\
+        \hline
+        L"osung eines Systems von n Gleichungen mit n Unbekannten
+        (A sei die Koeffizientenmatrix) & G(n) \\
+        \hline
+        Berechnung der Determinante von A & D(n) \\
+        \hline        
+        Berechnung des Charakteristischen Polynoms von A & P(n) \\
+        \hline
+    \end{tabular} \\[0.5ex]
+    Tabelle \ref{Csan76Tab1}
+    \end{center}
+\end{table}
+\addtocounter{footnote}{-1}
+\footnotetext
+{   f"ur $n \times m$-Matrizen, insbesondere f"ur 
+    $ 1 \times n$-Matrizen und $n \times 1$-Matrizen gelten die Zeilen- und
+    Spaltenbezeichnungen $ {A}_j$ und $ {A}_{|j}$ analog
+}
+\stepcounter{footnote}
+\footnotetext
+{   $ {A}_{\Box 00}:= {A} $
+}
+
+% $$$$ f"ur MIMD/SIMD "uberarbeiten:
+
+Bei den komplexit"atstheoretischen Betrachtungen werden
+folgende Vernachl"assigungen getroffen:
+\begin{itemize}
+    \item Der zus"atzliche Zeitaufwand zum Verteilen von Aufgaben auf 
+        verschiedene Prozessoren wird vernachl"assigt. D. h. es wird 
+        angenommen, da"s f"ur jeden der beteiligten Prozessoren vor 
+        dem Start der Berechnungen festgelegt wurde, was er zu tun 
+        hat oder ein Mechanismus existiert, der dies zur Laufzeit leistet.
+    \item Mehrfachinizierung wird gegen"uber Einfachindizierung nicht als
+        zus"atzlicher Aufwand betrachtet. Bei paralleler Abarbeitung von
+        Anweisungen, in denen mehrfachinizierte Variable vorkommen, ist 
+        dies tats"achlich kein zus"atzlicher Aufwand, da eine
+        zweidimensionale Matrix auf einen eindimensionalen Speicher abge-
+        bildet von jedem Prozessor nur noch mit einem Index adressiert 
+        wird, wenn z. B. ein gleichzeitiger Zugriff auf alle Matrixelement 
+        erfolgt.
+\end{itemize}
+
+\section{Schranken f"ur die parallele Zeitkomplexit"at}
+
+Zun"achst liefert Satz \ref{Csan76Satz1} eine untere Schranke f"ur D(n).
+Danach beschreibt Lemma \ref{Csan76Satz2} eine obere Schranke f"ur I(n).
+Mit Hilfe von Lemma \ref{Csan76Satz3} kann man von I(n) auf D(n) schlie"sen
+und schlie"slich
+wird daraus in Satz \ref{Csan76Satz4} eine obere Schranke f"ur D(n) 
+gewonnen. 
+%Dabei wird gleichzeitig auf die Anzahl der Prozessoren eingegangen,
+%die maximal gleichzeitig besch"aftigt werden k"onnen bzw. ben"otigt werden.
+
+\begin{satz}
+\label{Csan76Satz1}
+    $ 2 \log(n) \leq D(n) $
+\end{satz}
+\begin{beweis}
+    Die Determinante einer $n \times n$-Matrix A h"angt ab von allen 
+    $n^2$ Matrixelementen. Die im oben beschriebenen Modellrechner w"urde
+    die k"urzest m"ogliche Berechnung eines Wertes, in den alle 
+    Matrixelemente eingehen, folgenderma"sen ablaufen:
+
+    Wenn man davon ausgeht, da"s in jedem Rechenschritt von einem 
+    Prozessor 2 Eingabewerte durch eine mathematische Operation (s. o.) 
+    verkn"upft werden und maximal viele paarweise verschiedene
+    Eingabewerte parallel verkn"upft werden um einen einzelnen Werte zu 
+    ergeben, in den alle Eingabewerte eingehen, k"onnte man z. B. zuerst
+    die Werte in den Zeilen von A paarweise miteinander verkn"upfen, dann
+    paarweise die Ergebnisse dieser ersten Verkn"upfung usw. . Man erh"alt
+    n Zwischenergebnisse in $ log(n) $ Schritten.
+
+    Diese Zwischenergebnisse kann man dann in der gleichen Weise in weiteren
+    $ log(n) $ Schritten mit einander verkn"upfen und kommt so insgesamt 
+    auf $ 2 \log(n) $ Schritte.
+\end{beweis}
+
+\begin{lemma}
+\label{Csan76Satz2}
+    $ I(n) \leq O(\log^2 n) $ 
+%    und die Anzahl der Prozessoren, die maximal
+%    besch"aftigt werden k"onnen ist durch ein Polynom beschreibbar
+\end{lemma}
+\begin{beweis}
+% $$$$ hier Beweis einsetzen
+\end{beweis}
+
+\begin{lemma}
+\label{Csan76Satz3}
+    $ I(n)=O(f(n)) \Leftrightarrow D(n)=O(f(n)) $
+\end{lemma}
+\begin{beweis}
+    Der Beweis wird durch einen Ringschlu"s 
+    gef"uhrt \footnote{Schreibweisen siehe 
+        Tabelle \ref{Csan76Tab1}}. Man kann 
+    $ I(n)=O(f(n)) \Leftrightarrow G(n)=O(f(n)) $ und
+    $ G(n)=O(f(n)) \Leftrightarrow D(n)=O(f(n)) $ auch direkter zeigen, indem
+    man jeweils die Hin- und R"uckrichtung zeigt. Die Teile der Beweise, die 
+    sp"ater f"ur Algorithmen ben"otigt werden, sind jedoch die gleichen und
+    der vorliegende Beweis zeigt noch Zusammenh"ange zum 
+    Problem P\footnote{Problem P: siehe Tabelle \ref{Csan76Tab1}} auf.
+    \begin{description}
+        \item[ $ I(n)=O(f(n)) \Rightarrow G(n)=O(f(n)) $ ]
+            Es ist zu zeigen, da"s ein Algorithmus f"ur I
+            auch zur L"osung von G verwendet werden kann, ohne da"s sich 
+            die Gr"o"senordnung der parallelen Zeitkomplexit"at des
+            resultierenden Algorithmuses f"ur G von dem f"ur I unterscheidet.
+
+            Gegeben sei ein Gleichungssystem von n Gleichungen mit n
+            Unbekannten. In Matrizenschreibweise: $ {A}x=b $. Dabei ist
+            A die Koeffizientenmatrix, x der Vektor der n Unbekannten und
+            b der Vektor der n Konstanten auf den rechten Seite der 
+            Gleichungen. u sei eine Hilfsvariable (mit 0 initialisiert).
+            \begin{enumerate}
+                \item
+                    \label{Csan76Satz3Lab2}
+                    In  maximal zehn Schritten kann $ {A}x=b $ 
+                    in die Form $ \tilde{A}x = \tilde{b} $ mit
+                    $ \tilde{b} = E_{|1} $ gebracht werden:
+                    \begin{enumerate}
+                        \item
+                        \begin{sloppypar}
+                            \label{Csan76Satz3Lab6}
+                            Falls $ {b}_1 \neq 0 $, gehe zu
+                            Schritt \ref{Csan76Satz3Lab1}.\\
+                            (Verzweigung: ein Schritt) 
+                        \end{sloppypar}
+                        \item
+                        \begin{sloppypar}
+                            Parallel f"ur $ i=1 \ldots n $:
+                            \begin{enumerate}
+                                \item
+                                    Falls $ b_i = 0 $, gehe zu 
+                                    Schritt \ref{Csan76Satz3Lab4}.
+                                    (Verzweigung: ein Schritt)
+                                \item
+                                    $ u:= i$ \\An dieser Stelle wird eine
+                                    spezielle Eigenschaft des verwendeten
+                                    Parallelrechner-Modells gebraucht. Dieser
+                                    Befehl wird u. U. von mehreren Prozessoren 
+                                    gleichzeitig ausgef"uhrt, die somit alle 
+                                    schreibend auf u zugreifen. Der Algorithmus
+                                    ist korrekt, unabh"angig davon, welcher 
+                                    Prozessor
+                                    seinen Schreibzugriff tats"achlich 
+                                    durchf"uhren darf!
+                                    (ein Schritt)
+                            \end{enumerate}
+                            (insgesamt zwei Schritte)
+                        \end{sloppypar}
+                        \item
+                            \label{Csan76Satz3Lab4}
+                            Falls $ u = 0 $, gehe zum Programmende.
+                            In diesem Fall gilt 
+                            $ \forall i=1 \ldots n: x_i = 0 $.
+                            (Verzweigung: ein Schritt)
+                        \item
+                            An dieser Stelle lie"se sich die
+                            Zeilenvertauschung in den folgenden 3 Schritte
+                            ersparen, indem man die Zeile, f"ur die gilt 
+                            $ b_u \neq 0 $, jeweils mit Hilfe von u als
+                            Index anspricht. Das w"urde jedoch keine 
+                            wesentliche Ersparnis bedeuten und die weiteren
+                            Betrachtungen unn"otig un"ubersichtlich 
+                            erscheinen lassen. Deshalb: \\
+                            Parallel f"ur $ j=1 \ldots n $:
+                            \begin{enumerate}
+                                \item
+                                    $ h_j := a_{uj} $
+                                \item
+                                    $ a_{uj} := a_{1j} $
+                                \item
+                                    \label{Csan76Satz3Lab5}
+                                    $ a_{1j} := h_j $
+                             \end{enumerate}
+                             (insgesamt drei Schritte)
+                        \item
+                            \label{Csan76Satz3Lab1}
+                            $ \tilde{b}_1 := 1 $ sowie parallel dazu: \\
+                            Parallel f"ur $ i=1 \ldots n $: \\
+                            $ \tilde{a}_{1i} := {a}_{1i} / {b}_1 $
+                            (insgesamt ein Schritt)
+                        \item 
+                            Parallel f"ur $ i=2 \ldots n $ und
+                            $ j=1 \ldots n $: \\
+                            $ \hat{a}_{ij}:= \tilde{a}_{1j} * b_j$
+                            (insgesamt ein Schritt)
+                        \item
+                            \label{Csan76Satz3Lab3}
+                            Parallel f"ur $ i=2 \ldots n $ und 
+                            $ j=1 \ldots n $: \\
+                            $ \tilde{b}_i := 0 $ und 
+                            $ \tilde{a}_{ij} := a_{ij} - \hat{a}_{ij} $
+                            (insgesamt ein Schritt)
+                    \end{enumerate}
+                    Schritt \ref{Csan76Satz3Lab1} bis Schritt 
+                    \ref{Csan76Satz3Lab3} berechnen also:
+                    \begin{eqnarray*}
+                        \forall i=1 \ldots n: \tilde{b}_i          & := &
+                        \left\{
+                            \begin{array}{rcl}
+                               1 & : & i = 1 \\
+                               0 & : & \mbox{sonst} \\
+                            \end{array}
+                        \right.                                    \\
+                        \forall i=1 \ldots n: \forall j=1 \ldots n: 
+                            \tilde{a}_{ij}                         & := & 
+                        \left\{
+                            \begin{array}{rcl}
+                                \frac{a_{ij}}{b_1} & : & i=1 \\
+                                a_{ij}-\frac{a_{1i}}{b_1}*b_j & : & 
+                                    i=2 \ldots n \\
+                            \end{array}
+                        \right.
+                    \end{eqnarray*}
+                    Die Schritte \ref{Csan76Satz3Lab6} bis 
+                    \ref{Csan76Satz3Lab5} stellen sicher,
+                    da"s $ b_1 \neq 0 $ gilt. Wenn man von vornherein davon
+                    ausgehen kann, da"s $ b_1 \neq 0 $ erf"ullt ist, werden
+                    bis zu dieser Stelle nur drei Schritte statt zehn 
+                    ben"otigt.
+                \item
+                    Berechne $ \tilde{A}^{-1} $ in I(n) Schritten.
+                \item
+                    An dieser Stelle sieht das Gleichungssytem in 
+                    Matrizenschreibweise so aus: 
+                    $ x = \tilde{A}^{-1} \tilde{b} $ . Aufgrund der 
+                    besonderen Form von $ \tilde{b} $, die in den Schritten
+                    \ref{Csan76Satz3Lab2} erreicht wurde, gilt nun: 
+                    $ x = (\tilde{A}^{-1})_{|1} $. Diese Erkenntnis 
+                    erfordert keinen weiteren Schritt.
+            \end{enumerate}
+            Also gilt: $ G(n) \leq I(n)+10 $. Falls gilt $ b = \tilde{b} $
+            --- und somit auch $ {A} = \tilde{A} $ --- kommt man sogar ohne 
+            weitere Schritte aus, und es gilt: $ E(n) = I(n) $.
+
+        \item[ $ G(n)=O(f(n)) \Rightarrow D(n)=O(f(n)) $ ]
+            Mit der gleichen Argumentation wie im obigen Beweisschritt, wird
+            gezeigt, wie man einen Algorithmus f"ur G zur L"osung von D 
+            verwenden kann \footnote{Schreibweisen siehe 
+                Tabelle \ref{Csan76Tab1}}:
+
+            Das Gleichungssystem $ {A}x=b $ kann man, wie oben beschrieben,
+            dadurch l"osen, da"s man es in $ x= {A}^{-1}b $ umformt und dann
+            x einfach ausrechnet. Dieses Ausrechnen, mit Hilfe einer 
+            Summenformel geschrieben, w"urde folgenderma"sen aussehen:
+            \begin{displaymath}
+                x_i = \underbrace
+                      {
+                          \frac{ 1 }{ \mbox{det}(A) }*
+                          \sum_{j=1}^n ((-1)^{i+j} \mbox{det}({A}_{jk})
+                      }_{\mbox{Zeile i von $ {A}^{-1} $} } 
+                      \mbox{\hspace{1ex}}b_j)
+            \end{displaymath}
+            Setzt man nun $ b={E}_{|1} $ in dieser Formel ein, erh"alt man 
+            f"ur $ i=1 $:
+            \begin{displaymath}
+                x_1 = \frac{ \mbox{det}(A_{\Box 11}) }{ \mbox{det}(A) }
+            \end{displaymath}
+            Man kann nun in der gleichen Weise Gleichungssysteme betrachten,
+            deren Koeffizientenmatrizen durch die Untermatrizen 
+            $ A_{\Box ii} $ (mit $ i=1 \ldots n-1 $ ) gebildet werden: \\
+            Sei
+            \begin{displaymath}
+                \dot{x}_k:= \frac{ \mbox{det}( {A}_{\Box kk} ) }
+                                 { \mbox{det}( {A}_{\Box (k-1)(k-1)} ) }
+            \end{displaymath}
+            Berechnet man das Produkt aller $ \dot{x}_k $ mit 
+            $ k=1 \ldots n-1 $, erh"alt man nach Vereinfachung die Gleichung
+            \begin{displaymath}
+                \prod_{k=1}^{n-1} \dot{x}_k = 
+                    \frac{ \mbox{det}( {A}_{\Box (n-1)(n-1)} ) }
+                         { \mbox{det}( {A}_{\Box 00} ) }
+            \end{displaymath}
+            Diese Gleichung ist "aquivalent zu:
+            \begin{equation}
+                \label{Csan76Satz3Glei1}
+                \mbox{det}(A)= 
+                    \frac{ {a}_{nn} }
+                         { \prod_{k=1}^{n-1} \dot{x}_k }
+            \end{equation}
+            Um $ \mbox{det}(A) $ zu berechnen, mu"s man also die 
+            Gleichungssysteme zur Berechnung der $ \dot{x}_k $ l"osen und
+            anschlie"send den Wert des Terms auf der rechten Seite von 
+            Gleichung \ref{Csan76Satz3Glei1} berechnen.
+
+            Zu beachten ist hierbei, da"s die Gleichungssysteme Sonderf"alle
+            darstellen, die bereits im ersten Beweisschritt (s. o.) 
+            erw"ahnt wurden. Es gilt in den Gleichungssystemen 
+            $ {A}x = b $ jeweils: $ b = {E}_{|1} $. Somit kann man das 
+            L"osen der Systeme auf das Invertieren der Matrizen A beschr"anken.
+            Diese "Uberlegungen f"uhren zu folgendem
+            Algorithmus ($ \mbox{det}({A}) $ sei zu berechnen, wobei 
+            A und E (Einheitsmatrix) $ n \times n $-Matrizen sind):
+            \begin{enumerate}
+                \item
+                    Parallel f"ur $ k= 1 \ldots n-1$: \\
+                    L"ose das Gleichungssystem 
+                    $ {A}_{\Box (k-1)(k-1)} x^{(k)}= b^{(k)}$ 
+                    mit $ b^{(k)}= ({E}_{(k-1)(k-1)})_{|1} $.
+                    (insgesamt G(n) Schritte)
+
+                    Setze $ \dot{x}_k:= x^{(k)}_1 $ .
+                    (kein Schritt; nur Bezeichnung)
+
+                    Falls G mit Hilfe von I bearbeitet wird hei"st das: 
+                    Invertiere $ \forall k:{A}_{\Box kk} $ 
+                    in insgesamt I(n) Schritten.
+              
+                    In diesem Fall erh"alt man $ \dot{x}_k $ mit:
+                    $ \tilde{A}^{(kk)}:= {A}_{\Box kk}^{-1} $. 
+                    (kein Schritt; nur Bezeichnung)
+                    
+                    Setze $ \dot{x}_k:= \tilde{a}_{11}^{(kk)} $. 
+                    F"ur alle $ k < 1 $ und $ k > n-1 $ 
+                    sei $ \dot{x}_k:= 1 $.
+                    (kein Schritt; nur Bezeichnung)
+                \item
+                    F"ur $l= \lceil \log(n-1) \rceil \ldots 1$ :\\
+                    Parallel f"ur $ m=1 \ldots 2^{l-1}$:
+                    $ \dot{x}^{(l-1)}_m:= \dot{x}^{(l)}_{2*m} *
+                                          \dot{x}^{(l)}_{2*m+1} $
+                    F"ur die Rechenschritte zur 
+                    Berechnung von $ \dot{x}^{(0)}_1 $ werden 
+                    $ \lceil \log(n-1) \rceil $ Schritte ben"otigt. F"ur die
+                    Schleife sind pro Durchlauf zwei zus"atzliche Schritte f"ur
+                    Schleifenbedingung und Dekrementierung von l anzusetzen.
+                    Weiterhin werden pro Durchlauf zwei zus"atzliche
+                    Schritte f"ur die Berechnung von Indizes ben"otigt.
+                    So ergeben sich insgesamt $ 4\lceil \log(n-1) \rceil $ 
+                    Schritte.
+                \item
+                    $ \mbox{det}({A}):= a_{nn} / \dot{x}^{(0)}_1 $
+                    (insgesamt zwei Schritte; dabei einer f"ur 
+                     Mehrfachindizierung)
+            \end{enumerate}
+            Also gilt: $ {D}(n) \leq {G}(n)+ 4\lceil \log(n-1) \rceil + 2 $ 
+                       bzw.
+                       $ {D}(n) \leq {I}(n)+ 4\lceil \log(n-1) \rceil + 2 $.
+    \end{description}
+    Um $ I(n)=O(f(n)) \Rightarrow D(n)=O(f(n)) $ zu zeigen, w"urden
+    die obigen beiden Beweisschritte ausreichen. Die "Aquivalenz folgt aus
+    den n"achsten beiden Schritten.
+    \begin{description}
+        \item[ $ D(n)=O(f(n)) \Rightarrow P(n)=O(f(n)) $ ]
+            Um darstellen zu k"onnen, wie ein Algorithmus zur L"osung von D
+            zur L"osung von P benutzt werden kann, m"ussen zun"achst noch
+            einige Anforderungen an die Eingabe gestellt werden.
+
+% - A gr"o"ser, so da"s n Zweierpotenz ist
+% - w"ahle w, so da"s m gro"s genug ist (verlange w als Eingabe)
+    (z. B 2^{\lfloor \log(max(a_{ii})) \rfloor})
+% - Rechnungen modulo m
+% - Berechne alle w^i (am besten auch gleich W^{-1})
+% - Berechne alle A' = (A - E * w^i)
+% - Berechne alle g(A')
+% - wende Schnelle Fourier Transformation an
+% $$$$ Fortsetzung hier
+        \item[ $ P(n)=O(f(n)) \Rightarrow I(n)=O(f(n)) $ ]
+            Eine Matrix A kann man bekanntlich nach folgender Formel 
+            invertieren:
+            \begin{displaymath}
+                {A}^{-1} = \frac{1}{\mbox{det}{(A)}}
+                           ((-1)^{\mu + \nu} \mbox{det}(A)_{\mu nu})^{T}
+            \end{displaymath}
+            Sei g das Charakteristische Polynom von A. Dann gilt:
+            $ g(0)=\mbox{det}(A) $.
+            Dies f"uhr zu folgender M"oglichkeit, einen Algorithmus zur 
+            L"osung von P auch zur L"osung von I zu benutzen:
+            \begin{enumerate}
+                \item
+                    Parallel:
+                    \begin{enumerate}
+                        \item
+                            Berechne das Charakteristische Polynom g von A
+                            (P(n) Schritte). 
+                            Sei $ \tilde{z} = g(0) $ (nur Bezeichnung; kein
+                            Schritt)
+                        \item
+                            Parallel f"ur $ i,j = 1 \ldots n $:\\
+                            Berechne das Charakteristische Polynom $ g_{ij} $
+                            von $ {A}_{ij} $ (P(n-1) Schritte). 
+                            Sei $ z_{ij} = g_{ij}(0) $ (nur Bezeichnung; kein
+                            Schritt).
+                    \end{enumerate}
+                    (insgesamt P(n) Schritte)
+                \item
+                    Sei $ \tilde{A} = {A}^{-1} $.
+                    Parallel f"ur $i,j=1 \ldots n$:
+                    \begin{displaymath}
+                        \tilde{a}_ij:= \frac{(-1)^{j+i}*z_{ji}
+                                            }{\tilde{z}}
+                    \end{displaymath}
+                    (insgesamt 4 Schritte)
+            \end{enumerate}
+            Somit gilt: $ I(n) \leq P(n) + 4 $ .
+    \end{description}
+    Die parallelen Zeitkomplexit"aten von I und D sind also von der gleichen
+    Gr"o"senordnung.
+% $$$$ hier noch Hinweis auf Existenz von f.
+% $$$$ hier noch Hinweis auf Bedeutung von Satz 1 (untere Schranke) f"ur
+% Summand log(n) bei einigen Reduktionsschritten
+\end{beweis}
+
+Mit Hilfe von Lemma \ref{Csan76Satz3} hat man also, sobald man einen Algorithmus
+f"ur I gefunden hat, auch einen f"ur D. Da Satz \ref{Csan76Satz2} einen 
+Algorithmus f"ur I angibt, erhalten wir somit eine obere Schranke f"ur D(n):
+
+\begin{satz}
+\label{Csan76Satz4}
+% Wert f"ur I(n) noch einzusetzen:
+    $ D(n) \leq I(n)+ 4\lceil \log(n-1) \rceil + 2 $.
+\end{satz}
+\begin{beweis}
+Der Satz folgt aus Lemma \ref{Csan76Satz3} und Lemma \ref{Csan76Satz2}.
+\end{beweis}
+
+\section{Vermeidung von Divisionen}
+
+\subsection{Algorithmus von {Borodin,} Von zur Gathen und Hopcroft}
+% nach BGH82
+
+\subsection{Algorithmus von Berkowitz}
+% nach Berk84
+
+\section{Minimale Anzahl der Prozessoren}
+% nach Pan85
+
+\section{Schaltkreise}
+
+\section{Implementierung}
+
+Die Implementierung soll auf einem Rechner mit nur einem Prozessor erfolgen.
+Dazu m"u"s die ben"otigte Anzahl von Prozessoren irgendwie simuliert werden.
+Diese Problemstellung legt einen objektorientierten Ansatz nahe. 
+
+Eine M"oglichkeit w"are es, auf dem verwendeten Rechner vom Betriebssystem
+unterst"utzt quasi-parallele miteinander kommunizierende Prozesse zu verwenden,
+z. B. pro ben"otigtem Prozessor ein Prozess, sowie ein Prozess, der den
+Speicher simuliert. 
+
+Diese L"osung ist jedoch schwer zu handhaben und zu untersuchen. Z. B. w"are
+es problematisch, zuverl"assige vergleichbare Laufzeitmessungen vorzunehmen.
+
+Somit ist es n"otig, eine Programmiersprache zu w"ahlen, und dann { \em ein}
+Programm zu schreiben, das die gesamte Simulation des Parallelrechners 
+"ubernimmt. Da dann der gesamte Ablauf unter der Kontrolle des Programms
+statt findet, werden Messungen vereinfacht in Form von zus"atzlichen 
+Anweisungen an den geeigneten Stellen. Bei der gegebenen Problemstellung 
+sollte eine objektorientierte Programmiersprache gew"ahlt werden, die die
+Simulation des Parallelrechners m"oglichst gut unterst"utzt. Sehr gut geeignet
+ist dazu die Programmiersprache {\em Simula} \cite{Simula85}.
+
+% $$$$ Realisierung des 'Parallel f"ur i=1...k tue' bei der Aufgaben-
+%          verteilung besprechen
+
+
+% bei MIMD:
+% Problem : unterschiedliche Algorithmen f"ur verschiedene Prozessorgruppen
+%           (im obigen Algorithmus vernachl"assigt: zus"atzliche Schritte
+%            zur Verteilung der Aufgaben an die Prozessoren)
+% Beispiel: ... (?)
+% L"osung : 1) ein Algorithmus mit zus"atzlichen Anweisungen zur Feststellung
+%              der tats"achlichen Aufgabe f"ur Prozessor i (if-Abfrage)
+%           2) ein zus"atzlicher Prozessor, der die Aufgaben verteilt
+
+\bibliography{diplom}
+
+\end{document}

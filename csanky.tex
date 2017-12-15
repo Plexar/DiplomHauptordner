@@ -1,0 +1,1132 @@
+%
+% Datei: csanky.tex (Textteile nach 'Csan74' und 'Csan76')
+%
+
+\MyChapter{Die Algorithmen von Csanky}
+\label{ChapCsanky}
+
+In diesem Kapitel werden zwei von L. Csanky\footnote{ \cite{Csan74} und 
+\cite{Csan76} } vorgeschlagene Algorithmen 
+behandelt. Der erste davon verwendet eine relativ bekannte Methode zur
+Determinantenberechnung\footnote{Entwicklungssatz von Laplace}. 
+Die Effizienz dieser Methode ist jedoch nicht befriedigend. Ihre 
+Darstellung ist als Einstieg gedacht.
+
+\MySection{Die Stirling'schen Ungleichungen}
+
+Als Vorarbeit f"ur den ersten Algorithmus werden in diesem Unterkapitel 
+weitere Grundlagen behandelt.
+
+\begin{satz}[Stirling'sche Ungleichungen]
+\label{SatzStirling}
+\index{Stirling'sche Ungleichungen}
+    Sei \[ n \in \Nat \] Dann gilt
+    \begin{eqnarray}
+        \label{Equ1SatzStirling}
+        n! & \geq & \sqrt{2\pi n}
+                    \left( \frac{n}{\MathE} \right)^n
+                    \MathE^{\frac{1}{12n+1}}
+    \\  
+        \label{Equ2SatzStirling}
+        n! & \leq & \sqrt{2\pi n}
+                    \left( \frac{n}{\MathE} \right)^n
+                    \MathE^{\frac{1}{12n}}
+    \end{eqnarray}
+\end{satz}
+\begin{beweis}
+    Die Ungleichungen folgen aus \cite{Mang67} S. 154.
+\end{beweis}
+
+Die Ungleichungen werden in den folgenden Lemmata angewendet. Die Richtung
+der Ab\-sch"a\-tzung der jeweiligen Werte wird durch deren Verwendung
+im sp"ateren Text bestimmt.
+
+\begin{lemma}
+\label{SatzStirling2Anwendung}
+    \[ \MyChoose{ n }{ \frac{n}{2} }
+           \geq
+       \frac{2^n}{ \sqrt{\pi \frac{n}{2}} \: \MathE }
+    \]
+\end{lemma}
+\begin{beweis}
+    Es soll nach unten abgesch"atzt werden. Deshalb wird der Z"ahler mit
+    Hilfe von \equref{Equ1SatzStirling} und der Nenner mit Hilfe von
+    \equref{Equ2SatzStirling} abgesch"atzt. Man erh"alt:
+    \begin{eqnarray}
+       \MyChoose{ n }{ \frac{n}{2} }
+           & = &
+       \frac{n!}{ \left( \frac{n}{2} \right)^2 } \nonumber
+    \\ \label{Equ1LemmaStirling2}
+           & \geq &
+       \frac{
+            \sqrt{2\pi n}
+            \left( \frac{n}{\MathE} \right)^n
+            \MathE^{\frac{1}{12n+1}}
+       }{
+            \left(
+                \sqrt{\pi n}
+                \left( \frac{ \frac{n}{2} }{\MathE} \right)^{\frac{n}{2}}
+                \MathE^{\frac{1}{6n}}
+            \right)^2
+       }
+    \\     & \geq &
+       \frac{
+           \sqrt{2}
+       }{
+           \sqrt{\pi n} \left( \frac{1}{2} \right)^n
+       }
+       \, \MathE^{ \frac{ -18n-2 }{ (12n + 1)6n } }
+    \\     & \geq & 
+       \frac{2^n}{ \sqrt{\pi \frac{n}{2}} \: \MathE 
+       } \nonumber
+    \end{eqnarray}
+\end{beweis}
+
+Auf die gleiche Weise, wie im vorangegangenen Lemma
+\ref{SatzStirlingAnwendung} eine Absch"atzung nach unten erfolgt,
+erh"alt man eine Absch"atzung von
+\[ \log \MyChoose{ n }{ \frac{n}{2} } \] nach oben:
+
+\begin{lemma}
+\label{SatzStirlingAnwendung}
+    \[ \log{ n \choose \frac{n}{2} }
+           \leq
+       n - \frac{\log \left( \frac{n}{2} \right) + 1}{2}
+    \]
+\end{lemma}
+\begin{beweis}
+    Aus \equref{Equ1SatzStirling} folgt:
+    \[ \left( \frac{n}{2} \right) !
+           \geq
+       \sqrt{\pi n}
+       \left( \frac{ \frac{n}{2} }{\MathE} \right)^{\frac{n}{2}}
+       \MathE^{\frac{1}{6n+1}}
+    \]
+    Also gilt:
+    \begin{eqnarray}
+    \label{EquStirling1Schaetzung}
+       \frac{n!}{\left( \frac{n}{2}! \right)^2 }
+           & \leq &
+       \frac{
+            \sqrt{2\pi n}
+            \left( \frac{n}{\MathE} \right)^n
+            \MathE^{\frac{1}{12n}}
+       }{
+            \left(
+                \sqrt{\pi n}
+                \left( \frac{ \frac{n}{2} }{\MathE} \right)^{\frac{n}{2}}
+                \MathE^{\frac{1}{6n+1}}
+            \right)^2
+       }
+    \\ \label{EquStirling2Schaetzung}
+           & = &
+       \frac{
+           \sqrt{2}
+       }{
+           \sqrt{\pi n} \left( \frac{1}{2} \right)^n
+       }
+       \MathE^{ \frac{ 1-18n }{ 12n(6n+1) } }
+    \\ \nonumber
+        & \leq & \frac{2^n}{ \sqrt{ \pi \frac{n}{2} }  }
+    \end{eqnarray}
+    Bildet man nun auf beiden Seiten der Ungleichungskette den
+    Logarithmus, erh"alt man mit Hilfe einiger Logarithmengesetze
+    \[ \log{ n \choose \frac{n}{2} }
+           \leq
+       n - \frac{1}{2} \log\left( \frac{n}{2} \right) -
+                                                   \frac{1}{2} \log(\pi)
+           \leq
+       n - \frac{ \log \left( \frac{n}{2} \right) + 1 }{2}
+    \]
+\end{beweis}
+
+% **************************************************************************
+
+\MySection{Der Entwicklungssatz von Laplace}
+\label{SecLaplace}
+
+F"ur den ersten im Kapitel \ref{ChapCsanky} darzustellenden Algorithmus
+wird ein bekannter Satz verwendet. Er wird in diesem Unterkapitel zusammen 
+mit einer h"aufig benutzten Folgerung dargestellt.
+
+\begin{satz}[Entwicklungssatz von Laplace]
+\label{SatzLaplace}
+\index{Laplace!Entwicklungssatz von}
+    Sei $k$ eine nat"urliche Zahl mit
+    \[ 1 \leq k \leq n-1 \] Sei $D_n$ die Determinante der Matrix $A$.
+
+    F"ur die nat"urliche Zahl $i$ gelte \[ 1 \leq i \leq {n \choose k} \]
+    Sei $D_k^{(2i-1)}$ die Determinante einer Untermatrix $A_k^{(2i-1)}$ von
+    $A$, die aus $k$ Spalten der ersten $k$ Zeilen gebildet werde.
+    von
+    $A$, die aus den f"ur $A_k^{(2i-1)}$ nicht gew"ahlten $n-k$ Zeilen und
+    Spalten gebildet werde.
+
+    F"ur jedes $i$ werde eine andere der \[ {n \choose k} \] m"oglichen
+    Auswahlen f"ur die $k$ Spalten f"ur $A^{(2i-1)}$ getroffen.
+
+    F"ur eine Untermatrix $A_k^{(2i-1)}$ bezeichne \[ f(A_k^{(2i-1)}) \] die
+    $n$-Permutation, die die Spalten von $A$ so vertauscht, da"s
+    $A_k^{(2i-1)}$ aus den ersten $k$ und $A_{n-k}^{(2i)}$
+    aus den weiteren $n-k$ Zeilen und Spalten von $A$ besteht.
+
+    Dann gilt:
+    \begin{equation}
+    \label{EquSatzLaplace}
+    D_n = \sig(f(A_k^1)) D_k^1 D_{n-k}^2 + \sig(f(A_k^3)) D_k^3 D_{n-k}^4
+          + \cdots
+          + \sig \left( f \left( A_k^{2{n \choose k}-1} \right) \right)
+            D_k^{2{n \choose k}-1} D_k^{2{n \choose k}}
+    \end{equation}
+\end{satz}
+\begin{beweis}
+    (vergl. \cite{Csan74} Seite 21)
+    Es ist zu zeigen, da"s die Berechnung der Determinante nach
+    \equref{EquSatzLaplace} mit der Berechnung nach \equref{EquDet}
+    "ubereinstimmt.
+
+    Die einzelnen Determinanten in \equref{EquSatzLaplace} werden auf
+    die in \equref{EquDet} angegebene Weise berechnet.
+    Dazu ist zu beachten, da"s $\permut_n$ genau $n!$
+    Elemente besitzt.
+    Es gen"ugt zu zeigen, da"s in \equref{EquSatzLaplace}
+    ebenso viele Permutationen auf die Indizes von $1$ bis $n$ angewendet
+    werden und alle voneinander verschieden sind.
+
+    Berechnet man einen Summanden
+    \[ \sig\lb f\lb A_k^{(2i-1)}\rb\rb D_k^{(2i-1)} D_{n-k}^{(2i)} \]
+    in \equref{EquSatzLaplace} anhand von \equref{EquDet},
+    kann man die zwei Summen durch Ausmultiplizieren zu einer
+    zusammenfassen. Den $k!$ Permutationen zur Berechnung von $D_k^{(2i-1)}$
+    und den $(n-k)!$ Permutationen zur Berechnung von $D_{n-k}^{(2i)}$
+    entsprechen \[ k! \, (n-k)! \] $n$-Permutationen zur Berechnung der
+    zusammengefa"sten Summen f"ur diesen einen Summanden. Die Menge dieser
+    $n$-Permutationen wird mit $M_i$ bezeichnet.
+
+    Die $k$-Permutationen bzw. $(n-k)$-Permutationen zur Berechnung aller
+    Determinanten $D_k$ und $D_{n-k}$ werden jeweils auf
+    verschiedene Mengen von Indizes angewendet, d. h. f"ur zwei beliebige
+    dieser Mengen von Indizes gibt es in der einen mindestens einen Index,
+    der in der anderen nicht enthalten ist. Das bedeutet, da"s alle Mengen
+    $M_i$ voneinander verschieden sind.
+
+    Die Anzahl der Mengen $M_i$, die man auf diese Weise f"ur
+    \equref{EquSatzLaplace} erh"alt, betr"agt \[ {n \choose k} \]
+    Ihre Vereinigung ergibt eine Menge mit 
+    \[ {n \choose k} k! \, (n-k)! \]
+    also \[ n! \] Elementen, was zu zeigen war.
+\end{beweis}
+
+Aus diesem Satz erh"alt man mit $k=1$:
+
+\begin{korollar}[Zeilen- und Spaltenentwicklung]
+\label{SatzEntw}
+\index{Zeilenentwicklung}
+\index{Spaltenentwicklung}
+\index{Entwicklung! nach einer Zeile oder Spalte}
+     Seien \[ 1 \leq p \leq n \] und \[ 1 \leq q \leq n \] beliebig.
+     Dann gilt die {\em Entwicklung nach Zeile $p$}
+     \[ \det(A)= \sum_{j=1}^n (-1)^{p+j} a_{p,j} \det(A_{(p|j)}) \]
+     und die {\em Entwicklung nach Spalte $q$}
+     \[ \det(A)= \sum_{i=1}^n (-1)^{i+q} a_{i,q} \det(A_{(i|q)}) \]
+\end{korollar}
+
+% **************************************************************************
+
+\MySection{Determinantenberechnung durch 'Divide and Conquer'}
+\label{SecDivCon}
+\index{Divide and Conquer}
+\index{Csanky!Algorithmus von}
+\index{Algorithmus!von Csanky}
+
+Der Algorithmus (\cite{Csan74} S. 21 ff.), der hier betrachtet wird,
+berechnet die Determinante
+rekursiv mit Hilfe der Methode {\em Divide and Conquer}, d. h. durch
+die Berechnung der Determinanten von Untermatrizen der gegebenen Matrix.
+
+Da es sich hierbei nur um ein einleitendes Beispiel handelt, wird zur
+Vereinfachung angenommen,
+da"s die Anzahl der Zeilen und Spalten $n$ der
+Matrix eine Zweierpotenz ist. Falls dies nicht der Fall ist, wird sie um
+entsprechend viele Zeilen und Spalten erweitert, so da"s die neuen
+Elemente der Hauptdiagonalen jeweils gleich $1$ und alle weiteren
+neuen Elemente jeweils gleich $0$ sind.
+
+Zur rekursiven Berechnung der Determinate wird Satz \ref{SatzLaplace}
+benutzt. Man w"ahlt
+\[ k := \frac{1}{2}n \MyPunkt \]
+Somit gilt auch \[ n-k = \frac{1}{2}n \MyPunkt \]
+
+Die Anzahl der Schritte, die der Algorithmus ben"otigt, um mit Hilfe 
+dieses Satzes die Determinante einer $n \times n$-Matrix zu berechnen, 
+wird mit \[ s(n) \] bezeichnet. Die Anzahl der Prozessoren, die dabei
+besch"aftigt werden, wird mit \[ p(n) \] bezeichnet.
+
+Bei der Berechnung wird Gleichung
+\equref{EquSatzLaplace} rekursiv ausgewertet. Das f"uhrt dazu, da"s
+\[ \MyChoose{n}{ \frac{n}{2} } \] Determinanten von Untermatrizen zu
+berechnen sind. Die Berechnung einer Determinanten erfordert
+\[ s\left( \frac{n}{2} \right) \] Schritte und
+\[ 2 \MyChoose{n}{ \frac{n}{2} } p\left( \frac{n}{2} \right) \] Prozessoren.
+
+Aus \ref{SatzAlgRechnen} folgt, da"s die in
+\equref{EquSatzLaplace} auftretenden Additionen in
+\[ \log \MyChoose{ n }{ \frac{n}{2} } \] Schritten von
+\[ \frac{ \MyChoose{ n }{ \frac{n}{2}} }{2} \] Prozessoren erledigt werden
+k"onnen. Die Multiplikationen k"onnen in einem Schritt von ebenfalls
+\[ \frac{ \MyChoose{ n }{ \frac{n}{2}} }{2} \] Prozessoren durchgef"uhrt
+werden. Also gilt f"ur die Anzahl der Schritte, die der Algorithmus 
+ben"otigt, folgende Rekursionsgleichung:
+\[
+   s(n) = \left\{
+              \begin{array}{lcr}
+                  0 & : & n = 1
+              \\ s\left( \frac{n}{2} \right) + 1 +
+                 \log \MyChoose{ n }{ \frac{n}{2} }
+                   & : & n > 1
+              \end{array}
+          \right.
+\]
+Mit \ref{SatzStirlingAnwendung} folgt
+\[ s(n)
+       \leq
+   s\left( \frac{n}{2} \right) + 1 +
+   n - \frac{\log \left( \frac{n}{2} \right) + 1}{2}
+\]
+Das ist "aquivalent zu
+\[
+   s(n)
+       \leq
+   s\left( \frac{n}{2} \right) + 1 +
+   n - \frac{\log(n)}{2}
+\]
+Die Aufl"osung der Rekursion ergibt:
+\[
+   s(n)
+       \leq
+   \log(n) + \sum_{j=1}^{\log(n)} \frac{n}{j} -
+   \frac{1}{2} \sum_{k=1}^{\log(n)} \log\left( \frac{n}{k} \right)
+\]
+Man kann nun die folgenden Absch"atzungen vornehmen:
+\begin{eqnarray*}
+   \sum_{j=1}^{\log(n)} \frac{1}{j}
+       & = &
+   1 + \frac{1}{2} + \frac{1}{3} + \cdots + \frac{1}{\log(n)}
+\\
+   & \leq & 1 + \int\limits_1^{\log(n)} \frac{1}{x} \, dx
+\\
+   & = & [ \ln(x) ]_1^{\log(n)} = 1 + \ln(\log(n))
+\\ 
+   & \leq & 1 + \log(\log(n))
+\end{eqnarray*}
+und
+\[
+   \sum_{k=1}^{\log(n)} \log(k)
+       \leq
+   \sum_{k=1}^{\log(n)} \log(\log(n))
+       =
+   \log(n)\log(\log(n))
+\]
+und kommt so in Verbindung mit einigen Logarithmengesetzen auf
+\[
+   s(n)
+       \leq
+   \log(n) + n (1 + \lc \log(\log(n)) \rc ) 
+   - \frac{1}{2} \log^2(n) + \log(n) \lc \log(\log(n)) \rc
+\] % Probe: s(2) \leq 2.5
+Also gilt \[ s(n) = O(n\log(\log(n))) \]
+
+F"ur die Anzahl der besch"aftigten Prozessoren gilt
+\[ p(n) = \left\{
+              \begin{array}{lcr}
+                  0 & : & n = 1
+              \\  2 & : & n = 2
+              \\  \max\left(
+                         2 \MyChoose{ n }{ \frac{n}{2} }
+                         p\left( \frac{n}{2} \right)
+                      ,  \frac{ \MyChoose{ \scriptstyle n }{ \frac{n}{2} } 
+                              }{2}
+                      \right)
+                    & : & \mbox{sonst}
+              \end{array}
+          \right.
+\]
+Bei diesem Beispielalgorithmus interessiert uns nur die Gr"o"senordnung
+der Anzahl besch"aftigter Prozessoren. Deshalb wird diese Anzahl grob
+nach unten abgesch"atzt durch
+\[ p(n) > \MyChoose{ n }{ \frac{n}{2} } \]
+Mit \ref{SatzStirling2Anwendung} folgt
+\[ p(n) > \frac{ 2^n }{ \sqrt{\pi \frac{n}{2}} \: \MathE } \]
+Da nach unten abgesch"atzt wurde, folgt aus dieser Ungleichung
+\[ p(n) = \Omega\left( \frac{2^n}{\sqrt{n}} \right) \]
+Die Anzahl der Prozessoren ist also von exponentieller Gr"o"senordnung.
+
+Es wird sich bei den noch zu betrachtenden Algorithmen zeigen, da"s 
+sowohl f"ur die Anzahl der Schritte als auch f"ur die
+Anzahl der besch"aftigten Prozessoren deutlich bessere Werte m"oglich sind.
+
+% **************************************************************************
+
+\MySection{Die Linearfaktorendarstellung}
+
+In diesem Unterkapitel werden einige Aussagen behandelt, die sich in
+Verbindung mit einer weiteren Darstellungsm"oglichkeit f"ur das 
+charakteristische Polynom ergeben. Diese Aussagen werden f"ur den 
+Beweis des Satzes von Frame (siehe \ref{SecFrame}) ben"otigt. Literatur
+dazu ist bereits in Kapitel \ref{ChapBase} aufgelistet.
+
+Neben der Matrizendarstellung und der Koeffizientendarstellung gibt es 
+noch eine dritte f"ur uns wichtige Darstellung f"ur das charakteristische
+Polynom, die 
+\index{Linearfaktorendarstellung} {\em Linearfaktorendarstellung}. 
+Ein Polynom $n$-ten Grades
+kann man auch als Produkt von $n$ Linearfaktoren darstellen, so da"s das
+charakteristische Polynom folgendes Aussehen bekommt:
+\Beq{TermLinearfaktoren}
+    (\lambda_1 - \lambda) (\lambda_2 - \lambda) \ldots
+    (\lambda_n - \lambda)
+\Eeq
+Dabei sind die $\lambda_i$ die Eigenwerte der zugrunde liegenden
+$n \times n$-Matrix.
+Sie sind {\em nicht} paarweise verschieden.
+Diese Tatsache f"uhrt uns zum Begriff der
+{\em Vielfachheit}. Man kann in der obigen Linearfaktorendarstellung
+gleiche Faktoren mit Hilfe von Potenzen beschreiben. Dazu gelte
+\[ k \in \Nat, \: 1 \leq k \leq n \MyPunkt \]
+Die Eigenwerte seien
+\[ \lambda'_1, \lambda'_2, \ldots, \lambda'_k \MyKomma \]
+jedoch alle paarweise voneinander verschieden. So bekommt
+\equref{TermLinearfaktoren} folgendes Aussehen:
+\[ (\lambda'_1 - \lambda)^{m(\lambda'_1)}
+   (\lambda'_2 - \lambda)^{m(\lambda'_2)} \ldots
+   (\lambda'_k - \lambda)^{m(\lambda'_k)}
+\]
+\index{Vielfachheit}
+In dieser Darstellung wird $m(\lambda'_i)$ mit {\em Vielfachheit} des
+Eigenwertes $\lambda'_i$ bezeichnet.
+
+Die $n$ Eigenwerte einer $n \times n$-Matrix besitzen zur Determinante 
+und zur Spur jeweils eine wichtige Beziehung, welche in den n"achsten 
+beiden S"atzen dargestellt wird:
+\begin{satz}
+    \[ \det(A)= \prod_{i=1}^{n} \lambda_i \]
+\end{satz}
+\begin{beweis}
+    Die G"ultigkeit der Behauptung wird bei Betrachtung der Berechnung der
+    Koeffizientendarstellung des charakteristischen Polynoms aus dessen
+    Linearfaktorendarstellung deutlich. Beim Ausmultiplizieren der 
+    Linearfaktoren wird der Wert von $c_0$ nur durch das Produkt der 
+    Eigenwerte beeinflu"st.
+\end{beweis}
+
+\begin{satz}
+\label{SatzTrEigenwerte}
+    \[ \tr(A)= \sum_{i=1}^{n} \lambda_i \]
+\end{satz}
+\begin{beweis}
+    Betrachtet man die Berechnung der Koeffizientendarstellung des
+    charakteristischen Polynoms aus dessen Linearfaktorendarstellung durch
+    Ausmultiplizieren, erkennt man, da"s gilt:
+    \[ c_{n-1} = (-1)^{n-1} \sum_{i=1}^n \lambda_i \MyPunkt \]
+    Mit \ref{SatzDdurchP} folgt daraus die Behauptung.
+\end{beweis}
+
+Die Eigenwerte besitzen weiterhin folgende interessante Eigenschaft:
+\begin{satz}
+\label{SatzEigenPotenz}
+    Seien $\lambda_1, \lambda_2, \ldots, \lambda_n$ die Eigenwerte der
+    $n \times n$-Matrix $A$. Sei $k \in \Nat$. Dann gilt:
+    \[ \lambda_1^k, \lambda_2^k, \ldots, \lambda_n^k \] sind die
+    Eigenwerte von $A^k$.
+\end{satz}
+\begin{beweis}
+    Ein Skalar $\lambda$ ist genau dann Eigenwert von $A$, wenn es einen
+    Vektor $x \neq 0_n$ gibt, so da"s gilt\footnote{vgl. 
+    Erl"auterungen auf S. \pageref{PageEigenMotiv}}
+    \Beq{Equ1EigenPotenz}
+        Ax = \lambda x \MyPunkt
+    \Eeq
+    Mit Hilfe dieser Beziehung wird die Behauptung per Induktion
+    bewiesen.
+
+    Nach Voraussetzung ist die Behauptung f"ur $k=1$ erf"ullt. Es gelte
+    also nun
+    \[ \forall \lambda= \lambda_1, \ldots, \lambda_n \exists x : \:
+       A^k x = \lambda^k x \MyPunkt
+    \]
+    Zu zeigen ist, da"s dann auch gilt
+    \[ \forall \lambda= \lambda_1, \ldots, \lambda_n \exists x : \:
+       A^{k+1} x = \lambda^{k+1} x
+    \]
+    Diese Gleichung kann man umformen in
+    \[ \forall \lambda= \lambda_1, \ldots, \lambda_n \exists x : \:
+       A^k \underbrace{A x}_{(*)}= \lambda^k \underbrace{\lambda x}_{(*)}
+    \]
+    Nach Voraussetzung sind die Terme $(*)$ gleich. Sie werden mit $y$ 
+    bezeichnet. Die Gleichung bekommt dann folgendes Aussehen:
+    \[ \forall \lambda= \lambda_1, \ldots, \lambda_n \exists y: \:
+       A^k y= \lambda^k y
+    \]
+    Dies ist wiederum nach Voraussetzung richtig.
+\end{beweis}
+
+Aus diesem Satz ergibt sich mit Hilfe von \ref{SatzTrEigenwerte}
+eine f"ur uns wichtige Beziehung:
+\begin{korollar}
+\label{SatzTraceLambda}
+    \[ \tr(A^k) = \sum_{i=1}^n \lambda_i^k \]
+\end{korollar}
+
+% **************************************************************************
+
+\MySection{Die Newton'schen Gleichungen f"ur Potenzsummen}
+\label{SecNewtonPotenz}
+
+Mit den {\em Newton'schen Gleichungen f"ur Potenzsummen} werden in diesem
+Unterkapitel weitere Grundlagen f"ur den Beweis der S"atze von Frame
+(siehe \ref{SecFrame}) behandelt. Die gesamten Hintergr"unde f"ur diese
+Gleichungen werden z. B. in \cite{Haup52} (Kapitel 7 und 8) behandelt.
+
+Eine {\em Potenzsumme} ist eine Summe von Potenzen einer oder mehrerer
+Unbestimmter. Auf Seite \ref{SatzSumK} sind weitere Beispiele f"ur 
+einfachere Potenzsummengleichungen zu finden.
+
+Da uns diese Gleichungen im Zusammenhang mit dem charakteristischen
+Polynom einer Matrix interessieren, werden sie anhand dieses Polynoms
+entwickelt. Dazu werden folgende Vereinbarungen getroffen:
+\begin{itemize}
+\item
+      Das charakteristische Polynom der $n \times n$-Matrix $A$ sei
+      \[
+         p(\lambda) := c_n \lambda^n + c_{n-1} \lambda^{n-1} + \cdots
+                       + c_1 \lambda + c_0 \MyPunkt 
+      \]
+\item
+      Die erste Ableitung von $p(\lambda)$ wird mit \[ p'(\lambda) \]
+      bezeichnet.
+\item Die Eigenwerte von $A$ seien
+      \[ \lambda_1, \lambda_2, \ldots, \lambda_n \MyPunkt \]
+      Es wird definiert
+      \[ s_k := \sum_{i=1}^n \lambda_i^k \MyPunkt \]
+\end{itemize}
+
+Zun"achst besch"aftigen wir uns mit der 
+Polynomdivision. \index{Polynomdivsion}
+Sei dazu ein $i$
+mit $ 1 \leq i \leq n $ gegeben. Da $\lambda_i$ Eigenwert von $A$ und somit
+Nullstelle von $p(\lambda)$ ist, l"a"st sich $p(\lambda)$ ohne Rest durch
+\[ \lambda_i - \lambda \] teilen. Das Ergebnis ist ein Polynom vom Grad
+$n-1$. Das folgende Lemma liefert eine Aussage "uber dessen
+Koeffizienten:
+
+\begin{lemma}
+\label{SatzPolynomDiv}
+    Gegeben sei die Gleichung:
+    \Beq{Equ1SatzPolynomDiv}
+        \frac{ p(\lambda) }{ (\lambda_i - \lambda) }
+            =
+        \hat{c}_{n-1}\lambda^{n-1} +
+        \hat{c}_{n-2}\lambda^{n-2} + \ldots +
+        \hat{c}_1 \lambda + \hat{c}_0
+    \Eeq
+    Dann gilt f"ur $1 \leq k \leq n-1$:
+    \Beq{Equ2SatzPolynomDiv}
+        \hat{c}_k =
+        - \sum_{j=1}^{n-k} \lambda_i^{j-1} c_{k+j}
+%        = - ( \lambda_i^{n-k-1} c_n + \lambda_i^{n-k-2} c_{n-2} +
+%              \cdots + \lambda c_{k+2} + c_{k+1} )
+    \Eeq
+\end{lemma}
+\begin{beweis}
+     Multipliziert man beide Seiten von Gleichung
+     \equref{Equ1SatzPolynomDiv} mit \[ (\lambda_i - \lambda) \] und
+     multipliziert die rechte Seite der so gewonnenen Gleichung aus,
+     ergibt sich:
+     \begin{eqnarray*}
+         \lefteqn{c_n \lambda^n + c_{n-1} \lambda^{n-1} + \cdots
+                       + c_1 \lambda + c_0 }
+     \\ & = &
+         - \hat{c}_{n-1} \lambda^n +
+         (\lambda_i \hat{c}_{n-1} - \hat{c}_{n-2}) \lambda^{n-1} +
+         (\lambda_i \hat{c}_{n-2} - \hat{c}_{n-3}) \lambda^{n-2} + \cdots +
+         (\lambda_i \hat{c}_1 - \hat{c}_0) \lambda +
+         \lambda_i \hat{c}_0
+     \end{eqnarray*}
+     Setzt man \[ \hat{c}_n = \hat{c}_{-1} = 0 \MyKomma \]
+     erh"alt man durch Koeffizientenvergleich:
+     \begin{eqnarray}
+        \nonumber
+            & \forall 1 \leq l \leq n :
+            c_k = \lambda_i \hat{c}_k - \hat{c}_{k-1}
+     \\ \label{Equ3SatzPolynomDiv}
+            \Leftrightarrow &
+                \forall 1 \leq l \leq n :
+                \hat{c}_{l-1} = \lambda_i \hat{c}_l - c_l
+     \end{eqnarray}
+     Gleichung \equref{Equ2SatzPolynomDiv} wird durch
+     Induktion\footnote{Um die Art und Weise, wie die Koeffizienten der
+     Polynome indiziert sind, einheitlich zu halten, verl"auft die
+     Induktion etwas ungewohnt.} bewiesen.
+     F"ur $k = n-1$ folgt die G"ultigkeit von \equref{Equ2SatzPolynomDiv} 
+     aus \equref{Equ3SatzPolynomDiv}. 
+     
+     Gelte \equref{Equ2SatzPolynomDiv} also nun f"ur $k = l$.
+     Es ist zu zeigen, da"s die Gleichung dann auch f"ur $k = l-1$ gilt:
+     \[
+        \hat{c}_{l-1} = - \sum_{j=1}^{n-(l-1)} \lambda_i^{j-1} c_{l-1+j}
+     \]
+     Zieht man $c_l$ aus der Summe heraus und indiziert neu, erh"alt man:
+     \[
+        \hat{c}_{l-1} = - c_l - \sum_{j=1}^{n-l} \lambda_i^{j} c_{l+j}
+     \]
+     Zieht man nun noch $\lambda_i$ aus der Summe heraus, erh"alt man:
+     \[
+        \hat{c}_{l-1} = - c_l - \lambda_i 
+                                   \sum_{j=1}^{n-l} \lambda_i^{j-1} c_{l+j}
+     \]
+     Nach Induktionsvoraussetzung ist dies gleichbedeutend mit:
+     \[
+        \hat{c}_{l-1} = - c_l + \lambda_i \hat{c}_l
+     \]
+     Die G"ultigkeit dieser Gleichung folgt aus \equref{Equ3SatzPolynomDiv}.
+\end{beweis}
+
+Eine an dieser Stelle wichtige Regel f"ur das Differenzieren 
+lautet (\cite{Haup52} S. 160):
+
+\begin{bemerkung}
+\label{SatzProdDiff}
+\index{Differenzierung!von Produkten}
+    Seien \[ g_1(x), g_2(x), \ldots, g_n(x) \]
+    auf einem Intervall $I$ differenzierbare Funktionen. Es gelte 
+    \[ f(x) = \prod_{i=1}^n g_i(x) \MyPunkt \]
+    Dann ist auch $f(x)$ auf $I$ differenzierbar mit
+    \[ f'(x) = \sum_{i=1}^n g_1(x) g_2(x) \cdots 
+                            g_{i-1}(x) g_i'(x) g_{i+1}(x) \cdots
+                            g_{n-1}(x) g_n(x) \MyPunkt
+    \]
+\end{bemerkung}
+
+Falls gilt \[ \forall x \in I, 1 \leq i \leq n: \: g_i(x) \neq 0 \MyKomma \]
+l"a"st sich diese Regel auch einfacher formulieren:
+\[ f'(x) = \sum_{i=1}^n \frac{f(x)}{g_i(x)} g_i'(x) \]
+
+Betrachtet man das charakteristische Polynom $p(\lambda)$ in 
+Linearfaktorendarstellung und beachtet, da"s die Ableitung von
+\[ (\lambda_i - \lambda) \] $-1$ ergibt, dann erh"alt man mit Hilfe von 
+\ref{SatzProdDiff}:
+
+\begin{korollar}
+\label{SatzCharPolyDiff}
+    \Beq{EquCharPolyDiff} 
+        p'(\lambda)= - \sum_{i=1}^n 
+                               \frac{ p(\lambda) }{ (\lambda_i - \lambda) }
+    \Eeq
+\end{korollar}
+
+Mit Hilfe von \ref{SatzPolynomDiv} und \ref{SatzCharPolyDiff} erh"alt man
+nun die gesuchten Gleichungen (\cite{Haup52} S. 181):
+
+\begin{satz}[Newton'sche Gleichungen f"ur Potenzsummen]
+\label{SatzNewtonPotenz}
+\index{Newton!Gleichungen von}
+    \hfill \mbox{\hspace{1cm}} \\ 
+    F"ur die Koeffizienten des charakteristischen Polynoms 
+    gilt\footnote{Die Terme $s_i$ sind am Beginn des Unterkapitels 
+    definiert.}:
+    \[
+       \forall 0 \leq k \leq n-1 : \:
+       - (n - (k+1)
+         ) c_{k+1}
+       - \sum_{j=2}^{n-k} s_{j-1} c_{k+j}
+            = 0
+    \]
+\end{satz}
+\begin{beweis}
+    Die $\hat{c}_k$ aus Lemma \ref{SatzPolynomDiv} sind abh"angig vom
+    gew"ahlten $\lambda_i$. Deshalb definieren wir diese Koeffizienten
+    als Funktionen von $\lambda_i$:
+    \[ \hat{c}_k(\lambda_i) :=
+           - \sum_{j=1}^{n-k} \lambda_i^{j-1} c_{k+j} \MyPunkt
+    \]
+
+    Dann folgt aus Lemma \ref{SatzPolynomDiv}:
+    \Beq{Equ4SatzNewtonPotenz}
+       \sum_{i=1}^n \hat{c}_k(\lambda_i)
+           = \overbrace{- \sum_{j=1}^{n-k} s_{j-1} c_{k+j}
+                       }^{ \dot{c}_k := } \MyPunkt
+    \Eeq
+    "Ubertr"agt man diese Beziehung zwischen den Koeffizienten auf die
+    entsprechenden Polynome erh"alt man:
+    \Beq{Equ1SatzNewtonPotenz}
+       \sum_{i=1}^n \frac{ p(\lambda) }{ \lambda_i - \lambda }
+           =
+       \sum_{k=0}^{n-1} \dot{c}_k \lambda^k
+    \Eeq
+    Die erste Ableitung des charakteristischen Polynoms in der
+    Koeffizientendarstellung sieht folgenderma"sen aus:
+    \Beq{Equ2SatzNewtonPotenz}
+       p'(\lambda) = n c_n \lambda^{n-1} + (n-1) c_{n-1} \lambda^{n-2}
+                     + \cdots +
+                     2 c_2 \lambda + c_1
+    \Eeq
+    Aus den drei Gleichungen \equref{EquCharPolyDiff},
+    \equref{Equ1SatzNewtonPotenz} und \equref{Equ2SatzNewtonPotenz} folgt:
+    \[ - \sum_{k=0}^{n-1} \dot{c}_k \lambda^k
+           =
+       n c_n \lambda^{n-1} + (n-1) c_{n-1} \lambda^{n-2}
+           + \cdots +
+       2 c_2 \lambda + c_1
+    \]
+    Durch Koeffizientenvergleich erh"alt man aus dieser Gleichung:
+    \[ 
+        \forall 0 \leq k \leq n-1 : \: - \dot{c}_k = (k+1) c_{k+1} 
+    \]
+    Setzt man f"ur $\dot{c}_j$ den entsprechenden Term aus 
+    Gleichung \equref{Equ4SatzNewtonPotenz} ein, ergibt sich:
+    \begin{MyEqnArray}
+       \MT
+       \forall 0 \leq k \leq n-1 : \: 
+         \sum_{j=1}^{n-k} s_{j-1} c_{k+j}
+           \MT = \MT 
+       (k+1) c_{k+1}
+    \MNl \Leftrightarrow \MT
+       \forall 0 \leq k \leq n-1 : \: 
+         n c_{k+1} + \sum_{j=2}^{n-k} s_{j-1} c_{k+j}
+           & \DS = & \DS
+       (k+1) c_{k+1}
+    \MNl \Leftrightarrow \MT 
+       \forall 0 \leq k \leq n-1 : \: 
+         (n-(k+1)) c_{k+1} + \sum_{j=2}^{n-k} s_{j-1} c_{k+j}
+           \MT = \MT 0 
+    \end{MyEqnArray}
+\end{beweis}
+
+% **************************************************************************
+
+\MySection{Die Adjunkte einer Matrix}
+\label{SecAdj}
+
+Bei den Beweisen des Satzes von Frame in Unterkapitel \ref{SecFrame} 
+spielt die Adjunkte einer Matrix eine bedeutende Rolle und wird
+deshalb hier behandelt.
+
+\MyBeginDef
+\label{DefAdj}
+\index{Adjunkte}
+    Sei $A$ eine $n \times n$-Matrix.
+    Erh"alt man die Matrix $B$ aus der Matrix $A$ nach
+    \[
+        b_{i,j} := (-1)^{i+j} \det(A_{(j|i)}) \MyKomma
+    \] so hei"st $B$ {\em Adjunkte der Matrix $A$}. Die Adjunkte wird mit
+    \[ \adj(A) \] bezeichnet.
+\MyEndDef
+
+Zum Beweis einer uns besonders interessierenden Eigenschaft der Adjunkten
+ben"otigen wir zun"achst noch ein Lemma. Es
+behandelt den Fall einer Zeilen- bzw. Spaltenentwicklung\footnote{ vgl. 
+\ref{SatzEntw} }, bei der jedoch
+als Faktoren f"ur die Unterdeterminanten die Matrizenelemente nicht aus
+der Zeile bzw. Spalte entnommen werden, nach der die Determinante 
+entwickelt wird:
+
+\begin{lemma}
+\label{SatzFalscheEntw}
+    Seien \[ 1 \leq p,p' \leq n \] und \[ 1 \leq q,q' \leq n \] mit
+    \[ p \neq p' \] und \[ q \neq q' \] Dann gilt:
+    \[ \sum_{j=1}^n (-1)^{p+j} a_{p',j} \det(A_{(p|j)}) = 0 \] und
+    \[ \sum_{i=1}^n (-1)^{i+q} a_{i,q'} \det(A_{(i|q)}) = 0 \]
+\end{lemma}
+\begin{beweis}
+    Betrachtet man die Berechnung der Unterdeterminanten in den obigen
+    Gleichungen nach \equref{EquDet}, erkennt man beim
+    Vergleich mit der Berechnung der Determinante einer Matrix, die
+    zwei gleiche Zeilen enth"alt, da"s die Terme beider Berechnungen 
+    nach einigen Vereinfachungen "ubereinstimmen. Nach Satz
+    \ref{SatzDetPermut} ist die Determinante in diesem Fall gleich $0$.
+\end{beweis}
+
+Mit Hilfe von \ref{SatzFalscheEntw} erhalten wir nun:
+
+\begin{satz}
+\label{SatzAdj}
+    \begin{eqnarray}
+        \label{EquSatzAdj1}
+        A * \adj(A) = E_n * \det(A) 
+     \\ \label{EquSatzAdj2}
+        \adj(A) * A = E_n * \det(A)
+    \end{eqnarray}
+\end{satz}
+\begin{beweis}
+    Spalte $k$ der Matrix $\adj(A)$ sieht so aus:
+    \[ 
+        \left[
+        \begin{array}{c}
+            (-1)^{1+k} \det(A_{(k|1)}) 
+         \\ (-1)^{2+k} \det(A_{(k|2)})
+         \\ \vdots
+         \\ (-1)^{n+k} \det(A_{(k|n)})
+        \end{array} 
+        \right]
+    \]
+    Das Element an der Stelle $(i,k)$ der Produktmatrix \[ A * \adj(A) \]
+    ist also gleich \[ \sum_{j=1}^n a_{i,j} (-1)^{j+k} A_{(k|j)} \]
+    Dies ist nach \ref{SatzEntw} gleich $\det(A)$ f"ur \[ i = k \] und
+    nach \ref{SatzFalscheEntw} gleich $0$ f"ur \[ i \neq k \]
+    Daraus folgt die G"ultigkeit von \equref{EquSatzAdj1}. 
+    Die Argumentation
+    f"ur \equref{EquSatzAdj2} verl"auft analog.
+\end{beweis}
+
+% **************************************************************************
+
+\MySection{Der Satz von Frame}
+\label{SecFrame}
+
+In diesem Unterkapitel wird eine Methode von J. S. Frame (\cite{Fram49};
+\cite{Dwye51} S. 225-235) vorgestellt\footnote{ Die
+Originalver"offentlichung \cite{Fram49} enth"alt keinen Beweis. Dieser
+Beweis ist schwer zu bekommen. Er wird hier deshalb
+frei nachvollzogen und d"urfte sich vom Original nicht wesentlich 
+unterscheiden. In diesem Zusammenhang m"ochte ich mich bei R. T. Bumby 
+f"ur seinen Hinweis auf die Newton'schen Gleichungen f"ur Potenzsummen
+bedanken.} , die es u. a. erlaubt, die
+Determinante einer Matrix zu berechnen. Diese Methode ist im wesentlichen
+eine Neuentdeckung der 
+Methode von Leverrier \index{Leverrier!Methode von}
+aus dem 19. Jahrhundert zur 
+Bestimmung der Koeffizienten des charakteristischen Polynoms 
+(z. B. \cite{Hous64} S. 166 ff. ). Die Darstellung wird hier auf die Teile 
+beschr"ankt, die f"ur die Determinantenberechnung wichtig sind.
+
+Die Adjunkte von
+\Beq{TermFrameAminusLambda} 
+    A - \lambda E_n
+\Eeq 
+besteht aus lauter Determinanten von $(n-1) \times (n-1)$-Matrizen. Sie
+kann deshalb durch ein Polynom vom Grad $n-1$ dargestellt werden
+(siehe dazu auch \ref{DefCharPoly} und \ref{DefAdj}).
+Dies motiviert die folgende Vereinbarung zus"atzlich zu den in
+\ref{SecNewtonPotenz} aufgef"uhrten Bezeichnungen:
+\begin{quote}
+    Seien \[ B_i \: , \: 0 \leq i \leq n-1 \] geeignet gew"ahlte 
+    $n \times n$-Matrizen.
+    Dann bezeichnet
+    \[
+       c(\lambda) := B_{n-1} \lambda^{n-1} + B_{n-2} \lambda^{n-2} + 
+                     \cdots + B_2 \lambda^2 + B_1 \lambda + B_0 \MyPunkt
+    \] die Adjunkte von \equref{TermFrameAminusLambda}.
+\end{quote}
+
+\begin{lemma}
+\label{SatzFrame1}
+    \begin{eqnarray*}
+       B_{n-1} & = & (-1) E_n
+    \\ \forall n-2 \geq i \geq 0 : \:
+       B_{i} & = & A B_{i+1} - c_{i+1} E_n
+    \end{eqnarray*}
+\end{lemma}
+\begin{beweis}
+    Aus Satz \ref{SatzAdj} in Verbindung mit Definition \ref{DefCharPoly}
+    folgt:
+    \[ (A - \lambda E_n) c(\lambda) = p(\lambda) E_n \]
+    Setzt man die Koeffizientendarstellungen von $c(\lambda)$ und
+    $p(\lambda)$ in diese Gleichung ein, erh"alt man
+    \[
+    \begin{array}{p{1.8em}p{3.6em}l}
+    & \multicolumn{2}{l}{
+          \DS (A - \lambda E_n) (B_{n-1} \lambda^{n-1} + 
+               B_{n-2} \lambda^{n-2} + \cdots + 
+               B_2 \lambda^2 + B_1 \lambda + B_0) \MatStrut
+      } 
+    \\ & & \DS \MatStrut
+        = (c_n \lambda^n + c_{n-1} \lambda^{n-1} + \cdots
+                       + c_2 \lambda^2 + c_1 \lambda + c_0 ) E_n
+    \\ \mbox{ $\DS \Leftrightarrow$ } & 
+       \multicolumn{2}{l}{ \MatStrut
+           \DS AB_{n-1} \lambda^{n-1} + AB_{n-2} \lambda^{n-2} +
+                       \cdots + AB_2 \lambda^2 + AB_1 \lambda + AB_0
+       }
+    \\ &
+       \multicolumn{2}{l}{ \MatStrut
+           \DS - B_{n-1} \lambda^{n} - B_{n-2} \lambda^{n-1} -
+                       \cdots - B_2 \lambda^3 - B_1 \lambda^2 - B_0 \lambda
+       }
+    \\ & & \DS \MatStrut
+       = (c_n \lambda^n + c_{n-1} \lambda^{n-1} + \cdots
+                   + c_2 \lambda^2 + c_1 \lambda + c_0 ) E_n
+    \\ \mbox{ $\DS \Leftrightarrow$ } & 
+       \multicolumn{2}{l}{ \MatStrut
+           \DS - B_{n-1} \lambda^{n} + (AB_{n-1} - B_{n-2}) \lambda^{n-1} +
+               (AB_{n-2} - B_{n-3}) \lambda^{n-2} + \cdots 
+       }
+    \\ &
+       \multicolumn{2}{l}{ \MatStrut
+           \DS + (AB_2 - B_1) \lambda^2 + (AB_1 - B_0) \lambda
+       }
+    \\ & & \DS \MatStrut
+       = (c_n \lambda^n + c_{n-1} \lambda^{n-1} + \cdots
+                         + c_2 \lambda^2 + c_1 \lambda + c_0 ) E_n
+    \end{array}
+    \]
+    Koeffizientenvergleich ergibt die Behauptung.
+\end{beweis}
+
+\begin{lemma}
+\label{SatzFrame2}
+    Es gilt\footnote{Da in dieser Arbeit verschiedene Arten von hoch und
+    tiefgestellten Indizes und Markierungen verwendet werden, sei hiermit
+    exiplizit darauf hingewiesen, da"s mit $p'(\lambda)$ ,wie allgemein
+    "ublich, die erste Ableitung von $p(\lambda)$ gemeint ist.}
+    \[ p'(\lambda) = - \tr(c(\lambda)) \MyPunkt \]
+\end{lemma}
+\begin{beweis}
+    Zu zeigen ist:
+    \[ \sum_{j=1}^n j c_j \lambda^{j-1} = 
+       - \tr\left( \sum_{j=1}^{n} B_{j-1} \lambda^{j-1} \right)
+    \]
+    Durch Koeffizientenvergleich erh"alt man:
+    \[ 
+       \forall 1 \leq j \leq n: \: j c_j = - \tr(B_{j-1}) 
+    \]
+    Durch wiederholte Anwendung von \ref{SatzFrame1} ergibt sich daraus:
+    \begin{eqnarray*}
+       j c_j & = & - \tr(A B_{j} - c_{j} E_n)
+    \\ \Leftrightarrow
+       (n-j) c_j & = & \tr(A B_j)
+    \\ \Leftrightarrow
+       (n-j) c_j & = & \tr(A (A B_{j+1} - c_{j+1} E_n))
+    \\ \Leftrightarrow
+       (n-j) c_j & = & \tr(A^{n-j}B_{n-1}) 
+                       - \sum_{k=1}^{n-j-1} \tr(A^k) c_{j+k}
+    \\ \Leftrightarrow
+       (n-j) c_j & = & - \tr(A^{n-j}) 
+                       - \sum_{k=1}^{n-j-1} \tr(A^k) c_{j+k}
+    \\ \Leftrightarrow
+       (n-j) c_j & = & - \tr(A^{n-j}) 
+                       - \sum_{k=1}^{n-j-1} \tr(A^k) c_{j+k}
+    \end{eqnarray*}
+    Nach \ref{SatzTraceLambda} ist dies gleichbedeutend mit
+    \[
+       (n-j) c_j + s_{n-j}
+                   + \sum_{k=1}^{n-j-1} s_k c_{j+k} = 0
+    \]
+    Da f"ur das charakteristische Polynom $c_n=1$ gilt, ist diese 
+    Gleichung nach Satz \ref{SatzNewtonPotenz} richtig.
+    \\ \hspace{10em} % damit das Viereck auf der rechten Seite steht
+\end{beweis}
+
+\begin{lemma}
+\label{SatzFrame3}
+    \[ \forall 1 \leq i \leq n: \: c_i = \frac{1}{n-i} \tr(A B_i) \]
+\end{lemma}
+\begin{beweis}
+    Wie in \ref{SatzFrame1} folgt zun"achst aus
+    \ref{SatzAdj} in Verbindung mit Definition \ref{DefCharPoly}:
+    \begin{MyEqnArray}
+       \MT (A - \lambda E_n) c(\lambda) \MT = \MT p(\lambda) E_n 
+    \MNl \Leftrightarrow \MT
+        A c(\lambda) - \lambda c(\lambda) \MT = \MT p(\lambda) E_n
+    \MNl \Leftrightarrow \MT
+       \tr(A c(\lambda)) \MT = \MT 
+       \tr(\lambda c(\lambda)) + \tr(p(\lambda) E_n) \MatStrut
+    \end{MyEqnArray}
+    Mit Hilfe von \ref{SatzFrame2} folgt:
+    \[
+    \begin{array}{p{1.8em}rcl}
+       & \multicolumn{3}{l}{ 
+             \DS \tr(A c(\lambda)) \mbox{ $\DS =$ }
+             \DS n p(\lambda) - \lambda p'(\lambda) 
+         }
+    \\ \mbox{ $\DS \Leftrightarrow$ } &
+       \multicolumn{3}{l}{ \MatStrut
+          \DS \tr(AB_{n-1} \lambda^{n-1} + AB_{n-2} \lambda^{n-2} + 
+                       \cdots + AB_2 \lambda^2 + AB_1 \lambda + AB_0)
+       }
+    \\ & \mbox{ $\DS = $ } & \MatStrut
+        \DS n ( \lambda^n c_n + c_{n-1} \lambda^{n-1} + \cdots
+                       + c_2 \lambda^2 + c_1 \lambda + c_0)
+    \\ & & \MatStrut
+        \DS - (n \lambda^n c_n + (n-1) c_{n-1} \lambda^{n-1} + \cdots
+                       + 2 c_2 \lambda^2 + c_1 \lambda )
+    \end{array}
+    \]
+    Koeffizientenvergleich ergibt
+    \[ \forall 1 \leq i \leq n: \: \tr(AB_i) = n c_i - i c_i \MyPunkt \]
+\end{beweis}
+
+\begin{satz}[Frame]
+\label{SatzFrame}
+\index{Frame!Satz von}
+    \Beq{Equ3SatzFrame}
+        \det(A)= \frac{ \tr(A B_0) }{ n }
+    \Eeq
+\end{satz}
+\begin{beweis}
+    Man erh"alt die Behauptung aus \ref{SatzFrame1}, \ref{SatzFrame3} und
+    \ref{SatzDdurchP}.
+\end{beweis}
+
+% **************************************************************************
+
+\MySection{Determinantenberechnung mit Hilfe des Satzes von Frame}
+\label{SecAlgFrame}
+\index{Algorithmus!von Csanky}
+\index{Csanky!Algorithmus von}
+
+In diesem Unterkapitel wird eine effiziente Methode zur parallelen
+Determinantenberechnung \cite{Csan76} vorgestellt (abgek"urzt mit 
+{\em C-Alg.};
+vgl. Unterkapitel \ref{SecBez}). Sie benutzt Divisionen und kann deshalb
+nur angewendet werden, wenn die Berechnungen in einem K"orper stattfinden.
+Dies ist problematisch,
+weil in realen Rechnern nur mit begrenzter Genauigkeit gearbeitet werden 
+kann und somit immer auf die eine oder andere Weise modulo gerechnet wird. 
+Z. B. besitzt 6 im Ring $ \Integers_8 $ kein multiplikatives Inverses.
+
+Dies motiviert den Entwurf von Algorithmen, die ohne Divisionen
+auskommen, und somit auch in Ringen anwendbar sind, wie BGH-Alg. und
+B-Alg. . P-Alg. benutzt wie C-Alg. ebenfalls Divisionen.
+
+Die Determinantenberechnung erfolgt in dem Algorithmus, der in diesem
+Unterkapitel vorgestellt wird, mit Hilfe des Satzes von Frame
+(Satz \ref{SatzFrame}). Der Satz nutzt die bereits in \ref{SatzDdurchP}
+erw"ahnte Tatsache aus, da"s sich unter den Koeffizienten des
+charakteristischen Polynoms auch die Determiante befindet. Diese Eigenschaft
+des charakteristischen Polynoms wird auch in B-Alg. und P-Alg. in
+Verbindung mit anderen Verfahren zur Bestimmung der Koeffizienten
+verwendet.
+
+Die Berechnung der Determinante nach Satz \ref{SatzFrame} erfolgt mit Hilfe
+einer Rekursionsgleichung. F"ur eine effiziente parallele Berechnung ist
+dies nicht befriedigend. Deshalb ist sind einige Umformungen \cite{Csan76}
+erforderlich. F"ur diese Umformungen wird ein Operator ben"otigt. Dazu seien
+$M$ und $N$ jeweils $n \times n$-Matrizen:
+
+\MyBeginDef
+\index{Spuroperator}
+\label{DefSpurOp}
+    Der Operator $T$ wird definiert durch: \[ {T}{N} := \tr(N) \]
+    Er wird {\em Spuroperator} genannt.
+\MyEndDef
+
+Es gilt also \[ (E + MT)N = N + {M}{T}{N} = N + M \tr(N) \MyPunkt \]
+
+F"ur die Determinantenberechnung nach Satz \ref{SatzFrame} ist die dort
+auftretende Matrix $B_0$ zu berechnen. Mit Hilfe der Lemmata
+\ref{SatzFrame1} und \ref{SatzFrame2} sowie des soeben definierten
+Operators $T$ erh"alt diese Berechnung folgendes Aussehen:
+\begin{eqnarray*}
+   B_0 & = & A B_1 - c_1 E_n
+\\     & = & A B_1 - \frac{E_n}{n-1} \tr(A B_1)
+\\     & = & \left( E_n - \frac{E_n}{n-1} T \right) A B_1
+\\     & \vdots & 
+\\     & = & \left( E_n - \frac{E_n}{n-1}T \right)
+             \left\{A
+                 \left[
+                     \left(E_n - \frac{E_n}{n-2}T \right)
+                     \left\{A
+                         \left[
+                             \cdots
+                             (E_n - {E_n}{T})
+                             \{A[E_n]\}
+                             \cdots
+                         \right]
+                     \right\}
+                 \right]
+             \right\}
+\end{eqnarray*}
+Mit Hilfe der Assoziativit"at der Matrizenmultiplikation erh"alt man:
+\Beq{Equ1SatzCsanky}
+    B_0 = \left(
+              \underbrace{
+                  A - \overbrace{ \frac{E}{n-1} }^{\mbox{Term 1}}
+                  \overbrace{ {T}{A} }^{\mbox{Term 2}}
+              }_{\mbox{Term 3}}
+          \right)
+          \left(A - \frac{E}{n-2} {T}{A} \right)
+          \cdots
+          \left(A - \frac{E}{2} {T}{A} \right)
+          (A - {E}{T}{A})
+\end{equation}
+Da $E_n$ nur in der Hauptdiagonalen von $0$ verschiedene Elemente
+besitzt,
+l"a"st sich Term 1 in einem Schritt von \[ n \] Prozessoren berechnen.
+Parallel dazu l"a"st sich Term 2 nach Satz \ref{SatzAlgRechnen} in
+\[ \left\lceil \log(n) \right\rceil \] Schritten von
+\[ \left\lfloor \frac{n}{2} \right\rfloor \] Prozessoren berechnen.
+
+Anschlie"send ist die Ergebnismatrix von Term 1 mit dem Ergebnis von
+Term 2 zu multiplizieren. Dies kann, wie bei der Berechnung von Term 1
+in einem Schritt von \[ n \] Prozessoren durchgef"uhrt werden. Die
+darauf folgende Matrizensubtraktion zur Berechnung von Term 3 kann in
+einem Schritt von \[ n^2 \] Prozessoren erledigt werden.
+
+Insgesamt kann Term 3 also in
+\[ \left\lceil \log(n) \right\rceil + 2 \] Schritten von
+\[ n^2 \] Prozessoren berechnet werden.
+
+Zur Berechnung von $B_0$ sind $n$ Terme auf die gleiche Weise wie
+Term 3 zu berechnen. Term 2 braucht f"ur all diese Terme nur einmal
+berechnet zu werden. Insgesamt kann die Berechnung der $n$ Terme in
+\[ \left\lceil \log(n) \right\rceil + 2 \] Schritten von
+\[ n^3 \] Prozessoren erledigt werden.
+
+Um das Endergebnis $B_0$ zu erhalten sind schlie"slich noch die
+Ergebnismatrizen der $n$ Terme miteinander zu multiplizieren. Die
+Anzahl der Schritte und Prozessoren daf"ur folgt aus den S"atzen
+\ref{SatzAlgBinaerbaum} und \ref{SatzAlgMatMult}.
+Zu beachten ist dabei,
+da"s eine Verkn"upfung nicht in einem Schritt von
+einem Prozessor durchgef"uhrt wird, sondern nach \ref{SatzAlgMatMult} in
+\[ \lceil \log(n) \rceil + 1 \] Schritten von \[ n^3 \] Prozessoren.
+Deshalb werden diese Matrizenmultiplikationen in
+\[ (\lceil \log(n) \rceil + 1) \lceil \log(n) \rceil \] Schritten von
+\[ n^3 \left\lfloor \frac{n}{2} \right\rfloor \] Prozessoren
+durchgef"uhrt.
+
+Insgesamt wird die Berechnung von $B_0$ also in
+\[ \lceil \log(n) \rceil^2 + 2 \lceil \log(n) \rceil + 2 \] Schritten
+von \[ n^3 \left\lfloor \frac{n}{2} \right\rfloor \] Prozessoren
+durchgef"uhrt.
+
+Um die Determinante zu berechnen, sind noch nacheinander durchzuf"uhren:
+\begin{enumerate}
+\item
+      eine Matrizenmultiplikation nach Satz \ref{SatzAlgMatMult} in
+      \[ \lceil \log(n) \rceil + 1 \] Schritten von \[ n^3 \] 
+      Prozessoren,
+\item 
+      die Berechnung der Spur\footnote{siehe Definition
+      \ref{DefTr} } einer Matrix nach Satz \ref{SatzAlgBinaerbaum} in
+      \[ \lc \log(n) \rc \] Schritten von
+      \[ \lf \frac{n}{2} \rf \]
+      Prozessoren und
+\item
+      eine Division in einem Schritt von einem Prozessor.
+\end{enumerate}
+Diese drei Berechnungsstufen werden insgesamt in
+\[ 2 \lceil \log(n) \rceil + 2 \] Schritten von \[ n^3 \] Prozessoren
+durchgef"uhrt.
+
+Die Berechnung der Determinanten mit Hilfe von Satz \ref{SatzFrame}
+kann also in
+\[ \lc \log(n) \rc^2 + 4 \lc \log(n) \rc + 4 \] Schritten
+durchgef"uhrt werden. Die Anzahl der Prozessoren betr"agt
+\begin{eqnarray*}
+   &      & n^3 \lf \frac{n}{2} \rf
+\\ & \leq & \lc \frac{n^4}{2} \rc
+\end{eqnarray*}
+
+Man erkennt, da"s C-Alg. keine Fallunterscheidungen verwendet. Dies ist
+ein Vorteil bei der Konstruktion von Schaltkreisen, da somit keine
+Teilschaltkreise f"ur einzelne Zweige entworfen werden m"ussen. Dadurch
+wird ein Schaltkreis zur Determinantenberechnung mit Hilfe von C-Alg.
+nicht unn"otig vergr"o"sert. Es wird sich zeigen, da"s die anderen
+Algorithmen (BGH-Alg., B-Alg. und P-Alg.) die Eigenschaft fehlender 
+Fallunterscheidungen ebenfalls besitzen. In dieser Hinsicht besitzt keiner
+der Algorithmen einen Vorteil gegen"uber den anderen.
+
+Vergleicht man den Aufwand an Schritten und Prozessoren mit dem der anderen
+Algorithmen, zeigt sich, da"s C-Alg. bereits sehr effizient ist.
+

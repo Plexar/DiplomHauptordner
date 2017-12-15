@@ -1,0 +1,23 @@
+Bei diesen 
+Vernachl"assigungen gibt es insbesondere zwei Grenzf"alle:
+\begin{enumerate}
+\item 
+     Eine Bedingung, deren Bearbeitung nicht als Aufwand betrachtet wird, 
+     besteht aus mehreren, jedoch konstant vielen, logischen Operationen.
+     
+     Da der Aufwand f"ur die Auswertung dieser Bedingung von konstanter
+     Gr"o"se ist, wird er ebenfalls vernachl"assigt.
+\item
+     Es ist eine Berechnung durchzuf"uhren, die aus mehreren Teilrechnungen
+     besteht, die sich im wesentlichen dadurch unterscheiden, da"s 
+     verschiedene Permutationen und ihre Signaturen (siehe Definition
+     \ref{DefSig}) in ihnen verwendet werden und so das Vorzeichen 
+     des Ergebnisses der Teilrechnung beeinflussen. 
+     
+     Da die Verteilung der Aufgaben auf verschiedene Prozessoren nicht als
+     zus"atzlicher Aufwand betrachtet wird und die Zuweisung der 
+     Permutationen an die Prozessoren Teil der Aufgabenverteilung ist, wird
+     der konstante Zusatzaufwand zur Berechnung der Signaturen ebenfalls
+     vernachl"assigt.
+\end{enumerate}
+

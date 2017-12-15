@@ -1,0 +1,90 @@
+
+\begin{korollar}[Parallele Suche]
+\label{SatzAlgSuche}            % $$$ wird in 'SatzAlgLog' benutzt
+\index{Algorithmus!parallele Suche}
+    Sei $X$ eine Menge mit $n$ Elementen. Die Elemente seien
+    \[ x_1, x_2, \ldots, x_n \]
+    Sei \[ \circ : X \times X \rightarrow X \] eine zweistellige Operation,
+    genannt {\em Suchoperation}.
+    Sie sei assoziativ und liefere als Ergebnis dasjenige
+    Element der beiden, auf
+    die sie angewendet wird, das eine vorgegebene Bedingung erf"ullt.
+    Falls beide die Bedingung erf"ullen oder nicht erf"ullen, ist das
+    Ergebnis ein beliebiges der beiden Elemente.
+
+    Es l"a"st sich aus der Menge $X$ parallel in
+    \[ \left\lceil \log(n) \right\rceil \] Schritten von
+    \[ \left\lfloor \frac{n}{2} \right\rfloor \] Prozessoren ein
+    Element heraussuchen, das die Bedingung erf"ullt.
+\end{korollar}
+\begin{beweis}
+    Die Behauptung folgt aus Satz \ref{SatzAlgBinaerbaum}.
+\end{beweis}
+
+Es folgen ein paar Beispiele f"ur die Suchoperationen.
+\begin{itemize}
+\item
+     ({\em kleinstes} Element; analog: {\em gr"o"stes} Element)
+     \[ x \circ y :=
+                 \left\{
+                     \begin{array}{lcr}
+                         x & : & x < y \\
+                         y & : & x \geq y
+                     \end{array}
+                 \right.
+     \]
+\item
+     (Element, welches {\em n"achst gr"o"ser} ist als ein vorgegebenes $z$;
+      analog: {\em gr"o"ser oder gleich})
+
+     In diesem Fall ist die zu pr"ufende Bedingung etwas komplizierter.
+     Um die Assoziativit"at sicherzustellen, ist $y$ immer dann das 
+     Ergebnis, wenn $x$ die Bedingungen nicht erf"ullt, um das Ergebnis 
+     zu sein. Das wird mit folgender Definition ausgedr"uckt:
+     \[ x \circ y := \left\{
+                     \begin{array}{rcl}
+                         x & : & 
+                           \begin{array}{rcl}    
+                              ((x \leq y) & \und & ((z<x) \oder (y \leq z)))
+                           \\ \oder & & 
+                           \\ ((y<x) & \und & (y \leq z))
+                           \end{array}
+                     \\  y & : & \mbox{sonst}
+                     \end{array}
+                     \right.
+     \]
+\item
+     (Element, welches {\em gleich} einem vorgegebenen $z$ ist;
+      analog: {\em ungleich} )
+     \[ x \circ y := \left\{
+                     \begin{array}{lcr}
+                         x & : & x = z \\
+                         y & : & x \neq z
+                     \end{array}
+                 \right.
+     \]
+\end{itemize}
+
+Das f"ur uns wichtige in \ref{SecModell} beschriebene
+Berechnungsmodell erm"oglicht eine einfachere M"oglichkeit zur
+{\em Suche nach Gleichheit} --- die {\em Suche nach Ungleichheit}
+funktioniert analog --- als mit der obigen Suchoperation, wie der
+folgende Satz zeigt:
+
+\begin{satz}[Suche nach Gleichheit]
+\label{SatzAlgSucheGleich}
+\index{Algorithmus!parallele Suche nach Gleichheit}
+    Seien \[ x_1, \ldots , x_n \] sowie $z$ vorgegebene Werte.
+    Durch \[ n \] Prozessoren kann in einem Schritt von den $x_i$
+    irgendeins herausgesucht werden, das gleich $z$ ist.
+\end{satz}
+\begin{beweis}
+    Prozessor $i$ pr"uft $x_i$ auf Gleichheit zu $z$. Ist dies gegeben,
+    so ist $i$ das gesuchte Ergebnis. In dem Fall, da"s die Bedingung f"ur
+    mehrere $i$ erf"ullt ist, wird irgendeins dieser $i$ als endg"ultiges
+    Ergebnis angesehen \footnote{Das verwendete Rechnermodell (siehe
+    \ref{SecModell}) erlaubt dieses Vorgehen sehr effizient.} .
+    Es werden offensichtlich \[ n \] Prozessoren besch"aftigt, die das 
+    Problem in einem Schritt l"osen.
+\end{beweis}
+
